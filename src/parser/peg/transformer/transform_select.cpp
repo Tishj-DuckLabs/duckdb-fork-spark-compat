@@ -142,19 +142,22 @@ void RewriteSparkAutoNameReferences(SelectNode &node) {
 	}
 }
 
-//! Spark's explode() in SELECT position is a generator: one output row per element, arrays yielding a
-//! single column and maps yielding key/value columns. Rewrite a top-level, unaliased `explode(x)`
-//! select item to `unnest(__spark_explode_entries(x), max_depth := 2)` so the struct-expanding unnest
-//! sits at the select-item root - a scalar macro body binds as a non-root expression, which rejects the
-//! struct expansion - while __spark_explode_entries dispatches the array/map column shape. Aliased calls
-//! are left to the scalar explode macro (`unnest(x)`), which unnests a list under the alias directly.
+//! Spark's explode()/explode_outer() in SELECT position is a generator: one output row per element,
+//! arrays yielding a single column and maps yielding key/value columns. Rewrite a top-level, unaliased
+//! `explode(x)` / `explode_outer(x)` select item to `unnest(<entries>(x), max_depth := 2)` so the
+//! struct-expanding unnest sits at the select-item root - a scalar macro body binds as a non-root
+//! expression, which rejects the struct expansion - while the entries function dispatches the array/map
+//! column shape (the _outer helper additionally emits one all-NULL row for a NULL/empty collection).
+//! Aliased calls are left to the scalar explode/explode_outer macros, which unnest a list under the alias.
 void RewriteSparkSelectGenerators(SelectNode &node) {
 	for (auto &select_expr : node.select_list) {
 		if (select_expr->GetExpressionClass() != ExpressionClass::FUNCTION) {
 			continue;
 		}
 		auto &func = select_expr->Cast<FunctionExpression>();
-		if (StringUtil::Lower(func.FunctionName().GetIdentifierName()) != "explode" || !func.GetAlias().empty() ||
+		auto func_name = StringUtil::Lower(func.FunctionName().GetIdentifierName());
+		bool is_outer = func_name == "explode_outer";
+		if ((func_name != "explode" && !is_outer) || !func.GetAlias().empty() ||
 		    !func.GetQualifiedName().Schema().empty() || func.Distinct() || func.Filter() ||
 		    !func.OrderBy()->orders.empty()) {
 			continue;
@@ -165,7 +168,8 @@ void RewriteSparkSelectGenerators(SelectNode &node) {
 		}
 		vector<unique_ptr<ParsedExpression>> entries_args;
 		entries_args.push_back(std::move(args[0].GetExpressionMutable()));
-		auto entries = make_uniq<FunctionExpression>(Identifier("__spark_explode_entries"), std::move(entries_args));
+		auto entries_fn = is_outer ? "__spark_explode_outer_entries" : "__spark_explode_entries";
+		auto entries = make_uniq<FunctionExpression>(Identifier(entries_fn), std::move(entries_args));
 		auto max_depth = make_uniq<ConstantExpression>(Value::INTEGER(2));
 		max_depth->SetAlias(Identifier("max_depth"));
 		vector<unique_ptr<ParsedExpression>> unnest_args;
