@@ -142,6 +142,39 @@ void RewriteSparkAutoNameReferences(SelectNode &node) {
 	}
 }
 
+//! Spark's explode() in SELECT position is a generator: one output row per element, arrays yielding a
+//! single column and maps yielding key/value columns. Rewrite a top-level, unaliased `explode(x)`
+//! select item to `unnest(__spark_explode_entries(x), max_depth := 2)` so the struct-expanding unnest
+//! sits at the select-item root - a scalar macro body binds as a non-root expression, which rejects the
+//! struct expansion - while __spark_explode_entries dispatches the array/map column shape. Aliased calls
+//! are left to the scalar explode macro (`unnest(x)`), which unnests a list under the alias directly.
+void RewriteSparkSelectGenerators(SelectNode &node) {
+	for (auto &select_expr : node.select_list) {
+		if (select_expr->GetExpressionClass() != ExpressionClass::FUNCTION) {
+			continue;
+		}
+		auto &func = select_expr->Cast<FunctionExpression>();
+		if (StringUtil::Lower(func.FunctionName().GetIdentifierName()) != "explode" || !func.GetAlias().empty() ||
+		    !func.GetQualifiedName().Schema().empty() || func.Distinct() || func.Filter() ||
+		    !func.OrderBy()->orders.empty()) {
+			continue;
+		}
+		auto &args = func.GetArgumentsMutable();
+		if (args.size() != 1 || args[0].HasName()) {
+			continue;
+		}
+		vector<unique_ptr<ParsedExpression>> entries_args;
+		entries_args.push_back(std::move(args[0].GetExpressionMutable()));
+		auto entries = make_uniq<FunctionExpression>(Identifier("__spark_explode_entries"), std::move(entries_args));
+		auto max_depth = make_uniq<ConstantExpression>(Value::INTEGER(2));
+		max_depth->SetAlias(Identifier("max_depth"));
+		vector<unique_ptr<ParsedExpression>> unnest_args;
+		unnest_args.push_back(std::move(entries));
+		unnest_args.push_back(std::move(max_depth));
+		select_expr = make_uniq<FunctionExpression>(Identifier("unnest"), std::move(unnest_args));
+	}
+}
+
 } // namespace
 
 unique_ptr<SQLStatement>
@@ -173,6 +206,7 @@ unique_ptr<SelectStatement> PEGTransformerFactory::TransformSelectStatementInter
 	}
 	auto &select_node = select_statement->node->Cast<SelectNode>();
 	RewriteSparkAutoNameReferences(select_node);
+	RewriteSparkSelectGenerators(select_node);
 	if (select_node.from_table->type != TableReferenceType::SHOW_REF) {
 		return select_statement;
 	}
