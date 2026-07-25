@@ -487,6 +487,7 @@ Expression:
     - WhereClause
     - AliasedExpression
     - ExpressionAsCollabel
+    - ExpressionAsColumnAliases
     - ColIdExpression
     - ExpressionOptIdentifier
     - HavingClause

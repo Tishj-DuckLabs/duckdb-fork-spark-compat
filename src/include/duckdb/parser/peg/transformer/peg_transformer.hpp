@@ -4564,6 +4564,11 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeExpressionAsCollabelTrampoline(PEGTransformer &transformer,
 	                                                                               TransformStack &stack,
 	                                                                               TransformStackFrame &frame);
+	static void InitializeExpressionAsColumnAliasesTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                          TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeExpressionAsColumnAliasesTrampoline(PEGTransformer &transformer,
+	                                                                                    TransformStack &stack,
+	                                                                                    TransformStackFrame &frame);
 	static void InitializeExpressionOptIdentifierTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                        TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeExpressionOptIdentifierTrampoline(PEGTransformer &transformer,
@@ -8392,6 +8397,11 @@ public:
 	static unique_ptr<ParsedExpression> TransformExpressionAsCollabel(PEGTransformer &transformer,
 	                                                                  unique_ptr<ParsedExpression> expression,
 	                                                                  const Identifier &col_label_or_string);
+	static unique_ptr<TransformResultValue> TransformExpressionAsColumnAliasesInternal(PEGTransformer &transformer,
+	                                                                                   ParseResult &parse_result);
+	static unique_ptr<ParsedExpression> TransformExpressionAsColumnAliases(PEGTransformer &transformer,
+	                                                                       unique_ptr<ParsedExpression> expression,
+	                                                                       const vector<string> &column_aliases);
 	static unique_ptr<TransformResultValue> TransformExpressionOptIdentifierInternal(PEGTransformer &transformer,
 	                                                                                 ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformExpressionOptIdentifier(PEGTransformer &transformer,

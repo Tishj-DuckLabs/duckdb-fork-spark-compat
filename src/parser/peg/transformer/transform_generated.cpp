@@ -10309,6 +10309,16 @@ PEGTransformerFactory::TransformExpressionAsCollabelInternal(PEGTransformer &tra
 }
 
 unique_ptr<TransformResultValue>
+PEGTransformerFactory::TransformExpressionAsColumnAliasesInternal(PEGTransformer &transformer,
+                                                                  ParseResult &parse_result) {
+	auto &list_pr = parse_result.Cast<ListParseResult>();
+	auto expression = transformer.Transform<unique_ptr<ParsedExpression>>(list_pr.GetChild(0));
+	auto column_aliases = transformer.Transform<vector<string>>(list_pr.GetChild(2));
+	auto result = TransformExpressionAsColumnAliases(transformer, std::move(expression), column_aliases);
+	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
+}
+
+unique_ptr<TransformResultValue>
 PEGTransformerFactory::TransformExpressionOptIdentifierInternal(PEGTransformer &transformer,
                                                                 ParseResult &parse_result) {
 	auto &list_pr = parse_result.Cast<ListParseResult>();
@@ -11935,6 +11945,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"AliasedExpression", &PEGTransformerFactory::TransformAliasedExpressionInternal},
 	    {"ColIdExpression", &PEGTransformerFactory::TransformColIdExpressionInternal},
 	    {"ExpressionAsCollabel", &PEGTransformerFactory::TransformExpressionAsCollabelInternal},
+	    {"ExpressionAsColumnAliases", &PEGTransformerFactory::TransformExpressionAsColumnAliasesInternal},
 	    {"ExpressionOptIdentifier", &PEGTransformerFactory::TransformExpressionOptIdentifierInternal},
 	    {"ValuesClause", &PEGTransformerFactory::TransformValuesClauseInternal},
 	    {"ValuesClauseNoParens", &PEGTransformerFactory::TransformValuesClauseNoParensInternal},

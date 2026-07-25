@@ -26,6 +26,7 @@
 #include "duckdb/parser/expression/columnref_expression.hpp"
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/expression/constant_expression.hpp"
+#include "duckdb/parser/expression/lambda_expression.hpp"
 #include "duckdb/common/unordered_map.hpp"
 
 namespace duckdb_fork {
@@ -2137,6 +2138,63 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExpressionAsCollabe
     PEGTransformer &transformer, unique_ptr<ParsedExpression> expression, const Identifier &col_label_or_string) {
 	expression->SetAlias(col_label_or_string);
 	return expression;
+}
+
+//! Spark's generators (posexplode etc.) name their output columns with a parenthesized multi-column
+//! alias `AS (c1, c2, ...)` in the SELECT list. Rewrite a supported generator call into
+//! `unnest(list_transform(<entries>(arg), row -> struct_pack(c1 := struct_extract_at(row, 1), ...)), max_depth := 2)`:
+//! the entries helper returns a LIST(STRUCT(...)) row-per-element, the struct is renamed field-by-field to
+//! the aliases (positionally, so array/map shape does not matter), and the struct-expanding unnest at the
+//! select-item root turns each struct field into an output column. A parenthesized alias list is only valid
+//! on a generator, so anything else is a parse error.
+unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExpressionAsColumnAliases(
+    PEGTransformer &transformer, unique_ptr<ParsedExpression> expression, const vector<string> &column_aliases) {
+	const char *entries_fn = nullptr;
+	if (expression->GetExpressionClass() == ExpressionClass::FUNCTION) {
+		auto &func = expression->Cast<FunctionExpression>();
+		if (StringUtil::Lower(func.FunctionName().GetIdentifierName()) == "posexplode") {
+			entries_fn = "__spark_posexplode_entries";
+		}
+		auto &args = func.GetArgumentsMutable();
+		if (!entries_fn || !func.GetAlias().empty() || !func.GetQualifiedName().Schema().empty() || func.Distinct() ||
+		    func.Filter() || !func.OrderBy()->orders.empty() || args.size() != 1 || args[0].HasName()) {
+			entries_fn = nullptr;
+		}
+	}
+	if (!entries_fn) {
+		throw ParserException(
+		    "A parenthesized column alias list is only supported on a generator function (e.g. posexplode)");
+	}
+	auto &func = expression->Cast<FunctionExpression>();
+
+	vector<unique_ptr<ParsedExpression>> entries_args;
+	entries_args.push_back(std::move(func.GetArgumentsMutable()[0].GetExpressionMutable()));
+	auto entries = make_uniq<FunctionExpression>(Identifier(entries_fn), std::move(entries_args));
+
+	// row -> struct_pack(alias_0 := struct_extract_at(row, 1), ..., alias_{n-1} := struct_extract_at(row, n))
+	const string lambda_param = "__spark_gen_row";
+	vector<FunctionArgument> struct_fields;
+	for (idx_t i = 0; i < column_aliases.size(); i++) {
+		vector<unique_ptr<ParsedExpression>> extract_args;
+		extract_args.push_back(make_uniq<ColumnRefExpression>(Identifier(lambda_param)));
+		extract_args.push_back(make_uniq<ConstantExpression>(Value::INTEGER(UnsafeNumericCast<int32_t>(i + 1))));
+		struct_fields.emplace_back(Identifier(column_aliases[i]),
+		                           make_uniq<FunctionExpression>(Identifier("struct_extract_at"), std::move(extract_args)));
+	}
+	auto struct_pack = make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(struct_fields));
+	auto lambda = make_uniq<LambdaExpression>(vector<string> {lambda_param}, std::move(struct_pack));
+
+	vector<unique_ptr<ParsedExpression>> transform_args;
+	transform_args.push_back(std::move(entries));
+	transform_args.push_back(std::move(lambda));
+	auto list_transform = make_uniq<FunctionExpression>(Identifier("list_transform"), std::move(transform_args));
+
+	auto max_depth = make_uniq<ConstantExpression>(Value::INTEGER(2));
+	max_depth->SetAlias(Identifier("max_depth"));
+	vector<unique_ptr<ParsedExpression>> unnest_args;
+	unnest_args.push_back(std::move(list_transform));
+	unnest_args.push_back(std::move(max_depth));
+	return make_uniq<FunctionExpression>(Identifier("unnest"), std::move(unnest_args));
 }
 
 unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExpressionOptIdentifier(
