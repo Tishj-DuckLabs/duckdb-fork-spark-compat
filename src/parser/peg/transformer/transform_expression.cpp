@@ -126,6 +126,12 @@ PEGTransformerFactory::TransformBaseExpression(PEGTransformer &transformer,
 // NestedColumnName
 unique_ptr<ParsedExpression> PEGTransformerFactory::TransformColumnReference(PEGTransformer &transformer,
                                                                              unique_ptr<ColumnRefExpression> child) {
+	// the grouping__id virtual column is the grouping id over every GROUP BY expression
+	if (child->ColumnNames().size() == 1 && child->GetColumnName() == "grouping__id") {
+		auto grouping_id = make_uniq<OperatorExpression>(ExpressionType::GROUPING_FUNCTION);
+		grouping_id->SetAlias("grouping__id");
+		return std::move(grouping_id);
+	}
 	return std::move(child);
 }
 
