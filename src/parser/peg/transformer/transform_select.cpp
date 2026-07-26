@@ -180,6 +180,88 @@ void RewriteSparkSelectGenerators(SelectNode &node) {
 	}
 }
 
+//! The expression that decides a group key's identity: an ordinal stands for the select item it names.
+//! An out-of-range ordinal stands for itself, so the binder still reports it.
+const ParsedExpression &GroupByKeyExpression(const ParsedExpression &group_expr,
+                                             const vector<unique_ptr<ParsedExpression>> &select_list) {
+	if (group_expr.GetExpressionClass() != ExpressionClass::CONSTANT) {
+		return group_expr;
+	}
+	auto &value = group_expr.Cast<ConstantExpression>().GetValue();
+	if (value.IsNull() || !value.type().IsIntegral()) {
+		return group_expr;
+	}
+	auto ordinal = value.GetValue<int64_t>();
+	if (ordinal < 1 || static_cast<idx_t>(ordinal) > select_list.size()) {
+		return group_expr;
+	}
+	return *select_list[static_cast<idx_t>(ordinal) - 1];
+}
+
+//! Spark resolves a GROUP BY ordinal against the select list before grouping sets are formed, so an
+//! ordinal and the select item it names are one grouping key. Group keys are numbered here by structural
+//! equality of the raw expressions while ordinals are only resolved later, in the binder, which leaves
+//! GROUPING SETS ((1), (b), (a, 2)) with two keys for `a` and two for `b` - the select list can reference
+//! only one of each, so the sets built on the other keys project NULL. Merge the keys that become equal
+//! once ordinals are canonicalized to their select item, and remap the grouping sets onto them. Idempotent,
+//! so it can run again after a rewrite that turns a group expression into one of the select items.
+void MergeDuplicateGroupByKeys(SelectNode &node) {
+	auto &group_expressions = node.groups.group_expressions;
+	if (group_expressions.size() < 2 || node.groups.grouping_sets.empty()) {
+		return;
+	}
+	for (auto &select_expr : node.select_list) {
+		// an ordinal into an unexpanded star only resolves once the binder has expanded it
+		if (select_expr->GetExpressionClass() == ExpressionClass::STAR) {
+			return;
+		}
+	}
+	parsed_expression_map_t<idx_t> key_indexes;
+	vector<idx_t> remap;
+	remap.reserve(group_expressions.size());
+	for (auto &group_expr : group_expressions) {
+		auto &key = GroupByKeyExpression(*group_expr, node.select_list);
+		auto entry = key_indexes.find(key);
+		if (entry != key_indexes.end()) {
+			remap.push_back(entry->second);
+			continue;
+		}
+		auto key_index = key_indexes.size();
+		key_indexes[key] = key_index;
+		remap.push_back(key_index);
+	}
+	if (key_indexes.size() == group_expressions.size()) {
+		return;
+	}
+	vector<unique_ptr<ParsedExpression>> merged;
+	merged.reserve(key_indexes.size());
+	for (idx_t i = 0; i < group_expressions.size(); i++) {
+		if (remap[i] == merged.size()) {
+			merged.push_back(std::move(group_expressions[i]));
+		}
+	}
+	group_expressions = std::move(merged);
+	for (auto &grouping_set : node.groups.grouping_sets) {
+		GroupingSet remapped_set;
+		for (auto &index : grouping_set) {
+			remapped_set.insert(ProjectionIndex(remap[index.GetIndex()]));
+		}
+		grouping_set = std::move(remapped_set);
+	}
+}
+
+//! GROUP BY ALL arrives as a single star expression - drop it and let the binder infer the groups.
+void AssignGroupByNode(SelectNode &node, GroupByNode groups) {
+	if (groups.group_expressions.size() == 1 &&
+	    PEGTransformerFactory::ExpressionIsEmptyStar(*groups.group_expressions[0])) {
+		node.aggregate_handling = AggregateHandling::FORCE_AGGREGATES;
+		groups.group_expressions.clear();
+		groups.grouping_sets.clear();
+	}
+	node.groups = std::move(groups);
+	MergeDuplicateGroupByKeys(node);
+}
+
 } // namespace
 
 unique_ptr<SQLStatement>
@@ -212,6 +294,8 @@ unique_ptr<SelectStatement> PEGTransformerFactory::TransformSelectStatementInter
 	auto &select_node = select_statement->node->Cast<SelectNode>();
 	RewriteSparkAutoNameReferences(select_node);
 	RewriteSparkSelectGenerators(select_node);
+	// the auto-name rewrite can turn a group expression into a copy of a select item it shares a key with
+	MergeDuplicateGroupByKeys(select_node);
 	if (select_node.from_table->type != TableReferenceType::SHOW_REF) {
 		return select_statement;
 	}
@@ -412,13 +496,7 @@ unique_ptr<SelectStatement> PEGTransformerFactory::TransformSimpleSelect(PEGTran
 	transformer.TransformOptional<unique_ptr<ParsedExpression>>(list_pr, 1, select_node->where_clause);
 	auto &group_opt = list_pr.Child<OptionalParseResult>(2);
 	if (group_opt.HasResult()) {
-		auto group_by_node = transformer.Transform<GroupByNode>(group_opt.GetResult());
-		if (group_by_node.group_expressions.size() == 1 && ExpressionIsEmptyStar(*group_by_node.group_expressions[0])) {
-			select_node->aggregate_handling = AggregateHandling::FORCE_AGGREGATES;
-			group_by_node.group_expressions.clear();
-			group_by_node.grouping_sets.clear();
-		}
-		select_node->groups = std::move(group_by_node);
+		AssignGroupByNode(*select_node, transformer.Transform<GroupByNode>(group_opt.GetResult()));
 	}
 	transformer.TransformOptional<unique_ptr<ParsedExpression>>(list_pr, 3, select_node->having);
 	transformer.TransformOptional<unique_ptr<ParsedExpression>>(list_pr, 5, select_node->qualify);
@@ -500,13 +578,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeSimpleSelectTram
 		select_node->where_clause = frame.TakeResult<unique_ptr<ParsedExpression>>(1);
 	}
 	if (frame.child_results[2]) {
-		auto group_by_node = frame.TakeResult<GroupByNode>(2);
-		if (group_by_node.group_expressions.size() == 1 && ExpressionIsEmptyStar(*group_by_node.group_expressions[0])) {
-			select_node->aggregate_handling = AggregateHandling::FORCE_AGGREGATES;
-			group_by_node.group_expressions.clear();
-			group_by_node.grouping_sets.clear();
-		}
-		select_node->groups = std::move(group_by_node);
+		AssignGroupByNode(*select_node, frame.TakeResult<GroupByNode>(2));
 	}
 	if (frame.child_results[3]) {
 		select_node->having = frame.TakeResult<unique_ptr<ParsedExpression>>(3);
