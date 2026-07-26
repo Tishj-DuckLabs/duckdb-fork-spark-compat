@@ -271,7 +271,8 @@ ColumnNameKeyword <- 'BETWEEN' /
 'XMLROOT' /
 'XMLSERIALIZE' /
 'XMLTABLE'
-FuncNameKeyword <- 'ARRAY' /
+FuncNameKeyword <- 'ANY' /
+'ARRAY' /
 'ASOF' /
 'AT' /
 'AUTHORIZATION' /
@@ -306,6 +307,7 @@ FuncNameKeyword <- 'ARRAY' /
 'RIGHT' /
 'SIMILAR' /
 'SMALLINT' /
+'SOME' /
 'STRING' /
 'STRUCT' /
 'TABLESAMPLE' /

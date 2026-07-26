@@ -492,6 +492,7 @@ void PEGKeywordHelper::InitializeKeywordMaps() { // Renamed for clarity
 
 	// Populating typefunc_keyword_map
 	typefunc_keyword_map.insert("anti");
+	typefunc_keyword_map.insert("any");
 	typefunc_keyword_map.insert("array");
 	typefunc_keyword_map.insert("asof");
 	typefunc_keyword_map.insert("at");
@@ -530,6 +531,7 @@ void PEGKeywordHelper::InitializeKeywordMaps() { // Renamed for clarity
 	typefunc_keyword_map.insert("semi");
 	typefunc_keyword_map.insert("similar");
 	typefunc_keyword_map.insert("smallint");
+	typefunc_keyword_map.insert("some");
 	typefunc_keyword_map.insert("string");
 	typefunc_keyword_map.insert("struct");
 	typefunc_keyword_map.insert("tablesample");
