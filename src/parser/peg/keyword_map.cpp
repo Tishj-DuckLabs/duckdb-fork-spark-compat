@@ -508,6 +508,7 @@ void PEGKeywordHelper::InitializeKeywordMaps() { // Renamed for clarity
 	typefunc_keyword_map.insert("cross");
 	typefunc_keyword_map.insert("decimal");
 	typefunc_keyword_map.insert("double");
+	typefunc_keyword_map.insert("exists");
 	typefunc_keyword_map.insert("float");
 	typefunc_keyword_map.insert("freeze");
 	typefunc_keyword_map.insert("full");

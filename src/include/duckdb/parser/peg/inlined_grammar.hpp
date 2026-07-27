@@ -272,6 +272,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'CROSS' /\n"
 	"'DECIMAL' /\n"
 	"'DOUBLE' /\n"
+	"'EXISTS' /\n"
 	"'FLOAT' /\n"
 	"'FREEZE' /\n"
 	"'FULL' /\n"
