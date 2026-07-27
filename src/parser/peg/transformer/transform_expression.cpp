@@ -181,6 +181,19 @@ static string MapOrderedSetAggregateName(const string &lowercase_name, idx_t arg
 	throw ParserException("Unknown ordered aggregate \"%s\".", qualified_function.Name());
 }
 
+// Spark binds a non-lambda argument in a higher-order function's lambda slot as a lambda with hidden,
+// unused parameters (ResolveLambdaVariables.createLambda), so `aggregate(xs, 0, 100)` behaves like
+// `aggregate(xs, 0, (acc, x) -> 100)`. DuckDB only routes into its lambda-binding path when the argument
+// is syntactically a lambda, so the wrap happens here, before the macro and the binder see it. The
+// parameter names stand in for Spark's hidden lambda variables: no column can collide with them.
+static void WrapHiddenLambdaArgument(vector<FunctionArgument> &arguments, idx_t index, vector<string> parameter_names) {
+	auto &argument = arguments[index].GetExpressionMutable();
+	if (argument->GetExpressionClass() == ExpressionClass::LAMBDA) {
+		return;
+	}
+	argument = make_uniq<LambdaExpression>(std::move(parameter_names), std::move(argument));
+}
+
 unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
     PEGTransformer &transformer, const QualifiedName &function_identifier,
     MethodArguments function_expression_arguments, optional<vector<OrderByNode>> within_group_clause,
@@ -366,12 +379,16 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 		lowercase_name = MapOrderedSetAggregateName(lowercase_name, function_children.size(), qualified_function);
 	}
 	if (lowercase_name == "transform" && function_children.size() == 2) {
-		auto &lambda_arg = function_children[1].GetExpressionMutable();
-		if (lambda_arg->GetExpressionClass() != ExpressionClass::LAMBDA) {
-			// Spark implicitly wraps a non-lambda 2nd argument in an identity lambda that ignores
-			// its parameter, e.g. `transform(ys, 0)` behaves like `transform(ys, x -> 0)`.
-			lambda_arg =
-			    make_uniq<LambdaExpression>(vector<string> {"__spark_transform_hidden_arg"}, std::move(lambda_arg));
+		WrapHiddenLambdaArgument(function_children, 1, {"__spark_transform_hidden_arg"});
+	}
+	// aggregate and reduce are the same Spark function (ArrayAggregate): argument 2 is the merge lambda,
+	// bound with (accumulator, element), and argument 3 the optional finish lambda, bound with (accumulator).
+	if ((lowercase_name == "aggregate" || lowercase_name == "reduce") &&
+	    (function_children.size() == 3 || function_children.size() == 4)) {
+		WrapHiddenLambdaArgument(function_children, 2,
+		                         {"__spark_aggregate_hidden_acc", "__spark_aggregate_hidden_elem"});
+		if (function_children.size() == 4) {
+			WrapHiddenLambdaArgument(function_children, 3, {"__spark_aggregate_hidden_acc"});
 		}
 	}
 	auto result = make_uniq<FunctionExpression>(
