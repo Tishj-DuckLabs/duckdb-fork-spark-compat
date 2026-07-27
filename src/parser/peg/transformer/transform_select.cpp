@@ -44,8 +44,7 @@ optional<string> SparkColumnName(const ParsedExpression &expr) {
 		return expr.Cast<ConstantExpression>().GetValue().ToString();
 	case ExpressionClass::FUNCTION: {
 		auto &func = expr.Cast<FunctionExpression>();
-		string result = StringUtil::Lower(func.FunctionName().GetIdentifierName()) + "(";
-		bool first = true;
+		vector<string> child_names;
 		for (auto &arg : func.GetArguments()) {
 			if (arg.HasName()) {
 				return optional<string>();
@@ -54,8 +53,22 @@ optional<string> SparkColumnName(const ParsedExpression &expr) {
 			if (!child_name.has_value()) {
 				return optional<string>();
 			}
-			result += first ? *child_name : ", " + *child_name;
-			first = false;
+			child_names.push_back(std::move(*child_name));
+		}
+		auto function_name = StringUtil::Lower(func.FunctionName().GetIdentifierName());
+		if (func.IsOperator()) {
+			// operators render infix and parenthesized: `d + 1` is named "(d + 1)"
+			if (child_names.size() == 1) {
+				return "(" + function_name + " " + child_names[0] + ")";
+			}
+			if (child_names.size() == 2) {
+				return "(" + child_names[0] + " " + function_name + " " + child_names[1] + ")";
+			}
+			return optional<string>();
+		}
+		string result = function_name + "(";
+		for (idx_t i = 0; i < child_names.size(); i++) {
+			result += i == 0 ? child_names[i] : ", " + child_names[i];
 		}
 		return result + ")";
 	}
@@ -76,27 +89,39 @@ string NormalizeAutoName(const string &name) {
 	return StringUtil::Lower(result);
 }
 
-//! If `expr` is a bare (single-part) column reference naming the Spark auto-name of an unaliased
-//! select item, resolve it to that item. A constant match becomes a 1-based positional reference: a
-//! copy of the constant would be read as a positional ordinal by value (e.g. GROUP BY 7 -> 7th
-//! column). A function match is replaced with a copy of the select expression.
-void RewriteAutoNameRef(unique_ptr<ParsedExpression> &expr,
-                        const vector<unique_ptr<ParsedExpression>> &select_list,
-                        const unordered_map<string, idx_t> &auto_names) {
-	if (!expr || expr->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
-		return;
+//! The auto-name a bare (single-part) column reference names, if any.
+optional_idx MatchAutoName(const ParsedExpression &expr, const unordered_map<string, idx_t> &auto_names) {
+	if (expr.GetExpressionClass() != ExpressionClass::COLUMN_REF) {
+		return optional_idx();
 	}
-	auto &col = expr->Cast<ColumnRefExpression>();
+	auto &col = expr.Cast<ColumnRefExpression>();
 	if (col.IsQualified()) {
-		return;
+		return optional_idx();
 	}
 	auto entry = auto_names.find(NormalizeAutoName(col.GetColumnName().GetIdentifierName()));
 	if (entry == auto_names.end()) {
+		return optional_idx();
+	}
+	return entry->second;
+}
+
+//! If `expr` names the Spark auto-name of an unaliased select item, resolve it to that item. A
+//! constant match becomes a 1-based positional reference: a copy of the constant would be read as a
+//! positional ordinal by value (e.g. GROUP BY 7 -> 7th column). A function match is replaced with a
+//! copy of the select expression.
+void RewriteAutoNameRef(unique_ptr<ParsedExpression> &expr,
+                        const vector<unique_ptr<ParsedExpression>> &select_list,
+                        const unordered_map<string, idx_t> &auto_names) {
+	if (!expr) {
 		return;
 	}
-	auto &matched = *select_list[entry->second];
+	auto match = MatchAutoName(*expr, auto_names);
+	if (!match.IsValid()) {
+		return;
+	}
+	auto &matched = *select_list[match.GetIndex()];
 	if (matched.GetExpressionClass() == ExpressionClass::CONSTANT) {
-		expr = make_uniq<ConstantExpression>(Value::INTEGER(UnsafeNumericCast<int32_t>(entry->second + 1)));
+		expr = make_uniq<ConstantExpression>(Value::INTEGER(UnsafeNumericCast<int32_t>(match.GetIndex() + 1)));
 	} else {
 		expr = matched.Copy();
 	}
@@ -139,6 +164,49 @@ void RewriteSparkAutoNameReferences(SelectNode &node) {
 		}
 		for (auto &order : modifier->Cast<OrderModifier>().orders) {
 			RewriteAutoNameRef(order.expression, node.select_list, auto_names);
+		}
+	}
+}
+
+//! Spark's GROUPING SETS / CUBE / ROLLUP rewrite aliases every unaliased group expression to its
+//! auto-name, and that alias - not the underlying columns - is what an ORDER BY above the aggregate
+//! sees, so GROUP BY GROUPING SETS (a, d + 1) ORDER BY `(d + 1)` resolves. DuckDB has no such name, so
+//! rewrite the reference to the group expression itself. Only function calls (operators included) are
+//! registered: a column reference keeps its own name and already resolves, and a constant group
+//! expression is a positional ordinal rather than a value.
+void RewriteSparkGroupByAliasReferences(SelectNode &node) {
+	auto &group_expressions = node.groups.group_expressions;
+	vector<reference<OrderModifier>> order_modifiers;
+	for (auto &modifier : node.modifiers) {
+		if (modifier->type == ResultModifierType::ORDER_MODIFIER) {
+			order_modifiers.push_back(modifier->Cast<OrderModifier>());
+		}
+	}
+	if (group_expressions.empty() || order_modifiers.empty()) {
+		return;
+	}
+	unordered_map<string, idx_t> alias_names;
+	for (idx_t i = 0; i < group_expressions.size(); i++) {
+		if (group_expressions[i]->GetExpressionClass() != ExpressionClass::FUNCTION) {
+			continue;
+		}
+		auto name = SparkColumnName(*group_expressions[i]);
+		if (name.has_value()) {
+			alias_names.emplace(NormalizeAutoName(*name), i);
+		}
+	}
+	if (alias_names.empty()) {
+		return;
+	}
+	for (auto &order_modifier : order_modifiers) {
+		for (auto &order : order_modifier.get().orders) {
+			if (!order.expression) {
+				continue;
+			}
+			auto match = MatchAutoName(*order.expression, alias_names);
+			if (match.IsValid()) {
+				order.expression = group_expressions[match.GetIndex()]->Copy();
+			}
 		}
 	}
 }
@@ -293,6 +361,7 @@ unique_ptr<SelectStatement> PEGTransformerFactory::TransformSelectStatementInter
 	}
 	auto &select_node = select_statement->node->Cast<SelectNode>();
 	RewriteSparkAutoNameReferences(select_node);
+	RewriteSparkGroupByAliasReferences(select_node);
 	RewriteSparkSelectGenerators(select_node);
 	// the auto-name rewrite can turn a group expression into a copy of a select item it shares a key with
 	MergeDuplicateGroupByKeys(select_node);
