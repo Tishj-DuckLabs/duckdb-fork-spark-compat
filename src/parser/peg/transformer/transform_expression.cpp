@@ -1450,9 +1450,9 @@ string PEGTransformerFactory::TransformQualifiedOperatorContents(PEGTransformer 
 	return StringUtil::Join(result, ".");
 }
 
-pair<string, bool> PEGTransformerFactory::TransformAnyAllOperator(PEGTransformer &transformer, const string &any_op,
+pair<string, bool> PEGTransformerFactory::TransformAnyAllOperator(PEGTransformer &transformer, const string &any_all_op,
                                                                   const bool &any_or_all) {
-	return make_pair(any_op, any_or_all);
+	return make_pair(any_all_op, any_or_all);
 }
 
 bool PEGTransformerFactory::TransformSubqueryAny(PEGTransformer &transformer) {

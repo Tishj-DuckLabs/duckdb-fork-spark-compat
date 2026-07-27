@@ -1058,6 +1058,7 @@ String:
     - QualifiedOperatorContents
     - ColIdDot
     - AnyOp
+    - AnyAllOp
     - StringOperator
     - JsonOperator
     - InetOperator

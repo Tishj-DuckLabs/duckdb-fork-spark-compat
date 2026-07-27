@@ -3211,6 +3211,10 @@ public:
 	                                      TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeAnyOpTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                                TransformStackFrame &frame);
+	static void InitializeAnyAllOpTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                         TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeAnyAllOpTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
 	static void InitializeBitwiseExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -7200,7 +7204,7 @@ public:
 	static ParsedOperator TransformNamedOtherOperator(PEGTransformer &transformer, const string &child);
 	static unique_ptr<TransformResultValue> TransformAnyAllOperatorInternal(PEGTransformer &transformer,
 	                                                                        ParseResult &parse_result);
-	static pair<string, bool> TransformAnyAllOperator(PEGTransformer &transformer, const string &any_op,
+	static pair<string, bool> TransformAnyAllOperator(PEGTransformer &transformer, const string &any_all_op,
 	                                                  const bool &any_or_all);
 	static unique_ptr<TransformResultValue> TransformAnyOrAllInternal(PEGTransformer &transformer,
 	                                                                  ParseResult &parse_result);
@@ -7227,6 +7231,8 @@ public:
 	                                                 const optional<vector<string>> &col_id_dot, const string &any_op);
 	static unique_ptr<TransformResultValue> TransformAnyOpInternal(PEGTransformer &transformer,
 	                                                               ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformAnyAllOpInternal(PEGTransformer &transformer,
+	                                                                  ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformBitwiseExpressionInternal(PEGTransformer &transformer,
 	                                                                           ParseResult &parse_result);
 	static unique_ptr<ParsedExpression>
