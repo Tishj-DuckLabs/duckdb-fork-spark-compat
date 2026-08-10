@@ -377,6 +377,9 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 			    make_uniq<LambdaExpression>(vector<string> {"__spark_transform_hidden_arg"}, std::move(lambda_arg));
 		}
 	}
+	if (lowercase_name == "regexp_replace" && function_children.size() == 4) {
+		lowercase_name = "__spark_regexp_replace_position";
+	}
 	auto result = make_uniq<FunctionExpression>(
 	    QualifiedName(qualified_function.Catalog(), qualified_function.Schema(), Identifier(lowercase_name)),
 	    std::move(function_children), std::move(filter_expr), std::move(order_modifier), distinct, false,
