@@ -453,6 +453,12 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 			WrapHiddenLambdaArgument(function_children, 3, {"__spark_aggregate_hidden_acc"});
 		}
 	}
+	// map_zip_with's lambda is bound with (key, left value, right value).
+	if (lowercase_name == "map_zip_with" && function_children.size() == 3) {
+		WrapHiddenLambdaArgument(function_children, 2,
+		                         {"__spark_map_zip_with_hidden_key", "__spark_map_zip_with_hidden_left",
+		                          "__spark_map_zip_with_hidden_right"});
+	}
 	auto result = make_uniq<FunctionExpression>(
 	    QualifiedName(qualified_function.Catalog(), qualified_function.Schema(), Identifier(lowercase_name)),
 	    std::move(function_children), std::move(filter_expr), std::move(order_modifier), distinct, false,
