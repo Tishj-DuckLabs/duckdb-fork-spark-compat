@@ -1526,11 +1526,25 @@ PEGTransformerFactory::TransformAdditiveExpression(PEGTransformer &transformer,
 	}
 	auto add_depth_guard = transformer.StackCheck(additive_expression_tail->size());
 	for (auto &term_expr : *additive_expression_tail) {
+		auto is_calendar_interval = [](const ParsedExpression &expression) {
+			if (expression.GetExpressionClass() != ExpressionClass::FUNCTION) {
+				return false;
+			}
+			auto &function = expression.Cast<FunctionExpression>();
+			return function.FunctionName() == "make_interval" || function.FunctionName() == "make_ym_interval";
+		};
+		auto function_name = std::move(term_expr.op);
+		if (function_name == "+" &&
+		    (is_calendar_interval(*expr) || is_calendar_interval(*term_expr.expression))) {
+			function_name = "__spark_add_calendar_interval";
+		}
+		auto is_operator = function_name != "__spark_add_calendar_interval";
 		vector<unique_ptr<ParsedExpression>> term_children;
 		term_children.push_back(std::move(expr));
 		term_children.push_back(std::move(term_expr.expression));
-		auto func_expr = make_uniq<FunctionExpression>(Identifier(std::move(term_expr.op)), std::move(term_children));
-		func_expr->IsOperatorMutable() = true;
+		auto func_expr =
+		    make_uniq<FunctionExpression>(Identifier(std::move(function_name)), std::move(term_children));
+		func_expr->IsOperatorMutable() = is_operator;
 		if (term_expr.query_location.IsValid()) {
 			transformer.SetQueryLocation(*func_expr, term_expr.query_location);
 		}
