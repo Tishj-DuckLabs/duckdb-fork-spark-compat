@@ -453,6 +453,11 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 			WrapHiddenLambdaArgument(function_children, 3, {"__spark_aggregate_hidden_acc"});
 		}
 	}
+	// transform_values' lambda is bound with (key, value).
+	if (lowercase_name == "transform_values" && function_children.size() == 2) {
+		WrapHiddenLambdaArgument(function_children, 1,
+		                         {"__spark_transform_values_hidden_key", "__spark_transform_values_hidden_value"});
+	}
 	// map_zip_with's lambda is bound with (key, left value, right value).
 	if (lowercase_name == "map_zip_with" && function_children.size() == 3) {
 		WrapHiddenLambdaArgument(function_children, 2,
