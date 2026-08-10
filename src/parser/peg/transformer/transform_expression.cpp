@@ -162,6 +162,30 @@ Identifier PEGTransformerFactory::TransformReservedTableQualification(PEGTransfo
 	return reserved_table_name;
 }
 
+// a star in an argument list is spliced into the arguments: f(t.*) -> f(UNPACK(COLUMNS(t.*)))
+static void UnpackStarArgument(unique_ptr<ParsedExpression> &expr) {
+	if (expr->GetExpressionClass() != ExpressionClass::STAR) {
+		return;
+	}
+	auto &star = expr->Cast<StarExpression>();
+	if (star.IsColumns()) {
+		// COLUMNS(...) replicates the surrounding expression instead of splicing
+		return;
+	}
+	star.IsColumnsMutable() = true;
+	expr = make_uniq<OperatorExpression>(ExpressionType::OPERATOR_UNPACK, std::move(expr));
+}
+static void UnpackStarArguments(vector<unique_ptr<ParsedExpression>> &arguments) {
+	for (auto &argument : arguments) {
+		UnpackStarArgument(argument);
+	}
+}
+static void UnpackStarArguments(vector<FunctionArgument> &arguments) {
+	for (auto &argument : arguments) {
+		UnpackStarArgument(argument.GetExpressionMutable());
+	}
+}
+
 // Maps a Spark ordered-set aggregate (used with WITHIN GROUP) to its DuckDB name and validates the
 // argument count. Throws for any function that is not a supported ordered-set aggregate.
 static string MapOrderedSetAggregateName(const string &lowercase_name, idx_t argument_count,
@@ -210,12 +234,16 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 	if (filter_clause) {
 		filter_expr = std::move(*filter_clause);
 	}
-	if (function_children.size() == 1 && ExpressionIsEmptyStar(*function_children[0].GetExpressionMutable()) &&
-	    !distinct && order_modifier->orders.empty()) {
-		// COUNT(*) gets converted into COUNT()
-		function_children.clear();
-	}
 	auto lowercase_name = StringUtil::Lower(qualified_function.Name().GetIdentifierName());
+	if (lowercase_name == "count") {
+		// COUNT(*) is the row count, not a splice of the columns
+		if (function_children.size() == 1 && ExpressionIsEmptyStar(*function_children[0].GetExpressionMutable()) &&
+			!distinct && order_modifier->orders.empty()) {
+			function_children.clear();
+			}
+	} else {
+		UnpackStarArguments(function_children);
+	}
 
 	if (over_clause) {
 		if (transformer.in_window_definition) {
@@ -514,6 +542,7 @@ PEGTransformerFactory::TransformParenthesisExpression(PEGTransformer &transforme
 	}
 	// If any element carries an AS alias, build a named struct (struct_pack); otherwise a positional row
 	auto func_name = has_alias ? "struct_pack" : "row";
+	UnpackStarArguments(children);
 	return make_uniq<FunctionExpression>(func_name, std::move(children));
 }
 
@@ -2066,11 +2095,12 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformDotColumnOperator(P
 unique_ptr<ParsedExpression>
 PEGTransformerFactory::TransformMethodExpression(PEGTransformer &transformer, const string &col_label,
                                                  MethodArguments method_expression_arguments) {
-	if (method_expression_arguments.arguments.size() == 1 &&
+	if (StringUtil::CIEquals(col_label, "count") && method_expression_arguments.arguments.size() == 1 &&
 	    ExpressionIsEmptyStar(method_expression_arguments.arguments[0].GetExpression())) {
 		// COUNT(*) gets converted into COUNT()
 		method_expression_arguments.arguments.clear();
 	}
+	UnpackStarArguments(method_expression_arguments.arguments);
 	if (method_expression_arguments.has_ignore_nulls) {
 		throw ParserException("RESPECT/IGNORE NULLS is not supported for non-window functions");
 	}
@@ -2706,6 +2736,7 @@ PEGTransformerFactory::TransformRowExpression(PEGTransformer &transformer,
 	}
 	// If any argument has an AS alias, use struct_pack (named struct)
 	auto func_name = has_alias ? "struct_pack" : "row";
+	UnpackStarArguments(results);
 	auto func_expr = make_uniq<FunctionExpression>(func_name, std::move(results));
 	return std::move(func_expr);
 }
