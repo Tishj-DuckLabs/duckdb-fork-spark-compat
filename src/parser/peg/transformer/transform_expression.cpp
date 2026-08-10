@@ -2863,17 +2863,33 @@ PEGTransformerFactory::TransformOverlayExpressionList(PEGTransformer &transforme
 unique_ptr<ParsedExpression>
 PEGTransformerFactory::TransformPositionExpression(PEGTransformer &transformer,
                                                    vector<unique_ptr<ParsedExpression>> position_arguments) {
+	if (position_arguments.size() == 3) {
+		vector<unique_ptr<ParsedExpression>> locate_arguments;
+		locate_arguments.push_back(std::move(position_arguments[1]));
+		locate_arguments.push_back(std::move(position_arguments[0]));
+		locate_arguments.push_back(std::move(position_arguments[2]));
+		return make_uniq<FunctionExpression>("locate", std::move(locate_arguments));
+	}
 	return make_uniq<FunctionExpression>("position", std::move(position_arguments));
 }
 
 vector<unique_ptr<ParsedExpression>>
 PEGTransformerFactory::TransformPositionArguments(PEGTransformer &transformer,
                                                   unique_ptr<ParsedExpression> other_operator_expression,
-                                                  unique_ptr<ParsedExpression> expression) {
+                                                  unique_ptr<ParsedExpression> expression,
+                                                  optional<unique_ptr<ParsedExpression>> position_start) {
 	vector<unique_ptr<ParsedExpression>> result;
 	result.push_back(std::move(expression));
 	result.push_back(std::move(other_operator_expression));
+	if (position_start) {
+		result.push_back(std::move(*position_start));
+	}
 	return result;
+}
+
+unique_ptr<ParsedExpression>
+PEGTransformerFactory::TransformPositionStart(PEGTransformer &transformer, unique_ptr<ParsedExpression> expression) {
+	return expression;
 }
 
 unique_ptr<ParsedExpression> PEGTransformerFactory::TransformCastExpression(PEGTransformer &transformer,

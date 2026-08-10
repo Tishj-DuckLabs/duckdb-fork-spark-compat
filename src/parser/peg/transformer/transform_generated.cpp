@@ -7423,8 +7423,23 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformPositionArgumen
 	auto &list_pr = parse_result.Cast<ListParseResult>();
 	auto other_operator_expression = transformer.Transform<unique_ptr<ParsedExpression>>(list_pr.GetChild(0));
 	auto expression = transformer.Transform<unique_ptr<ParsedExpression>>(list_pr.GetChild(2));
-	auto result = TransformPositionArguments(transformer, std::move(other_operator_expression), std::move(expression));
+	optional<unique_ptr<ParsedExpression>> position_start {};
+	auto &position_start_opt = list_pr.GetChild(3).Cast<OptionalParseResult>();
+	if (position_start_opt.HasResult()) {
+		auto position_start_value = transformer.Transform<unique_ptr<ParsedExpression>>(position_start_opt.GetResult());
+		position_start = std::move(position_start_value);
+	}
+	auto result = TransformPositionArguments(transformer, std::move(other_operator_expression), std::move(expression),
+	                                         std::move(position_start));
 	return make_uniq<TypedTransformResult<vector<unique_ptr<ParsedExpression>>>>(std::move(result));
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::TransformPositionStartInternal(PEGTransformer &transformer,
+                                                                                       ParseResult &parse_result) {
+	auto &list_pr = parse_result.Cast<ListParseResult>();
+	auto expression = transformer.Transform<unique_ptr<ParsedExpression>>(list_pr.GetChild(1));
+	auto result = TransformPositionStart(transformer, std::move(expression));
+	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformRowExpressionInternal(PEGTransformer &transformer,
@@ -11688,6 +11703,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"NullIfArguments", &PEGTransformerFactory::TransformNullIfArgumentsInternal},
 	    {"PositionExpression", &PEGTransformerFactory::TransformPositionExpressionInternal},
 	    {"PositionArguments", &PEGTransformerFactory::TransformPositionArgumentsInternal},
+	    {"PositionStart", &PEGTransformerFactory::TransformPositionStartInternal},
 	    {"RowExpression", &PEGTransformerFactory::TransformRowExpressionInternal},
 	    {"RowExpressionArg", &PEGTransformerFactory::TransformRowExpressionArgInternal},
 	    {"RowExpressionAlias", &PEGTransformerFactory::TransformRowExpressionAliasInternal},

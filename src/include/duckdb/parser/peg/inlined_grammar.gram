@@ -1594,7 +1594,8 @@ LambdaExpression <- 'LAMBDA' List(ColIdOrString) ':' Expression
 NullIfExpression <- 'NULLIF' Parens(NullIfArguments)
 NullIfArguments <- Expression ',' Expression
 PositionExpression <- 'POSITION' Parens(PositionArguments)
-PositionArguments <- OtherOperatorExpression PositionSeparator Expression
+PositionArguments <- OtherOperatorExpression PositionSeparator Expression PositionStart?
+PositionStart <- ',' Expression
 PositionSeparator <- 'IN' / ','
 RowExpression <- RowOrStruct Parens(List(RowExpressionArg)?)
 RowExpressionArg <- Expression RowExpressionAlias?

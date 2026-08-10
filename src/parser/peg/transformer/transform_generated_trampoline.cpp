@@ -1988,6 +1988,9 @@ static const TransformFrameOps POSITION_EXPRESSION_OPS = {
 static const TransformFrameOps POSITION_ARGUMENTS_OPS = {"PositionArguments",
                                                          &PEGTransformerFactory::InitializePositionArgumentsTrampoline,
                                                          &PEGTransformerFactory::FinalizePositionArgumentsTrampoline};
+static const TransformFrameOps POSITION_START_OPS = {"PositionStart",
+                                                     &PEGTransformerFactory::InitializePositionStartTrampoline,
+                                                     &PEGTransformerFactory::FinalizePositionStartTrampoline};
 static const TransformFrameOps ROW_EXPRESSION_OPS = {"RowExpression",
                                                      &PEGTransformerFactory::InitializeRowExpressionTrampoline,
                                                      &PEGTransformerFactory::FinalizeRowExpressionTrampoline};
@@ -3617,6 +3620,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"NullIfArguments", &NULL_IF_ARGUMENTS_OPS},
 	    {"PositionExpression", &POSITION_EXPRESSION_OPS},
 	    {"PositionArguments", &POSITION_ARGUMENTS_OPS},
+	    {"PositionStart", &POSITION_START_OPS},
 	    {"RowExpression", &ROW_EXPRESSION_OPS},
 	    {"RowExpressionArg", &ROW_EXPRESSION_ARG_OPS},
 	    {"RowExpressionAlias", &ROW_EXPRESSION_ALIAS_OPS},
@@ -18440,7 +18444,12 @@ PEGTransformerFactory::FinalizePositionExpressionTrampoline(PEGTransformer &tran
 void PEGTransformerFactory::InitializePositionArgumentsTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                   TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
-	frame.ReserveChildSlots(2);
+	frame.ReserveChildSlots(3);
+	auto &position_start_opt = list_pr.GetChild(3).Cast<OptionalParseResult>();
+	if (position_start_opt.HasResult()) {
+		stack.PushFrame(position_start_opt.GetResult(), POSITION_START_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 2));
+	}
 	stack.PushFrame(list_pr.GetChild(2), EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 1));
 	stack.PushFrame(list_pr.GetChild(0), OTHER_OPERATOR_EXPRESSION_OPS,
 	                TransformFrameResultTarget(frame.frame_index, 0));
@@ -18451,8 +18460,28 @@ PEGTransformerFactory::FinalizePositionArgumentsTrampoline(PEGTransformer &trans
                                                            TransformStackFrame &frame) {
 	auto other_operator_expression = frame.TakeResult<unique_ptr<ParsedExpression>>(0);
 	auto expression = frame.TakeResult<unique_ptr<ParsedExpression>>(1);
-	auto result = TransformPositionArguments(transformer, std::move(other_operator_expression), std::move(expression));
+	optional<unique_ptr<ParsedExpression>> position_start {};
+	if (frame.child_results[2]) {
+		position_start = frame.TakeResult<unique_ptr<ParsedExpression>>(2);
+	}
+	auto result = TransformPositionArguments(transformer, std::move(other_operator_expression), std::move(expression),
+	                                         std::move(position_start));
 	return make_uniq<TypedTransformResult<vector<unique_ptr<ParsedExpression>>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializePositionStartTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                              TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(1);
+	stack.PushFrame(list_pr.GetChild(1), EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizePositionStartTrampoline(PEGTransformer &transformer,
+                                                                                        TransformStack &stack,
+                                                                                        TransformStackFrame &frame) {
+	auto expression = frame.TakeResult<unique_ptr<ParsedExpression>>(0);
+	auto result = TransformPositionStart(transformer, std::move(expression));
+	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
 void PEGTransformerFactory::InitializeRowExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,

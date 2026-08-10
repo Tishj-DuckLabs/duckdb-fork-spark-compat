@@ -401,6 +401,7 @@ Expression:
     - BetweenClause
     - LikeClause
     - EscapeClause
+    - PositionStart
     - OtherOperatorExpression
     - BitwiseExpression
     - BitwiseAndExpression
