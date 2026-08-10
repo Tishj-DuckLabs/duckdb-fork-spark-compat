@@ -6467,6 +6467,12 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformLikeVariationsI
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
+unique_ptr<TransformResultValue> PEGTransformerFactory::TransformRLikeTokenInternal(PEGTransformer &transformer,
+                                                                                    ParseResult &parse_result) {
+	auto result = TransformRLikeToken(transformer);
+	return make_uniq<TypedTransformResult<string>>(result);
+}
+
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformLikeTokenInternal(PEGTransformer &transformer,
                                                                                    ParseResult &parse_result) {
 	auto result = TransformLikeToken(transformer);
@@ -11593,6 +11599,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"LikeClause", &PEGTransformerFactory::TransformLikeClauseInternal},
 	    {"EscapeClause", &PEGTransformerFactory::TransformEscapeClauseInternal},
 	    {"LikeVariations", &PEGTransformerFactory::TransformLikeVariationsInternal},
+	    {"RLikeToken", &PEGTransformerFactory::TransformRLikeTokenInternal},
 	    {"LikeToken", &PEGTransformerFactory::TransformLikeTokenInternal},
 	    {"ILikeToken", &PEGTransformerFactory::TransformILikeTokenInternal},
 	    {"GlobToken", &PEGTransformerFactory::TransformGlobTokenInternal},

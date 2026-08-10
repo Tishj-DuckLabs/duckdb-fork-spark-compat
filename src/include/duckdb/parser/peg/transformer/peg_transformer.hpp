@@ -3072,6 +3072,10 @@ public:
 	                                               TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeLikeVariationsTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeRLikeTokenTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                           TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeRLikeTokenTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
 	static void InitializeLikeTokenTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                          TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -7123,6 +7127,9 @@ public:
 	                                                          unique_ptr<ParsedExpression> comparison_expression);
 	static unique_ptr<TransformResultValue> TransformLikeVariationsInternal(PEGTransformer &transformer,
 	                                                                        ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformRLikeTokenInternal(PEGTransformer &transformer,
+	                                                                    ParseResult &parse_result);
+	static string TransformRLikeToken(PEGTransformer &transformer);
 	static unique_ptr<TransformResultValue> TransformLikeTokenInternal(PEGTransformer &transformer,
 	                                                                   ParseResult &parse_result);
 	static string TransformLikeToken(PEGTransformer &transformer);

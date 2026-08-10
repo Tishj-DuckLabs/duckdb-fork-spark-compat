@@ -1285,6 +1285,10 @@ string PEGTransformerFactory::TransformLikeToken(PEGTransformer &transformer) {
 	return "~~";
 }
 
+string PEGTransformerFactory::TransformRLikeToken(PEGTransformer &transformer) {
+	return "regexp_matches";
+}
+
 string PEGTransformerFactory::TransformILikeToken(PEGTransformer &transformer) {
 	return "~~*";
 }

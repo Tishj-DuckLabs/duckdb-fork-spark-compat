@@ -1483,7 +1483,8 @@ LikeAll <- 'ALL'
 LikeClause <- LikeVariations OtherOperatorExpression EscapeClause?
 EscapeClause <- 'ESCAPE' ComparisonExpression
 
-LikeVariations <- SimilarToToken / RegexInsensitiveMatchToken / RegexMatchToken / ILikeToken / LikeToken / GlobToken / NotILikeOp / NotLikeOp / NotRegexInsensitiveMatchOp / NotSimilarToOp
+LikeVariations <- RLikeToken / SimilarToToken / RegexInsensitiveMatchToken / RegexMatchToken / ILikeToken / LikeToken / GlobToken / NotILikeOp / NotLikeOp / NotRegexInsensitiveMatchOp / NotSimilarToOp
+RLikeToken     <- 'RLIKE'
 LikeToken      <- 'LIKE' / '~~'
 ILikeToken     <- 'ILIKE' / '~~*'
 GlobToken      <- 'GLOB' / '~~~'

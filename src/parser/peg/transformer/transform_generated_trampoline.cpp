@@ -1727,6 +1727,8 @@ static const TransformFrameOps ESCAPE_CLAUSE_OPS = {"EscapeClause",
 static const TransformFrameOps LIKE_VARIATIONS_OPS = {"LikeVariations",
                                                       &PEGTransformerFactory::InitializeLikeVariationsTrampoline,
                                                       &PEGTransformerFactory::FinalizeLikeVariationsTrampoline};
+static const TransformFrameOps RLIKE_TOKEN_OPS = {"RLikeToken", &PEGTransformerFactory::InitializeRLikeTokenTrampoline,
+                                                  &PEGTransformerFactory::FinalizeRLikeTokenTrampoline};
 static const TransformFrameOps LIKE_TOKEN_OPS = {"LikeToken", &PEGTransformerFactory::InitializeLikeTokenTrampoline,
                                                  &PEGTransformerFactory::FinalizeLikeTokenTrampoline};
 static const TransformFrameOps ILIKE_TOKEN_OPS = {"ILikeToken", &PEGTransformerFactory::InitializeILikeTokenTrampoline,
@@ -3524,6 +3526,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"LikeClause", &LIKE_CLAUSE_OPS},
 	    {"EscapeClause", &ESCAPE_CLAUSE_OPS},
 	    {"LikeVariations", &LIKE_VARIATIONS_OPS},
+	    {"RLikeToken", &RLIKE_TOKEN_OPS},
 	    {"LikeToken", &LIKE_TOKEN_OPS},
 	    {"ILikeToken", &ILIKE_TOKEN_OPS},
 	    {"GlobToken", &GLOB_TOKEN_OPS},
@@ -16550,6 +16553,18 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeLikeVariationsTr
 			result = transformer.Transform<string>(choice_result);
 		}
 	}
+	return make_uniq<TypedTransformResult<string>>(result);
+}
+
+void PEGTransformerFactory::InitializeRLikeTokenTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                           TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeRLikeTokenTrampoline(PEGTransformer &transformer,
+                                                                                     TransformStack &stack,
+                                                                                     TransformStackFrame &frame) {
+	auto result = TransformRLikeToken(transformer);
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
