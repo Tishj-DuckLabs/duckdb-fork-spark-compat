@@ -13272,7 +13272,12 @@ void PEGTransformerFactory::InitializeFunctionExpressionArgumentsTrampoline(PEGT
                                                                             TransformStack &stack,
                                                                             TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
-	frame.ReserveChildSlots(1);
+	frame.ReserveChildSlots(2);
+	auto &ignore_or_respect_nulls_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (ignore_or_respect_nulls_opt.HasResult()) {
+		stack.PushFrame(ignore_or_respect_nulls_opt.GetResult(), IGNORE_OR_RESPECT_NULLS_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 1));
+	}
 	stack.PushFrame(ExtractResultFromParens(list_pr.GetChild(0)), FUNCTION_EXPRESSION_ARGUMENT_LIST_OPS,
 	                TransformFrameResultTarget(frame.frame_index, 0));
 }
@@ -13281,7 +13286,12 @@ unique_ptr<TransformResultValue>
 PEGTransformerFactory::FinalizeFunctionExpressionArgumentsTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                      TransformStackFrame &frame) {
 	auto function_expression_argument_list = frame.TakeResult<MethodArguments>(0);
-	auto result = TransformFunctionExpressionArguments(transformer, std::move(function_expression_argument_list));
+	optional<bool> ignore_or_respect_nulls {};
+	if (frame.child_results[1]) {
+		ignore_or_respect_nulls = frame.TakeResult<bool>(1);
+	}
+	auto result = TransformFunctionExpressionArguments(transformer, std::move(function_expression_argument_list),
+	                                                   ignore_or_respect_nulls);
 	return make_uniq<TypedTransformResult<MethodArguments>>(std::move(result));
 }
 

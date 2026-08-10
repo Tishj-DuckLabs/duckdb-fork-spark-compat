@@ -1177,7 +1177,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"SchemaReservedTableColumnName <- SchemaQualification ReservedTableQualification ReservedColumnName\n"
 	"TableReservedColumnName <- TableQualification ReservedColumnName\n"
 	"FunctionExpression <- FunctionIdentifier FunctionExpressionArguments WithinGroupClause? FilterClause? ExportClause? OverClause?\n"
-	"FunctionExpressionArguments <- Parens(FunctionExpressionArgumentList)\n"
+	"FunctionExpressionArguments <- Parens(FunctionExpressionArgumentList) IgnoreOrRespectNulls?\n"
 	"FunctionExpressionArgumentList <- DistinctOrAll? FunctionArgumentList? OrderByClause? IgnoreOrRespectNulls?\n"
 	"FunctionArgumentList <- List(FunctionArgument)\n"
 	"FunctionIdentifier <- CatalogReservedSchemaFunctionName / SchemaReservedFunctionName / FunctionNameAsQualifiedName\n"

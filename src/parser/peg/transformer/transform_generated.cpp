@@ -4810,7 +4810,14 @@ PEGTransformerFactory::TransformFunctionExpressionArgumentsInternal(PEGTransform
 	auto &list_pr = parse_result.Cast<ListParseResult>();
 	auto function_expression_argument_list =
 	    transformer.Transform<MethodArguments>(ExtractResultFromParens(list_pr.GetChild(0)));
-	auto result = TransformFunctionExpressionArguments(transformer, std::move(function_expression_argument_list));
+	optional<bool> ignore_or_respect_nulls {};
+	auto &ignore_or_respect_nulls_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (ignore_or_respect_nulls_opt.HasResult()) {
+		auto ignore_or_respect_nulls_value = transformer.Transform<bool>(ignore_or_respect_nulls_opt.GetResult());
+		ignore_or_respect_nulls = ignore_or_respect_nulls_value;
+	}
+	auto result = TransformFunctionExpressionArguments(transformer, std::move(function_expression_argument_list),
+	                                                   ignore_or_respect_nulls);
 	return make_uniq<TypedTransformResult<MethodArguments>>(std::move(result));
 }
 

@@ -6532,7 +6532,8 @@ public:
 	static unique_ptr<TransformResultValue> TransformFunctionExpressionArgumentsInternal(PEGTransformer &transformer,
 	                                                                                     ParseResult &parse_result);
 	static MethodArguments TransformFunctionExpressionArguments(PEGTransformer &transformer,
-	                                                            MethodArguments function_expression_argument_list);
+	                                                            MethodArguments function_expression_argument_list,
+	                                                            const optional<bool> &ignore_or_respect_nulls);
 	static unique_ptr<TransformResultValue> TransformFunctionExpressionArgumentListInternal(PEGTransformer &transformer,
 	                                                                                        ParseResult &parse_result);
 	static MethodArguments

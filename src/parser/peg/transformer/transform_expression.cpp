@@ -197,6 +197,15 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 		function_children.clear();
 	}
 	auto lowercase_name = StringUtil::Lower(qualified_function.Name().GetIdentifierName());
+	if (!over_clause && function_expression_arguments.has_ignore_nulls &&
+	    (lowercase_name == "first" || lowercase_name == "last" || lowercase_name == "any_value")) {
+		if (function_children.size() != 1) {
+			throw ParserException("IGNORE/RESPECT NULLS requires one argument for %s", qualified_function.Name());
+		}
+		function_children.emplace_back(
+		    make_uniq<ConstantExpression>(Value::BOOLEAN(function_expression_arguments.ignore_nulls)));
+		function_expression_arguments.has_ignore_nulls = false;
+	}
 
 	if (over_clause) {
 		if (transformer.in_window_definition) {
@@ -399,7 +408,15 @@ MethodArguments PEGTransformerFactory::TransformFunctionExpressionArgumentList(
 
 MethodArguments
 PEGTransformerFactory::TransformFunctionExpressionArguments(PEGTransformer &transformer,
-                                                            MethodArguments function_expression_argument_list) {
+                                                            MethodArguments function_expression_argument_list,
+                                                            const optional<bool> &ignore_or_respect_nulls) {
+	if (ignore_or_respect_nulls) {
+		if (function_expression_argument_list.has_ignore_nulls) {
+			throw ParserException("Cannot specify IGNORE/RESPECT NULLS more than once");
+		}
+		function_expression_argument_list.has_ignore_nulls = true;
+		function_expression_argument_list.ignore_nulls = *ignore_or_respect_nulls;
+	}
 	return function_expression_argument_list;
 }
 

@@ -3,7 +3,7 @@ CatalogReservedSchemaTableColumnName <- CatalogQualification ReservedSchemaQuali
 SchemaReservedTableColumnName <- SchemaQualification ReservedTableQualification ReservedColumnName
 TableReservedColumnName <- TableQualification ReservedColumnName
 FunctionExpression <- FunctionIdentifier FunctionExpressionArguments WithinGroupClause? FilterClause? ExportClause? OverClause?
-FunctionExpressionArguments <- Parens(FunctionExpressionArgumentList)
+FunctionExpressionArguments <- Parens(FunctionExpressionArgumentList) IgnoreOrRespectNulls?
 FunctionExpressionArgumentList <- DistinctOrAll? FunctionArgumentList? OrderByClause? IgnoreOrRespectNulls?
 FunctionArgumentList <- List(FunctionArgument)
 
