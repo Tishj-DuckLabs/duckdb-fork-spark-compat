@@ -76,6 +76,19 @@ PEGTransformerFactory::TransformExpressionStatement(PEGTransformer &transformer,
 	return std::move(select_statement);
 }
 
+// The binder splices *COLUMNS(...) through function arguments but rejects it underneath an operator, so an expression
+// containing one has to reach the binder wrapped in functions all the way up to the root of the select element.
+static bool ContainsUnpackedStar(const ParsedExpression &expr) {
+	if (StarExpression::IsColumnsUnpacked(expr)) {
+		return true;
+	}
+	bool contains_unpacked_star = false;
+	ParsedExpressionIterator::EnumerateChildren(expr, [&](const ParsedExpression &child) {
+		contains_unpacked_star = contains_unpacked_star || ContainsUnpackedStar(child);
+	});
+	return contains_unpacked_star;
+}
+
 unique_ptr<ParsedExpression>
 PEGTransformerFactory::TransformBaseExpression(PEGTransformer &transformer,
                                                unique_ptr<ParsedExpression> single_expression,
@@ -108,12 +121,16 @@ PEGTransformerFactory::TransformBaseExpression(PEGTransformer &transformer,
 			expr = std::move(function_expr);
 			prev_indirection_was_cast = false;
 		} else if (indirection_expr->GetExpressionClass() == ExpressionClass::CONSTANT) {
+			auto extracts_from_star = ContainsUnpackedStar(*expr);
 			vector<unique_ptr<ParsedExpression>> struct_children;
 			struct_children.push_back(std::move(expr));
 			struct_children.push_back(std::move(indirection_expr));
-			auto struct_expr =
-			    make_uniq<OperatorExpression>(ExpressionType::STRUCT_EXTRACT, std::move(struct_children));
-			expr = std::move(struct_expr);
+			if (extracts_from_star) {
+				// the operator would cut the star off from the binder, the function keeps it reachable
+				expr = make_uniq<FunctionExpression>("struct_extract", std::move(struct_children));
+			} else {
+				expr = make_uniq<OperatorExpression>(ExpressionType::STRUCT_EXTRACT, std::move(struct_children));
+			}
 			prev_indirection_was_cast = false;
 		} else {
 			throw NotImplementedException("Unhandled case for Base Expression with indirection");
@@ -183,6 +200,23 @@ static void UnpackStarArguments(vector<unique_ptr<ParsedExpression>> &arguments)
 static void UnpackStarArguments(vector<FunctionArgument> &arguments) {
 	for (auto &argument : arguments) {
 		UnpackStarArgument(argument.GetExpressionMutable());
+	}
+}
+
+// Spark names every field of a struct(...): the AS alias, else the name of the column the argument references, else
+// the positional col<N>. A star names one field per column it expands into, so its alias is left to the expansion.
+// Must run before UnpackStarArguments, which hides the star behind an UNPACK operator.
+static void NameStructFields(vector<unique_ptr<ParsedExpression>> &arguments) {
+	for (idx_t i = 0; i < arguments.size(); i++) {
+		auto &argument = arguments[i];
+		if (argument->GetExpressionClass() == ExpressionClass::STAR || !argument->GetAlias().empty()) {
+			continue;
+		}
+		if (argument->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
+			argument->SetAlias(argument->Cast<ColumnRefExpression>().GetColumnName());
+			continue;
+		}
+		argument->SetAlias(Identifier("col" + to_string(i + 1)));
 	}
 }
 
@@ -540,7 +574,8 @@ PEGTransformerFactory::TransformParenthesisExpression(PEGTransformer &transforme
 			return std::move(children[0]);
 		}
 	}
-	// If any element carries an AS alias, build a named struct (struct_pack); otherwise a positional row
+	// If any element carries an AS alias, build a named struct (struct_pack); otherwise a positional row - the
+	// unnamed form also carries the parameter list of a lambda, which has to stay a plain row
 	auto func_name = has_alias ? "struct_pack" : "row";
 	UnpackStarArguments(children);
 	return make_uniq<FunctionExpression>(func_name, std::move(children));
@@ -2719,6 +2754,7 @@ PEGTransformerFactory::TransformNullIfArguments(PEGTransformer &transformer, uni
 	return result;
 }
 
+// is activated by both struct_pack() and row()
 unique_ptr<ParsedExpression>
 PEGTransformerFactory::TransformRowExpression(PEGTransformer &transformer,
                                               optional<vector<unique_ptr<ParsedExpression>>> row_expression_arg) {
@@ -2727,17 +2763,12 @@ PEGTransformerFactory::TransformRowExpression(PEGTransformer &transformer,
 	}
 
 	vector<unique_ptr<ParsedExpression>> results;
-	bool has_alias = false;
 	for (auto &child : *row_expression_arg) {
-		if (!child->GetAlias().empty()) {
-			has_alias = true;
-		}
 		results.push_back(std::move(child));
 	}
-	// If any argument has an AS alias, use struct_pack (named struct)
-	auto func_name = has_alias ? "struct_pack" : "row";
+	NameStructFields(results);
 	UnpackStarArguments(results);
-	auto func_expr = make_uniq<FunctionExpression>(func_name, std::move(results));
+	auto func_expr = make_uniq<FunctionExpression>("struct_pack", std::move(results));
 	return std::move(func_expr);
 }
 
