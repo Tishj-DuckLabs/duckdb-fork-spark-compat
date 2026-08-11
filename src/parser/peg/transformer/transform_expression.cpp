@@ -2288,7 +2288,19 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformStarExpression(
 	auto result = make_uniq<StarExpression>();
 	if (star_qualifier_list) {
 		if (star_qualifier_list->size() > 1) {
-			throw ParserException("Did not expect more than one column in front of a star expression");
+			// A StarExpression only carries a single relation name, so a star target with more
+			// qualifiers (db.tbl.*, tbl.struct_col.*, ...) becomes unnest over a column reference: ...
+			if (exclude_list || replace_list || rename_list) {
+			        throw ParserException(
+			            "EXCLUDE/REPLACE/RENAME are not supported on a star expression with a qualified relation name");
+			    }
+			vector<Identifier> column_names;
+			for (auto &qualifier : *star_qualifier_list) {
+			        column_names.emplace_back(qualifier);
+			    }
+			vector<unique_ptr<ParsedExpression>> children;
+			children.push_back(make_uniq<ColumnRefExpression>(std::move(column_names)));
+			return make_uniq<FunctionExpression>("unnest", std::move(children));
 		}
 		result->RelationNameMutable() = Identifier((*star_qualifier_list)[0]);
 	}
