@@ -26,6 +26,7 @@
 #include "duckdb/parser/expression/columnref_expression.hpp"
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/expression/constant_expression.hpp"
+#include "duckdb/parser/expression/lambda_expression.hpp"
 #include "duckdb/common/unordered_map.hpp"
 
 namespace duckdb_fork {
@@ -43,8 +44,7 @@ optional<string> SparkColumnName(const ParsedExpression &expr) {
 		return expr.Cast<ConstantExpression>().GetValue().ToString();
 	case ExpressionClass::FUNCTION: {
 		auto &func = expr.Cast<FunctionExpression>();
-		string result = StringUtil::Lower(func.FunctionName().GetIdentifierName()) + "(";
-		bool first = true;
+		vector<string> child_names;
 		for (auto &arg : func.GetArguments()) {
 			if (arg.HasName()) {
 				return optional<string>();
@@ -53,8 +53,22 @@ optional<string> SparkColumnName(const ParsedExpression &expr) {
 			if (!child_name.has_value()) {
 				return optional<string>();
 			}
-			result += first ? *child_name : ", " + *child_name;
-			first = false;
+			child_names.push_back(std::move(*child_name));
+		}
+		auto function_name = StringUtil::Lower(func.FunctionName().GetIdentifierName());
+		if (func.IsOperator()) {
+			// operators render infix and parenthesized: `d + 1` is named "(d + 1)"
+			if (child_names.size() == 1) {
+				return "(" + function_name + " " + child_names[0] + ")";
+			}
+			if (child_names.size() == 2) {
+				return "(" + child_names[0] + " " + function_name + " " + child_names[1] + ")";
+			}
+			return optional<string>();
+		}
+		string result = function_name + "(";
+		for (idx_t i = 0; i < child_names.size(); i++) {
+			result += i == 0 ? child_names[i] : ", " + child_names[i];
 		}
 		return result + ")";
 	}
@@ -75,27 +89,39 @@ string NormalizeAutoName(const string &name) {
 	return StringUtil::Lower(result);
 }
 
-//! If `expr` is a bare (single-part) column reference naming the Spark auto-name of an unaliased
-//! select item, resolve it to that item. A constant match becomes a 1-based positional reference: a
-//! copy of the constant would be read as a positional ordinal by value (e.g. GROUP BY 7 -> 7th
-//! column). A function match is replaced with a copy of the select expression.
-void RewriteAutoNameRef(unique_ptr<ParsedExpression> &expr,
-                        const vector<unique_ptr<ParsedExpression>> &select_list,
-                        const unordered_map<string, idx_t> &auto_names) {
-	if (!expr || expr->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
-		return;
+//! The auto-name a bare (single-part) column reference names, if any.
+optional_idx MatchAutoName(const ParsedExpression &expr, const unordered_map<string, idx_t> &auto_names) {
+	if (expr.GetExpressionClass() != ExpressionClass::COLUMN_REF) {
+		return optional_idx();
 	}
-	auto &col = expr->Cast<ColumnRefExpression>();
+	auto &col = expr.Cast<ColumnRefExpression>();
 	if (col.IsQualified()) {
-		return;
+		return optional_idx();
 	}
 	auto entry = auto_names.find(NormalizeAutoName(col.GetColumnName().GetIdentifierName()));
 	if (entry == auto_names.end()) {
+		return optional_idx();
+	}
+	return entry->second;
+}
+
+//! If `expr` names the Spark auto-name of an unaliased select item, resolve it to that item. A
+//! constant match becomes a 1-based positional reference: a copy of the constant would be read as a
+//! positional ordinal by value (e.g. GROUP BY 7 -> 7th column). A function match is replaced with a
+//! copy of the select expression.
+void RewriteAutoNameRef(unique_ptr<ParsedExpression> &expr,
+                        const vector<unique_ptr<ParsedExpression>> &select_list,
+                        const unordered_map<string, idx_t> &auto_names) {
+	if (!expr) {
 		return;
 	}
-	auto &matched = *select_list[entry->second];
+	auto match = MatchAutoName(*expr, auto_names);
+	if (!match.IsValid()) {
+		return;
+	}
+	auto &matched = *select_list[match.GetIndex()];
 	if (matched.GetExpressionClass() == ExpressionClass::CONSTANT) {
-		expr = make_uniq<ConstantExpression>(Value::INTEGER(UnsafeNumericCast<int32_t>(entry->second + 1)));
+		expr = make_uniq<ConstantExpression>(Value::INTEGER(UnsafeNumericCast<int32_t>(match.GetIndex() + 1)));
 	} else {
 		expr = matched.Copy();
 	}
@@ -142,6 +168,168 @@ void RewriteSparkAutoNameReferences(SelectNode &node) {
 	}
 }
 
+//! Spark's GROUPING SETS / CUBE / ROLLUP rewrite aliases every unaliased group expression to its
+//! auto-name, and that alias - not the underlying columns - is what an ORDER BY above the aggregate
+//! sees, so GROUP BY GROUPING SETS (a, d + 1) ORDER BY `(d + 1)` resolves. DuckDB has no such name, so
+//! rewrite the reference to the group expression itself. Only function calls (operators included) are
+//! registered: a column reference keeps its own name and already resolves, and a constant group
+//! expression is a positional ordinal rather than a value.
+void RewriteSparkGroupByAliasReferences(SelectNode &node) {
+	auto &group_expressions = node.groups.group_expressions;
+	vector<reference<OrderModifier>> order_modifiers;
+	for (auto &modifier : node.modifiers) {
+		if (modifier->type == ResultModifierType::ORDER_MODIFIER) {
+			order_modifiers.push_back(modifier->Cast<OrderModifier>());
+		}
+	}
+	if (group_expressions.empty() || order_modifiers.empty()) {
+		return;
+	}
+	unordered_map<string, idx_t> alias_names;
+	for (idx_t i = 0; i < group_expressions.size(); i++) {
+		if (group_expressions[i]->GetExpressionClass() != ExpressionClass::FUNCTION) {
+			continue;
+		}
+		auto name = SparkColumnName(*group_expressions[i]);
+		if (name.has_value()) {
+			alias_names.emplace(NormalizeAutoName(*name), i);
+		}
+	}
+	if (alias_names.empty()) {
+		return;
+	}
+	for (auto &order_modifier : order_modifiers) {
+		for (auto &order : order_modifier.get().orders) {
+			if (!order.expression) {
+				continue;
+			}
+			auto match = MatchAutoName(*order.expression, alias_names);
+			if (match.IsValid()) {
+				order.expression = group_expressions[match.GetIndex()]->Copy();
+			}
+		}
+	}
+}
+
+//! Spark's explode()/explode_outer() in SELECT position is a generator: one output row per element,
+//! arrays yielding a single column and maps yielding key/value columns. Rewrite a top-level, unaliased
+//! `explode(x)` / `explode_outer(x)` select item to `unnest(<entries>(x), max_depth := 2)` so the
+//! struct-expanding unnest sits at the select-item root - a scalar macro body binds as a non-root
+//! expression, which rejects the struct expansion - while the entries function dispatches the array/map
+//! column shape (the _outer helper additionally emits one all-NULL row for a NULL/empty collection).
+//! Aliased calls are left to the scalar explode/explode_outer macros, which unnest a list under the alias.
+void RewriteSparkSelectGenerators(SelectNode &node) {
+	for (auto &select_expr : node.select_list) {
+		if (select_expr->GetExpressionClass() != ExpressionClass::FUNCTION) {
+			continue;
+		}
+		auto &func = select_expr->Cast<FunctionExpression>();
+		auto func_name = StringUtil::Lower(func.FunctionName().GetIdentifierName());
+		bool is_outer = func_name == "explode_outer";
+		if ((func_name != "explode" && !is_outer) || !func.GetAlias().empty() ||
+		    !func.GetQualifiedName().Schema().empty() || func.Distinct() || func.Filter() ||
+		    !func.OrderBy()->orders.empty()) {
+			continue;
+		}
+		auto &args = func.GetArgumentsMutable();
+		if (args.size() != 1 || args[0].HasName()) {
+			continue;
+		}
+		vector<unique_ptr<ParsedExpression>> entries_args;
+		entries_args.push_back(std::move(args[0].GetExpressionMutable()));
+		auto entries_fn = is_outer ? "__spark_explode_outer_entries" : "__spark_explode_entries";
+		auto entries = make_uniq<FunctionExpression>(Identifier(entries_fn), std::move(entries_args));
+		auto max_depth = make_uniq<ConstantExpression>(Value::INTEGER(2));
+		max_depth->SetAlias(Identifier("max_depth"));
+		vector<unique_ptr<ParsedExpression>> unnest_args;
+		unnest_args.push_back(std::move(entries));
+		unnest_args.push_back(std::move(max_depth));
+		select_expr = make_uniq<FunctionExpression>(Identifier("unnest"), std::move(unnest_args));
+	}
+}
+
+//! The expression that decides a group key's identity: an ordinal stands for the select item it names.
+//! An out-of-range ordinal stands for itself, so the binder still reports it.
+const ParsedExpression &GroupByKeyExpression(const ParsedExpression &group_expr,
+                                             const vector<unique_ptr<ParsedExpression>> &select_list) {
+	if (group_expr.GetExpressionClass() != ExpressionClass::CONSTANT) {
+		return group_expr;
+	}
+	auto &value = group_expr.Cast<ConstantExpression>().GetValue();
+	if (value.IsNull() || !value.type().IsIntegral()) {
+		return group_expr;
+	}
+	auto ordinal = value.GetValue<int64_t>();
+	if (ordinal < 1 || static_cast<idx_t>(ordinal) > select_list.size()) {
+		return group_expr;
+	}
+	return *select_list[static_cast<idx_t>(ordinal) - 1];
+}
+
+//! Spark resolves a GROUP BY ordinal against the select list before grouping sets are formed, so an
+//! ordinal and the select item it names are one grouping key. Group keys are numbered here by structural
+//! equality of the raw expressions while ordinals are only resolved later, in the binder, which leaves
+//! GROUPING SETS ((1), (b), (a, 2)) with two keys for `a` and two for `b` - the select list can reference
+//! only one of each, so the sets built on the other keys project NULL. Merge the keys that become equal
+//! once ordinals are canonicalized to their select item, and remap the grouping sets onto them. Idempotent,
+//! so it can run again after a rewrite that turns a group expression into one of the select items.
+void MergeDuplicateGroupByKeys(SelectNode &node) {
+	auto &group_expressions = node.groups.group_expressions;
+	if (group_expressions.size() < 2 || node.groups.grouping_sets.empty()) {
+		return;
+	}
+	for (auto &select_expr : node.select_list) {
+		// an ordinal into an unexpanded star only resolves once the binder has expanded it
+		if (select_expr->GetExpressionClass() == ExpressionClass::STAR) {
+			return;
+		}
+	}
+	parsed_expression_map_t<idx_t> key_indexes;
+	vector<idx_t> remap;
+	remap.reserve(group_expressions.size());
+	for (auto &group_expr : group_expressions) {
+		auto &key = GroupByKeyExpression(*group_expr, node.select_list);
+		auto entry = key_indexes.find(key);
+		if (entry != key_indexes.end()) {
+			remap.push_back(entry->second);
+			continue;
+		}
+		auto key_index = key_indexes.size();
+		key_indexes[key] = key_index;
+		remap.push_back(key_index);
+	}
+	if (key_indexes.size() == group_expressions.size()) {
+		return;
+	}
+	vector<unique_ptr<ParsedExpression>> merged;
+	merged.reserve(key_indexes.size());
+	for (idx_t i = 0; i < group_expressions.size(); i++) {
+		if (remap[i] == merged.size()) {
+			merged.push_back(std::move(group_expressions[i]));
+		}
+	}
+	group_expressions = std::move(merged);
+	for (auto &grouping_set : node.groups.grouping_sets) {
+		GroupingSet remapped_set;
+		for (auto &index : grouping_set) {
+			remapped_set.insert(ProjectionIndex(remap[index.GetIndex()]));
+		}
+		grouping_set = std::move(remapped_set);
+	}
+}
+
+//! GROUP BY ALL arrives as a single star expression - drop it and let the binder infer the groups.
+void AssignGroupByNode(SelectNode &node, GroupByNode groups) {
+	if (groups.group_expressions.size() == 1 &&
+	    PEGTransformerFactory::ExpressionIsEmptyStar(*groups.group_expressions[0])) {
+		node.aggregate_handling = AggregateHandling::FORCE_AGGREGATES;
+		groups.group_expressions.clear();
+		groups.grouping_sets.clear();
+	}
+	node.groups = std::move(groups);
+	MergeDuplicateGroupByKeys(node);
+}
+
 } // namespace
 
 unique_ptr<SQLStatement>
@@ -173,6 +361,10 @@ unique_ptr<SelectStatement> PEGTransformerFactory::TransformSelectStatementInter
 	}
 	auto &select_node = select_statement->node->Cast<SelectNode>();
 	RewriteSparkAutoNameReferences(select_node);
+	RewriteSparkGroupByAliasReferences(select_node);
+	RewriteSparkSelectGenerators(select_node);
+	// the auto-name rewrite can turn a group expression into a copy of a select item it shares a key with
+	MergeDuplicateGroupByKeys(select_node);
 	if (select_node.from_table->type != TableReferenceType::SHOW_REF) {
 		return select_statement;
 	}
@@ -373,13 +565,7 @@ unique_ptr<SelectStatement> PEGTransformerFactory::TransformSimpleSelect(PEGTran
 	transformer.TransformOptional<unique_ptr<ParsedExpression>>(list_pr, 1, select_node->where_clause);
 	auto &group_opt = list_pr.Child<OptionalParseResult>(2);
 	if (group_opt.HasResult()) {
-		auto group_by_node = transformer.Transform<GroupByNode>(group_opt.GetResult());
-		if (group_by_node.group_expressions.size() == 1 && ExpressionIsEmptyStar(*group_by_node.group_expressions[0])) {
-			select_node->aggregate_handling = AggregateHandling::FORCE_AGGREGATES;
-			group_by_node.group_expressions.clear();
-			group_by_node.grouping_sets.clear();
-		}
-		select_node->groups = std::move(group_by_node);
+		AssignGroupByNode(*select_node, transformer.Transform<GroupByNode>(group_opt.GetResult()));
 	}
 	transformer.TransformOptional<unique_ptr<ParsedExpression>>(list_pr, 3, select_node->having);
 	transformer.TransformOptional<unique_ptr<ParsedExpression>>(list_pr, 5, select_node->qualify);
@@ -461,13 +647,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeSimpleSelectTram
 		select_node->where_clause = frame.TakeResult<unique_ptr<ParsedExpression>>(1);
 	}
 	if (frame.child_results[2]) {
-		auto group_by_node = frame.TakeResult<GroupByNode>(2);
-		if (group_by_node.group_expressions.size() == 1 && ExpressionIsEmptyStar(*group_by_node.group_expressions[0])) {
-			select_node->aggregate_handling = AggregateHandling::FORCE_AGGREGATES;
-			group_by_node.group_expressions.clear();
-			group_by_node.grouping_sets.clear();
-		}
-		select_node->groups = std::move(group_by_node);
+		AssignGroupByNode(*select_node, frame.TakeResult<GroupByNode>(2));
 	}
 	if (frame.child_results[3]) {
 		select_node->having = frame.TakeResult<unique_ptr<ParsedExpression>>(3);
@@ -2099,6 +2279,63 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExpressionAsCollabe
     PEGTransformer &transformer, unique_ptr<ParsedExpression> expression, const Identifier &col_label_or_string) {
 	expression->SetAlias(col_label_or_string);
 	return expression;
+}
+
+//! Spark's generators (posexplode etc.) name their output columns with a parenthesized multi-column
+//! alias `AS (c1, c2, ...)` in the SELECT list. Rewrite a supported generator call into
+//! `unnest(list_transform(<entries>(arg), row -> struct_pack(c1 := struct_extract_at(row, 1), ...)), max_depth := 2)`:
+//! the entries helper returns a LIST(STRUCT(...)) row-per-element, the struct is renamed field-by-field to
+//! the aliases (positionally, so array/map shape does not matter), and the struct-expanding unnest at the
+//! select-item root turns each struct field into an output column. A parenthesized alias list is only valid
+//! on a generator, so anything else is a parse error.
+unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExpressionAsColumnAliases(
+    PEGTransformer &transformer, unique_ptr<ParsedExpression> expression, const vector<string> &column_aliases) {
+	const char *entries_fn = nullptr;
+	if (expression->GetExpressionClass() == ExpressionClass::FUNCTION) {
+		auto &func = expression->Cast<FunctionExpression>();
+		if (StringUtil::Lower(func.FunctionName().GetIdentifierName()) == "posexplode") {
+			entries_fn = "__spark_posexplode_entries";
+		}
+		auto &args = func.GetArgumentsMutable();
+		if (!entries_fn || !func.GetAlias().empty() || !func.GetQualifiedName().Schema().empty() || func.Distinct() ||
+		    func.Filter() || !func.OrderBy()->orders.empty() || args.size() != 1 || args[0].HasName()) {
+			entries_fn = nullptr;
+		}
+	}
+	if (!entries_fn) {
+		throw ParserException(
+		    "A parenthesized column alias list is only supported on a generator function (e.g. posexplode)");
+	}
+	auto &func = expression->Cast<FunctionExpression>();
+
+	vector<unique_ptr<ParsedExpression>> entries_args;
+	entries_args.push_back(std::move(func.GetArgumentsMutable()[0].GetExpressionMutable()));
+	auto entries = make_uniq<FunctionExpression>(Identifier(entries_fn), std::move(entries_args));
+
+	// row -> struct_pack(alias_0 := struct_extract_at(row, 1), ..., alias_{n-1} := struct_extract_at(row, n))
+	const string lambda_param = "__spark_gen_row";
+	vector<FunctionArgument> struct_fields;
+	for (idx_t i = 0; i < column_aliases.size(); i++) {
+		vector<unique_ptr<ParsedExpression>> extract_args;
+		extract_args.push_back(make_uniq<ColumnRefExpression>(Identifier(lambda_param)));
+		extract_args.push_back(make_uniq<ConstantExpression>(Value::INTEGER(UnsafeNumericCast<int32_t>(i + 1))));
+		struct_fields.emplace_back(Identifier(column_aliases[i]),
+		                           make_uniq<FunctionExpression>(Identifier("struct_extract_at"), std::move(extract_args)));
+	}
+	auto struct_pack = make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(struct_fields));
+	auto lambda = make_uniq<LambdaExpression>(vector<string> {lambda_param}, std::move(struct_pack));
+
+	vector<unique_ptr<ParsedExpression>> transform_args;
+	transform_args.push_back(std::move(entries));
+	transform_args.push_back(std::move(lambda));
+	auto list_transform = make_uniq<FunctionExpression>(Identifier("list_transform"), std::move(transform_args));
+
+	auto max_depth = make_uniq<ConstantExpression>(Value::INTEGER(2));
+	max_depth->SetAlias(Identifier("max_depth"));
+	vector<unique_ptr<ParsedExpression>> unnest_args;
+	unnest_args.push_back(std::move(list_transform));
+	unnest_args.push_back(std::move(max_depth));
+	return make_uniq<FunctionExpression>(Identifier("unnest"), std::move(unnest_args));
 }
 
 unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExpressionOptIdentifier(

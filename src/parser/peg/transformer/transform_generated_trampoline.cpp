@@ -1818,6 +1818,8 @@ static const TransformFrameOps QUALIFIED_OPERATOR_CONTENTS_OPS = {
     &PEGTransformerFactory::FinalizeQualifiedOperatorContentsTrampoline};
 static const TransformFrameOps ANY_OP_OPS = {"AnyOp", &PEGTransformerFactory::InitializeAnyOpTrampoline,
                                              &PEGTransformerFactory::FinalizeAnyOpTrampoline};
+static const TransformFrameOps ANY_ALL_OP_OPS = {"AnyAllOp", &PEGTransformerFactory::InitializeAnyAllOpTrampoline,
+                                                 &PEGTransformerFactory::FinalizeAnyAllOpTrampoline};
 static const TransformFrameOps BITWISE_EXPRESSION_OPS = {"BitwiseExpression",
                                                          &PEGTransformerFactory::InitializeBitwiseExpressionTrampoline,
                                                          &PEGTransformerFactory::FinalizeBitwiseExpressionTrampoline};
@@ -2740,6 +2742,9 @@ static const TransformFrameOps COL_ID_EXPRESSION_OPS = {"ColIdExpression",
 static const TransformFrameOps EXPRESSION_AS_COLLABEL_OPS = {
     "ExpressionAsCollabel", &PEGTransformerFactory::InitializeExpressionAsCollabelTrampoline,
     &PEGTransformerFactory::FinalizeExpressionAsCollabelTrampoline};
+static const TransformFrameOps EXPRESSION_AS_COLUMN_ALIASES_OPS = {
+    "ExpressionAsColumnAliases", &PEGTransformerFactory::InitializeExpressionAsColumnAliasesTrampoline,
+    &PEGTransformerFactory::FinalizeExpressionAsColumnAliasesTrampoline};
 static const TransformFrameOps EXPRESSION_OPT_IDENTIFIER_OPS = {
     "ExpressionOptIdentifier", &PEGTransformerFactory::InitializeExpressionOptIdentifierTrampoline,
     &PEGTransformerFactory::FinalizeExpressionOptIdentifierTrampoline};
@@ -3557,6 +3562,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"QualifiedOperator", &QUALIFIED_OPERATOR_OPS},
 	    {"QualifiedOperatorContents", &QUALIFIED_OPERATOR_CONTENTS_OPS},
 	    {"AnyOp", &ANY_OP_OPS},
+	    {"AnyAllOp", &ANY_ALL_OP_OPS},
 	    {"BitwiseExpression", &BITWISE_EXPRESSION_OPS},
 	    {"BitwiseExpressionTail", &BITWISE_EXPRESSION_TAIL_OPS},
 	    {"BitwiseOrOperator", &BITWISE_OR_OPERATOR_OPS},
@@ -3882,6 +3888,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"AliasedExpression", &ALIASED_EXPRESSION_OPS},
 	    {"ColIdExpression", &COL_ID_EXPRESSION_OPS},
 	    {"ExpressionAsCollabel", &EXPRESSION_AS_COLLABEL_OPS},
+	    {"ExpressionAsColumnAliases", &EXPRESSION_AS_COLUMN_ALIASES_OPS},
 	    {"ExpressionOptIdentifier", &EXPRESSION_OPT_IDENTIFIER_OPS},
 	    {"ValuesClause", &VALUES_CLAUSE_OPS},
 	    {"ValuesClauseNoParens", &VALUES_CLAUSE_NO_PARENS_OPS},
@@ -16942,15 +16949,15 @@ void PEGTransformerFactory::InitializeAnyAllOperatorTrampoline(PEGTransformer &t
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	frame.ReserveChildSlots(2);
 	stack.PushFrame(list_pr.GetChild(1), ANY_OR_ALL_OPS, TransformFrameResultTarget(frame.frame_index, 1));
-	stack.PushFrame(list_pr.GetChild(0), ANY_OP_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+	stack.PushFrame(list_pr.GetChild(0), ANY_ALL_OP_OPS, TransformFrameResultTarget(frame.frame_index, 0));
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAnyAllOperatorTrampoline(PEGTransformer &transformer,
                                                                                          TransformStack &stack,
                                                                                          TransformStackFrame &frame) {
-	auto any_op = frame.TakeResult<string>(0);
+	auto any_all_op = frame.TakeResult<string>(0);
 	auto any_or_all = frame.TakeResult<bool>(1);
-	auto result = TransformAnyAllOperator(transformer, any_op, any_or_all);
+	auto result = TransformAnyAllOperator(transformer, any_all_op, any_or_all);
 	return make_uniq<TypedTransformResult<pair<string, bool>>>(result);
 }
 
@@ -17126,6 +17133,20 @@ void PEGTransformerFactory::InitializeAnyOpTrampoline(PEGTransformer &transforme
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAnyOpTrampoline(PEGTransformer &transformer,
                                                                                 TransformStack &stack,
                                                                                 TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto result = choice_pr.GetResult().Cast<KeywordParseResult>().keyword;
+	return make_uniq<TypedTransformResult<string>>(result);
+}
+
+void PEGTransformerFactory::InitializeAnyAllOpTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                         TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAnyAllOpTrampoline(PEGTransformer &transformer,
+                                                                                   TransformStack &stack,
+                                                                                   TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
 	auto result = choice_pr.GetResult().Cast<KeywordParseResult>().keyword;
@@ -23958,6 +23979,24 @@ PEGTransformerFactory::FinalizeExpressionAsCollabelTrampoline(PEGTransformer &tr
 	auto expression = frame.TakeResult<unique_ptr<ParsedExpression>>(0);
 	auto col_label_or_string = frame.TakeResult<Identifier>(1);
 	auto result = TransformExpressionAsCollabel(transformer, std::move(expression), col_label_or_string);
+	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeExpressionAsColumnAliasesTrampoline(PEGTransformer &transformer,
+                                                                          TransformStack &stack,
+                                                                          TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(2);
+	stack.PushFrame(list_pr.GetChild(2), COLUMN_ALIASES_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	stack.PushFrame(list_pr.GetChild(0), EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeExpressionAsColumnAliasesTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                   TransformStackFrame &frame) {
+	auto expression = frame.TakeResult<unique_ptr<ParsedExpression>>(0);
+	auto column_aliases = frame.TakeResult<vector<string>>(1);
+	auto result = TransformExpressionAsColumnAliases(transformer, std::move(expression), column_aliases);
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 

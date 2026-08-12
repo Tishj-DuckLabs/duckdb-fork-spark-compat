@@ -76,6 +76,19 @@ PEGTransformerFactory::TransformExpressionStatement(PEGTransformer &transformer,
 	return std::move(select_statement);
 }
 
+// The binder splices *COLUMNS(...) through function arguments but rejects it underneath an operator, so an expression
+// containing one has to reach the binder wrapped in functions all the way up to the root of the select element.
+static bool ContainsUnpackedStar(const ParsedExpression &expr) {
+	if (StarExpression::IsColumnsUnpacked(expr)) {
+		return true;
+	}
+	bool contains_unpacked_star = false;
+	ParsedExpressionIterator::EnumerateChildren(expr, [&](const ParsedExpression &child) {
+		contains_unpacked_star = contains_unpacked_star || ContainsUnpackedStar(child);
+	});
+	return contains_unpacked_star;
+}
+
 unique_ptr<ParsedExpression>
 PEGTransformerFactory::TransformBaseExpression(PEGTransformer &transformer,
                                                unique_ptr<ParsedExpression> single_expression,
@@ -108,12 +121,16 @@ PEGTransformerFactory::TransformBaseExpression(PEGTransformer &transformer,
 			expr = std::move(function_expr);
 			prev_indirection_was_cast = false;
 		} else if (indirection_expr->GetExpressionClass() == ExpressionClass::CONSTANT) {
+			auto extracts_from_star = ContainsUnpackedStar(*expr);
 			vector<unique_ptr<ParsedExpression>> struct_children;
 			struct_children.push_back(std::move(expr));
 			struct_children.push_back(std::move(indirection_expr));
-			auto struct_expr =
-			    make_uniq<OperatorExpression>(ExpressionType::STRUCT_EXTRACT, std::move(struct_children));
-			expr = std::move(struct_expr);
+			if (extracts_from_star) {
+				// the operator would cut the star off from the binder, the function keeps it reachable
+				expr = make_uniq<FunctionExpression>("struct_extract", std::move(struct_children));
+			} else {
+				expr = make_uniq<OperatorExpression>(ExpressionType::STRUCT_EXTRACT, std::move(struct_children));
+			}
 			prev_indirection_was_cast = false;
 		} else {
 			throw NotImplementedException("Unhandled case for Base Expression with indirection");
@@ -126,6 +143,12 @@ PEGTransformerFactory::TransformBaseExpression(PEGTransformer &transformer,
 // NestedColumnName
 unique_ptr<ParsedExpression> PEGTransformerFactory::TransformColumnReference(PEGTransformer &transformer,
                                                                              unique_ptr<ColumnRefExpression> child) {
+	// the grouping__id virtual column is the grouping id over every GROUP BY expression
+	if (child->ColumnNames().size() == 1 && child->GetColumnName() == "grouping__id") {
+		auto grouping_id = make_uniq<OperatorExpression>(ExpressionType::GROUPING_FUNCTION);
+		grouping_id->SetAlias("grouping__id");
+		return std::move(grouping_id);
+	}
 	return std::move(child);
 }
 
@@ -156,6 +179,47 @@ Identifier PEGTransformerFactory::TransformReservedTableQualification(PEGTransfo
 	return reserved_table_name;
 }
 
+// a star in an argument list is spliced into the arguments: f(t.*) -> f(UNPACK(COLUMNS(t.*)))
+static void UnpackStarArgument(unique_ptr<ParsedExpression> &expr) {
+	if (expr->GetExpressionClass() != ExpressionClass::STAR) {
+		return;
+	}
+	auto &star = expr->Cast<StarExpression>();
+	if (star.IsColumns()) {
+		// COLUMNS(...) replicates the surrounding expression instead of splicing
+		return;
+	}
+	star.IsColumnsMutable() = true;
+	expr = make_uniq<OperatorExpression>(ExpressionType::OPERATOR_UNPACK, std::move(expr));
+}
+static void UnpackStarArguments(vector<unique_ptr<ParsedExpression>> &arguments) {
+	for (auto &argument : arguments) {
+		UnpackStarArgument(argument);
+	}
+}
+static void UnpackStarArguments(vector<FunctionArgument> &arguments) {
+	for (auto &argument : arguments) {
+		UnpackStarArgument(argument.GetExpressionMutable());
+	}
+}
+
+// Spark names every field of a struct(...): the AS alias, else the name of the column the argument references, else
+// the positional col<N>. A star names one field per column it expands into, so its alias is left to the expansion.
+// Must run before UnpackStarArguments, which hides the star behind an UNPACK operator.
+static void NameStructFields(vector<unique_ptr<ParsedExpression>> &arguments) {
+	for (idx_t i = 0; i < arguments.size(); i++) {
+		auto &argument = arguments[i];
+		if (argument->GetExpressionClass() == ExpressionClass::STAR || !argument->GetAlias().empty()) {
+			continue;
+		}
+		if (argument->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
+			argument->SetAlias(argument->Cast<ColumnRefExpression>().GetColumnName());
+			continue;
+		}
+		argument->SetAlias(Identifier("col" + to_string(i + 1)));
+	}
+}
+
 // Maps a Spark ordered-set aggregate (used with WITHIN GROUP) to its DuckDB name and validates the
 // argument count. Throws for any function that is not a supported ordered-set aggregate.
 static string MapOrderedSetAggregateName(const string &lowercase_name, idx_t argument_count,
@@ -175,6 +239,19 @@ static string MapOrderedSetAggregateName(const string &lowercase_name, idx_t arg
 	throw ParserException("Unknown ordered aggregate \"%s\".", qualified_function.Name());
 }
 
+// Spark binds a non-lambda argument in a higher-order function's lambda slot as a lambda with hidden,
+// unused parameters (ResolveLambdaVariables.createLambda), so `aggregate(xs, 0, 100)` behaves like
+// `aggregate(xs, 0, (acc, x) -> 100)`. DuckDB only routes into its lambda-binding path when the argument
+// is syntactically a lambda, so the wrap happens here, before the macro and the binder see it. The
+// parameter names stand in for Spark's hidden lambda variables: no column can collide with them.
+static void WrapHiddenLambdaArgument(vector<FunctionArgument> &arguments, idx_t index, vector<string> parameter_names) {
+	auto &argument = arguments[index].GetExpressionMutable();
+	if (argument->GetExpressionClass() == ExpressionClass::LAMBDA) {
+		return;
+	}
+	argument = make_uniq<LambdaExpression>(std::move(parameter_names), std::move(argument));
+}
+
 unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
     PEGTransformer &transformer, const QualifiedName &function_identifier,
     MethodArguments function_expression_arguments, optional<vector<OrderByNode>> within_group_clause,
@@ -191,12 +268,16 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 	if (filter_clause) {
 		filter_expr = std::move(*filter_clause);
 	}
-	if (function_children.size() == 1 && ExpressionIsEmptyStar(*function_children[0].GetExpressionMutable()) &&
-	    !distinct && order_modifier->orders.empty()) {
-		// COUNT(*) gets converted into COUNT()
-		function_children.clear();
-	}
 	auto lowercase_name = StringUtil::Lower(qualified_function.Name().GetIdentifierName());
+	if (lowercase_name == "count") {
+		// COUNT(*) is the row count, not a splice of the columns
+		if (function_children.size() == 1 && ExpressionIsEmptyStar(*function_children[0].GetExpressionMutable()) &&
+			!distinct && order_modifier->orders.empty()) {
+			function_children.clear();
+			}
+	} else {
+		UnpackStarArguments(function_children);
+	}
 
 	if (over_clause) {
 		if (transformer.in_window_definition) {
@@ -360,13 +441,33 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 		lowercase_name = MapOrderedSetAggregateName(lowercase_name, function_children.size(), qualified_function);
 	}
 	if (lowercase_name == "transform" && function_children.size() == 2) {
-		auto &lambda_arg = function_children[1].GetExpressionMutable();
-		if (lambda_arg->GetExpressionClass() != ExpressionClass::LAMBDA) {
-			// Spark implicitly wraps a non-lambda 2nd argument in an identity lambda that ignores
-			// its parameter, e.g. `transform(ys, 0)` behaves like `transform(ys, x -> 0)`.
-			lambda_arg =
-			    make_uniq<LambdaExpression>(vector<string> {"__spark_transform_hidden_arg"}, std::move(lambda_arg));
+		WrapHiddenLambdaArgument(function_children, 1, {"__spark_transform_hidden_arg"});
+	}
+	// aggregate and reduce are the same Spark function (ArrayAggregate): argument 2 is the merge lambda,
+	// bound with (accumulator, element), and argument 3 the optional finish lambda, bound with (accumulator).
+	if ((lowercase_name == "aggregate" || lowercase_name == "reduce") &&
+	    (function_children.size() == 3 || function_children.size() == 4)) {
+		WrapHiddenLambdaArgument(function_children, 2,
+		                         {"__spark_aggregate_hidden_acc", "__spark_aggregate_hidden_elem"});
+		if (function_children.size() == 4) {
+			WrapHiddenLambdaArgument(function_children, 3, {"__spark_aggregate_hidden_acc"});
 		}
+	}
+	// transform_values' lambda is bound with (key, value).
+	if (lowercase_name == "transform_values" && function_children.size() == 2) {
+		WrapHiddenLambdaArgument(function_children, 1,
+		                         {"__spark_transform_values_hidden_key", "__spark_transform_values_hidden_value"});
+	}
+	// zip_with's lambda is bound with (left element, right element).
+	if (lowercase_name == "zip_with" && function_children.size() == 3) {
+		WrapHiddenLambdaArgument(function_children, 2,
+		                         {"__spark_zip_with_hidden_left", "__spark_zip_with_hidden_right"});
+	}
+	// map_zip_with's lambda is bound with (key, left value, right value).
+	if (lowercase_name == "map_zip_with" && function_children.size() == 3) {
+		WrapHiddenLambdaArgument(function_children, 2,
+		                         {"__spark_map_zip_with_hidden_key", "__spark_map_zip_with_hidden_left",
+		                          "__spark_map_zip_with_hidden_right"});
 	}
 	auto result = make_uniq<FunctionExpression>(
 	    QualifiedName(qualified_function.Catalog(), qualified_function.Schema(), Identifier(lowercase_name)),
@@ -489,8 +590,10 @@ PEGTransformerFactory::TransformParenthesisExpression(PEGTransformer &transforme
 			return std::move(children[0]);
 		}
 	}
-	// If any element carries an AS alias, build a named struct (struct_pack); otherwise a positional row
+	// If any element carries an AS alias, build a named struct (struct_pack); otherwise a positional row - the
+	// unnamed form also carries the parameter list of a lambda, which has to stay a plain row
 	auto func_name = has_alias ? "struct_pack" : "row";
+	UnpackStarArguments(children);
 	return make_uniq<FunctionExpression>(func_name, std::move(children));
 }
 
@@ -1444,9 +1547,9 @@ string PEGTransformerFactory::TransformQualifiedOperatorContents(PEGTransformer 
 	return StringUtil::Join(result, ".");
 }
 
-pair<string, bool> PEGTransformerFactory::TransformAnyAllOperator(PEGTransformer &transformer, const string &any_op,
+pair<string, bool> PEGTransformerFactory::TransformAnyAllOperator(PEGTransformer &transformer, const string &any_all_op,
                                                                   const bool &any_or_all) {
-	return make_pair(any_op, any_or_all);
+	return make_pair(any_all_op, any_or_all);
 }
 
 bool PEGTransformerFactory::TransformSubqueryAny(PEGTransformer &transformer) {
@@ -2043,11 +2146,12 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformDotColumnOperator(P
 unique_ptr<ParsedExpression>
 PEGTransformerFactory::TransformMethodExpression(PEGTransformer &transformer, const string &col_label,
                                                  MethodArguments method_expression_arguments) {
-	if (method_expression_arguments.arguments.size() == 1 &&
+	if (StringUtil::CIEquals(col_label, "count") && method_expression_arguments.arguments.size() == 1 &&
 	    ExpressionIsEmptyStar(method_expression_arguments.arguments[0].GetExpression())) {
 		// COUNT(*) gets converted into COUNT()
 		method_expression_arguments.arguments.clear();
 	}
+	UnpackStarArguments(method_expression_arguments.arguments);
 	if (method_expression_arguments.has_ignore_nulls) {
 		throw ParserException("RESPECT/IGNORE NULLS is not supported for non-window functions");
 	}
@@ -2184,7 +2288,19 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformStarExpression(
 	auto result = make_uniq<StarExpression>();
 	if (star_qualifier_list) {
 		if (star_qualifier_list->size() > 1) {
-			throw ParserException("Did not expect more than one column in front of a star expression");
+			// A StarExpression only carries a single relation name, so a star target with more
+			// qualifiers (db.tbl.*, tbl.struct_col.*, ...) becomes unnest over a column reference: ...
+			if (exclude_list || replace_list || rename_list) {
+			        throw ParserException(
+			            "EXCLUDE/REPLACE/RENAME are not supported on a star expression with a qualified relation name");
+			    }
+			vector<Identifier> column_names;
+			for (auto &qualifier : *star_qualifier_list) {
+			        column_names.emplace_back(qualifier);
+			    }
+			vector<unique_ptr<ParsedExpression>> children;
+			children.push_back(make_uniq<ColumnRefExpression>(std::move(column_names)));
+			return make_uniq<FunctionExpression>("unnest", std::move(children));
 		}
 		result->RelationNameMutable() = Identifier((*star_qualifier_list)[0]);
 	}
@@ -2666,6 +2782,7 @@ PEGTransformerFactory::TransformNullIfArguments(PEGTransformer &transformer, uni
 	return result;
 }
 
+// is activated by both struct_pack() and row()
 unique_ptr<ParsedExpression>
 PEGTransformerFactory::TransformRowExpression(PEGTransformer &transformer,
                                               optional<vector<unique_ptr<ParsedExpression>>> row_expression_arg) {
@@ -2674,16 +2791,12 @@ PEGTransformerFactory::TransformRowExpression(PEGTransformer &transformer,
 	}
 
 	vector<unique_ptr<ParsedExpression>> results;
-	bool has_alias = false;
 	for (auto &child : *row_expression_arg) {
-		if (!child->GetAlias().empty()) {
-			has_alias = true;
-		}
 		results.push_back(std::move(child));
 	}
-	// If any argument has an AS alias, use struct_pack (named struct)
-	auto func_name = has_alias ? "struct_pack" : "row";
-	auto func_expr = make_uniq<FunctionExpression>(func_name, std::move(results));
+	NameStructFields(results);
+	UnpackStarArguments(results);
+	auto func_expr = make_uniq<FunctionExpression>("struct_pack", std::move(results));
 	return std::move(func_expr);
 }
 
