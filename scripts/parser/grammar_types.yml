@@ -488,6 +488,7 @@ Expression:
     - WhereClause
     - AliasedExpression
     - ExpressionAsCollabel
+    - ExpressionAsColumnAliases
     - ColIdExpression
     - ExpressionOptIdentifier
     - HavingClause
@@ -1059,6 +1060,7 @@ String:
     - QualifiedOperatorContents
     - ColIdDot
     - AnyOp
+    - AnyAllOp
     - StringOperator
     - JsonOperator
     - InetOperator

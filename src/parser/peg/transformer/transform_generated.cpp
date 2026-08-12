@@ -6662,9 +6662,9 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformNamedOtherOpera
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformAnyAllOperatorInternal(PEGTransformer &transformer,
                                                                                         ParseResult &parse_result) {
 	auto &list_pr = parse_result.Cast<ListParseResult>();
-	auto any_op = transformer.Transform<string>(list_pr.GetChild(0));
+	auto any_all_op = transformer.Transform<string>(list_pr.GetChild(0));
 	auto any_or_all = transformer.Transform<bool>(list_pr.GetChild(1));
-	auto result = TransformAnyAllOperator(transformer, any_op, any_or_all);
+	auto result = TransformAnyAllOperator(transformer, any_all_op, any_or_all);
 	return make_uniq<TypedTransformResult<pair<string, bool>>>(result);
 }
 
@@ -6748,6 +6748,14 @@ PEGTransformerFactory::TransformQualifiedOperatorContentsInternal(PEGTransformer
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformAnyOpInternal(PEGTransformer &transformer,
                                                                                ParseResult &parse_result) {
+	auto &list_pr = parse_result.Cast<ListParseResult>();
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto result = choice_pr.GetResult().Cast<KeywordParseResult>().keyword;
+	return make_uniq<TypedTransformResult<string>>(result);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::TransformAnyAllOpInternal(PEGTransformer &transformer,
+                                                                                  ParseResult &parse_result) {
 	auto &list_pr = parse_result.Cast<ListParseResult>();
 	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
 	auto result = choice_pr.GetResult().Cast<KeywordParseResult>().keyword;
@@ -9026,13 +9034,13 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformTargetListInter
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformColumnAliasesInternal(PEGTransformer &transformer,
                                                                                        ParseResult &parse_result) {
 	auto &list_pr = parse_result.Cast<ListParseResult>();
-	vector<Identifier> col_id_or_string;
-	auto col_id_or_string_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
-	for (auto &col_id_or_string_item : col_id_or_string_items) {
-		auto col_id_or_string_value = transformer.Transform<Identifier>(col_id_or_string_item.get());
-		col_id_or_string.push_back(col_id_or_string_value);
+	vector<Identifier> col_label_or_string;
+	auto col_label_or_string_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
+	for (auto &col_label_or_string_item : col_label_or_string_items) {
+		auto col_label_or_string_value = transformer.Transform<Identifier>(col_label_or_string_item.get());
+		col_label_or_string.push_back(col_label_or_string_value);
 	}
-	auto result = TransformColumnAliases(transformer, col_id_or_string);
+	auto result = TransformColumnAliases(transformer, col_label_or_string);
 	return make_uniq<TypedTransformResult<vector<string>>>(result);
 }
 
@@ -10333,6 +10341,16 @@ PEGTransformerFactory::TransformExpressionAsCollabelInternal(PEGTransformer &tra
 	auto expression = transformer.Transform<unique_ptr<ParsedExpression>>(list_pr.GetChild(0));
 	auto col_label_or_string = transformer.Transform<Identifier>(list_pr.GetChild(2));
 	auto result = TransformExpressionAsCollabel(transformer, std::move(expression), col_label_or_string);
+	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::TransformExpressionAsColumnAliasesInternal(PEGTransformer &transformer,
+                                                                  ParseResult &parse_result) {
+	auto &list_pr = parse_result.Cast<ListParseResult>();
+	auto expression = transformer.Transform<unique_ptr<ParsedExpression>>(list_pr.GetChild(0));
+	auto column_aliases = transformer.Transform<vector<string>>(list_pr.GetChild(2));
+	auto result = TransformExpressionAsColumnAliases(transformer, std::move(expression), column_aliases);
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
@@ -11647,6 +11665,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"QualifiedOperator", &PEGTransformerFactory::TransformQualifiedOperatorInternal},
 	    {"QualifiedOperatorContents", &PEGTransformerFactory::TransformQualifiedOperatorContentsInternal},
 	    {"AnyOp", &PEGTransformerFactory::TransformAnyOpInternal},
+	    {"AnyAllOp", &PEGTransformerFactory::TransformAnyAllOpInternal},
 	    {"BitwiseExpression", &PEGTransformerFactory::TransformBitwiseExpressionInternal},
 	    {"BitwiseExpressionTail", &PEGTransformerFactory::TransformBitwiseExpressionTailInternal},
 	    {"BitwiseOrOperator", &PEGTransformerFactory::TransformBitwiseOrOperatorInternal},
@@ -11965,6 +11984,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"AliasedExpression", &PEGTransformerFactory::TransformAliasedExpressionInternal},
 	    {"ColIdExpression", &PEGTransformerFactory::TransformColIdExpressionInternal},
 	    {"ExpressionAsCollabel", &PEGTransformerFactory::TransformExpressionAsCollabelInternal},
+	    {"ExpressionAsColumnAliases", &PEGTransformerFactory::TransformExpressionAsColumnAliasesInternal},
 	    {"ExpressionOptIdentifier", &PEGTransformerFactory::TransformExpressionOptIdentifierInternal},
 	    {"ValuesClause", &PEGTransformerFactory::TransformValuesClauseInternal},
 	    {"ValuesClauseNoParens", &PEGTransformerFactory::TransformValuesClauseNoParensInternal},

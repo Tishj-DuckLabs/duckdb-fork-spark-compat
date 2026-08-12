@@ -41,7 +41,7 @@ WithClause <- 'WITH' Recursive? List(WithStatement)
 Recursive <- 'RECURSIVE'
 SelectClause <- 'SELECT' DistinctClause? TargetList?
 TargetList <- List(AliasedExpression)
-ColumnAliases <- Parens(List(ColIdOrString))
+ColumnAliases <- Parens(List(ColLabelOrString))
 
 DistinctClause <- DistinctOn
 DistinctOn <- 'DISTINCT' DistinctOnTargets?
@@ -195,9 +195,10 @@ FetchClause <- 'FETCH' FirstOrNext FetchValue RowOrRows 'ONLY'
 FirstOrNext <- 'FIRST' / 'NEXT'
 FetchValue <- Expression
 
-AliasedExpression <- ColIdExpression / ExpressionAsCollabel / ExpressionOptIdentifier
+AliasedExpression <- ColIdExpression / ExpressionAsCollabel / ExpressionAsColumnAliases / ExpressionOptIdentifier
 ColIdExpression <- ColId ':' Expression
 ExpressionAsCollabel <- Expression 'AS' ColLabelOrString
+ExpressionAsColumnAliases <- Expression 'AS' ColumnAliases
 ExpressionOptIdentifier <- Expression Identifier?
 
 ValuesClause <- 'VALUES' List(ValuesExpressions)

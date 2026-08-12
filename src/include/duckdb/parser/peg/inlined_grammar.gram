@@ -285,6 +285,7 @@ FuncNameKeyword <- 'ANY' /
 'CROSS' /
 'DECIMAL' /
 'DOUBLE' /
+'EXISTS' /
 'FLOAT' /
 'FREEZE' /
 'FULL' /
@@ -1511,7 +1512,7 @@ AnyAllParsedOperator <- AnyAllOperator
 NamedOtherOperator <-
     QualifiedOperator / InetOperator / JsonOperator / ListOperator / StringOperator / OperatorLiteral
 OperatorLiteral <- Identifier
-AnyAllOperator <- AnyOp AnyOrAll
+AnyAllOperator <- AnyAllOp AnyOrAll
 AnyOrAll <- SubqueryAny / SubqueryAll
 SubqueryAny <- 'ANY'
 SubqueryAll <- 'ALL'
@@ -1522,6 +1523,9 @@ StringOperator <- '^@' / '||'
 QualifiedOperator <- 'OPERATOR' Parens(QualifiedOperatorContents)
 QualifiedOperatorContents <- ColIdDot* AnyOp
 AnyOp <- '!~~*' / '>>=' / '<<=' / '->>' / '!~~' / '!~*' / '~~*' / '~~~' / '~*' / '!~' / '^@' / '||' / '&&' / '@>' / '<@' / '<=' / '>=' / '<>' / '!=' / '==' / '<<' / '>>' / '//' / '**' / '->' / '~~' / '+' / '-' / '*' / '/' / '%' / '^' / '<' / '>' / '=' / '&' / '|' / '~' / '!'
+# AnyOp without '->': the lambda arrow may never introduce a quantified comparison, otherwise
+# 'x -> all ...' parses as 'x -> ALL (...)' instead of a lambda taking a parameter named all
+AnyAllOp <- '!~~*' / '>>=' / '<<=' / '->>' / '!~~' / '!~*' / '~~*' / '~~~' / '~*' / '!~' / '^@' / '||' / '&&' / '@>' / '<@' / '<=' / '>=' / '<>' / '!=' / '==' / '<<' / '>>' / '//' / '**' / '~~' / '+' / '-' / '*' / '/' / '%' / '^' / '<' / '>' / '=' / '&' / '|' / '~' / '!'
 # LEVEL 9 (bitwise OR - loosest of the three bitwise tiers)
 BitwiseExpression <- BitwiseAndExpression BitwiseExpressionTail*
 BitwiseExpressionTail <- BitwiseOrOperator BitwiseAndExpression
@@ -1787,7 +1791,7 @@ WithClause <- 'WITH' Recursive? List(WithStatement)
 Recursive <- 'RECURSIVE'
 SelectClause <- 'SELECT' DistinctClause? TargetList?
 TargetList <- List(AliasedExpression)
-ColumnAliases <- Parens(List(ColIdOrString))
+ColumnAliases <- Parens(List(ColLabelOrString))
 
 DistinctClause <- DistinctOn
 DistinctOn <- 'DISTINCT' DistinctOnTargets?
@@ -1941,9 +1945,10 @@ FetchClause <- 'FETCH' FirstOrNext FetchValue RowOrRows 'ONLY'
 FirstOrNext <- 'FIRST' / 'NEXT'
 FetchValue <- Expression
 
-AliasedExpression <- ColIdExpression / ExpressionAsCollabel / ExpressionOptIdentifier
+AliasedExpression <- ColIdExpression / ExpressionAsCollabel / ExpressionAsColumnAliases / ExpressionOptIdentifier
 ColIdExpression <- ColId ':' Expression
 ExpressionAsCollabel <- Expression 'AS' ColLabelOrString
+ExpressionAsColumnAliases <- Expression 'AS' ColumnAliases
 ExpressionOptIdentifier <- Expression Identifier?
 
 ValuesClause <- 'VALUES' List(ValuesExpressions)

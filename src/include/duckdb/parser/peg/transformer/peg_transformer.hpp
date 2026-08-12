@@ -3215,6 +3215,10 @@ public:
 	                                      TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeAnyOpTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                                TransformStackFrame &frame);
+	static void InitializeAnyAllOpTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                         TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeAnyAllOpTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
 	static void InitializeBitwiseExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4572,6 +4576,11 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeExpressionAsCollabelTrampoline(PEGTransformer &transformer,
 	                                                                               TransformStack &stack,
 	                                                                               TransformStackFrame &frame);
+	static void InitializeExpressionAsColumnAliasesTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                          TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeExpressionAsColumnAliasesTrampoline(PEGTransformer &transformer,
+	                                                                                    TransformStack &stack,
+	                                                                                    TransformStackFrame &frame);
 	static void InitializeExpressionOptIdentifierTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                        TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeExpressionOptIdentifierTrampoline(PEGTransformer &transformer,
@@ -7207,7 +7216,7 @@ public:
 	static ParsedOperator TransformNamedOtherOperator(PEGTransformer &transformer, const string &child);
 	static unique_ptr<TransformResultValue> TransformAnyAllOperatorInternal(PEGTransformer &transformer,
 	                                                                        ParseResult &parse_result);
-	static pair<string, bool> TransformAnyAllOperator(PEGTransformer &transformer, const string &any_op,
+	static pair<string, bool> TransformAnyAllOperator(PEGTransformer &transformer, const string &any_all_op,
 	                                                  const bool &any_or_all);
 	static unique_ptr<TransformResultValue> TransformAnyOrAllInternal(PEGTransformer &transformer,
 	                                                                  ParseResult &parse_result);
@@ -7234,6 +7243,8 @@ public:
 	                                                 const optional<vector<string>> &col_id_dot, const string &any_op);
 	static unique_ptr<TransformResultValue> TransformAnyOpInternal(PEGTransformer &transformer,
 	                                                               ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformAnyAllOpInternal(PEGTransformer &transformer,
+	                                                                  ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformBitwiseExpressionInternal(PEGTransformer &transformer,
 	                                                                           ParseResult &parse_result);
 	static unique_ptr<ParsedExpression>
@@ -7976,7 +7987,7 @@ public:
 	static unique_ptr<TransformResultValue> TransformColumnAliasesInternal(PEGTransformer &transformer,
 	                                                                       ParseResult &parse_result);
 	static vector<string> TransformColumnAliases(PEGTransformer &transformer,
-	                                             const vector<Identifier> &col_id_or_string);
+	                                             const vector<Identifier> &col_label_or_string);
 	static unique_ptr<TransformResultValue> TransformDistinctClauseInternal(PEGTransformer &transformer,
 	                                                                        ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformDistinctOnInternal(PEGTransformer &transformer,
@@ -8409,6 +8420,11 @@ public:
 	static unique_ptr<ParsedExpression> TransformExpressionAsCollabel(PEGTransformer &transformer,
 	                                                                  unique_ptr<ParsedExpression> expression,
 	                                                                  const Identifier &col_label_or_string);
+	static unique_ptr<TransformResultValue> TransformExpressionAsColumnAliasesInternal(PEGTransformer &transformer,
+	                                                                                   ParseResult &parse_result);
+	static unique_ptr<ParsedExpression> TransformExpressionAsColumnAliases(PEGTransformer &transformer,
+	                                                                       unique_ptr<ParsedExpression> expression,
+	                                                                       const vector<string> &column_aliases);
 	static unique_ptr<TransformResultValue> TransformExpressionOptIdentifierInternal(PEGTransformer &transformer,
 	                                                                                 ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformExpressionOptIdentifier(PEGTransformer &transformer,
