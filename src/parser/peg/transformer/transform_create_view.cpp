@@ -3,8 +3,7 @@
 #include "duckdb/parser/query_node/recursive_cte_node.hpp"
 #include "duckdb/parser/query_node/set_operation_node.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 unique_ptr<QueryNode> PEGTransformerFactory::ToRecursiveCTE(unique_ptr<QueryNode> node, const Identifier &name,
                                                             vector<Identifier> &aliases,
                                                             vector<unique_ptr<ParsedExpression>> &key_targets) {
@@ -147,8 +146,8 @@ string PEGTransformerFactory::TransformViewColumn(PEGTransformer &transformer, c
 
 // ViewColumnList <- Parens(List(ViewColumn))
 vector<string> PEGTransformerFactory::TransformViewColumnList(PEGTransformer &transformer,
-                                                               const vector<string> &view_column) {
+                                                              const vector<string> &view_column) {
 	return view_column;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

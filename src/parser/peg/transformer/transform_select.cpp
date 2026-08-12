@@ -30,8 +30,7 @@
 #include "duckdb/common/unordered_map.hpp"
 #include "duckdb/main/query_result.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 namespace {
 
@@ -110,8 +109,7 @@ optional_idx MatchAutoName(const ParsedExpression &expr, const unordered_map<str
 //! constant match becomes a 1-based positional reference: a copy of the constant would be read as a
 //! positional ordinal by value (e.g. GROUP BY 7 -> 7th column). A function match is replaced with a
 //! copy of the select expression.
-void RewriteAutoNameRef(unique_ptr<ParsedExpression> &expr,
-                        const vector<unique_ptr<ParsedExpression>> &select_list,
+void RewriteAutoNameRef(unique_ptr<ParsedExpression> &expr, const vector<unique_ptr<ParsedExpression>> &select_list,
                         const unordered_map<string, idx_t> &auto_names) {
 	if (!expr) {
 		return;
@@ -144,8 +142,7 @@ void RewriteSparkAutoNameReferences(SelectNode &node) {
 			continue;
 		}
 		auto expr_class = select_expr->GetExpressionClass();
-		if (expr_class != ExpressionClass::FUNCTION &&
-		    !(no_from && expr_class == ExpressionClass::CONSTANT)) {
+		if (expr_class != ExpressionClass::FUNCTION && !(no_from && expr_class == ExpressionClass::CONSTANT)) {
 			continue;
 		}
 		auto name = SparkColumnName(*select_expr);
@@ -1549,13 +1546,12 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeWithClauseTrampo
 	return make_uniq<TypedTransformResult<CommonTableExpressionMap>>(std::move(result));
 }
 
-pair<Identifier, unique_ptr<CommonTableExpressionInfo>>
-PEGTransformerFactory::TransformWithStatement(PEGTransformer &transformer, const Identifier &col_id_or_string,
-                                              const optional<vector<string>> &insert_column_list,
-                                              const bool &has_result,
-                                              optional<vector<unique_ptr<ParsedExpression>>> using_key,
-                                              const optional<bool> &materialized, unique_ptr<TableRef> cte_body) {
-	// has_result is Spark's MAX RECURSION LEVEL clause, a per-CTE recursion ceiling that duckdb does not enforce; ignored.
+pair<Identifier, unique_ptr<CommonTableExpressionInfo>> PEGTransformerFactory::TransformWithStatement(
+    PEGTransformer &transformer, const Identifier &col_id_or_string, const optional<vector<string>> &insert_column_list,
+    const bool &has_result, optional<vector<unique_ptr<ParsedExpression>>> using_key,
+    const optional<bool> &materialized, unique_ptr<TableRef> cte_body) {
+	// has_result is Spark's MAX RECURSION LEVEL clause, a per-CTE recursion ceiling that duckdb does not enforce;
+	// ignored.
 	auto result = make_uniq<CommonTableExpressionInfo>();
 	auto cte_name = col_id_or_string;
 	if (insert_column_list) {
@@ -2324,8 +2320,9 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExpressionAsColumnA
 		vector<unique_ptr<ParsedExpression>> extract_args;
 		extract_args.push_back(make_uniq<ColumnRefExpression>(Identifier(lambda_param)));
 		extract_args.push_back(make_uniq<ConstantExpression>(Value::INTEGER(UnsafeNumericCast<int32_t>(i + 1))));
-		struct_fields.emplace_back(Identifier(field_names[i]),
-		                           make_uniq<FunctionExpression>(Identifier("struct_extract_at"), std::move(extract_args)));
+		struct_fields.emplace_back(
+		    Identifier(field_names[i]),
+		    make_uniq<FunctionExpression>(Identifier("struct_extract_at"), std::move(extract_args)));
 	}
 	auto struct_pack = make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(struct_fields));
 	auto lambda = make_uniq<LambdaExpression>(vector<string> {lambda_param}, std::move(struct_pack));
@@ -2396,4 +2393,4 @@ PEGTransformerFactory::TransformValuesExpressions(PEGTransformer &transformer,
 	return result;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

@@ -4,8 +4,7 @@
 #include "duckdb/common/types/value.hpp"
 #include "duckdb/parser/constraint.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 struct ColumnConstraint {
 	vector<unique_ptr<Constraint>> constraints;
@@ -13,4 +12,4 @@ struct ColumnConstraint {
 	unique_ptr<ParsedExpression> default_value;
 };
 
-} // namespace duckdb_fork
+} // namespace duckdb

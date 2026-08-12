@@ -13,8 +13,7 @@
 #include "duckdb/parser/statement/merge_into_statement.hpp"
 #include "duckdb/parser/constraints/foreign_key_constraint.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement> PEGTransformerFactory::TransformStatement(PEGTransformer &transformer,
                                                                    ParseResult &parse_result) {
@@ -397,4 +396,4 @@ bool PEGTransformerFactory::ConstructConstantFromExpression(const ParsedExpressi
 	}
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

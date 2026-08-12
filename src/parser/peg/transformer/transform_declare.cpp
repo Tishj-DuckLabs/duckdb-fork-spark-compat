@@ -2,8 +2,7 @@
 #include "duckdb/parser/expression/constant_expression.hpp"
 #include "duckdb/parser/statement/set_statement.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 // DeclareStatement <- 'DECLARE' OrReplace? 'VARIABLE'? Identifier Type? DeclareValue?
 // Spark session variable -> duckdb SET VARIABLE. The declared type and OR REPLACE are accepted but not
@@ -29,4 +28,4 @@ unique_ptr<SQLStatement> PEGTransformerFactory::TransformDropVariableStatement(P
 	return make_uniq<ResetVariableStatement>(identifier, SetScope::VARIABLE);
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

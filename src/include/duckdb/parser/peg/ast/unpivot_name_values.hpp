@@ -2,10 +2,9 @@
 #include "duckdb/parser/tableref/pivotref.hpp"
 
 #include "duckdb/common/identifier.hpp"
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 struct UnpivotNameValues {
 	vector<Identifier> unpivot_names;
 	PivotColumn column;
 };
-} // namespace duckdb_fork
+} // namespace duckdb

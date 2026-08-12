@@ -2,8 +2,7 @@
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 #include "duckdb/parser/expression/comparison_expression.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 unique_ptr<SQLStatement>
 PEGTransformerFactory::TransformPragmaStatement(PEGTransformer &transformer,
                                                 unique_ptr<SQLStatement> pragma_assign_or_function) {
@@ -80,4 +79,4 @@ PEGTransformerFactory::TransformPragmaParameters(PEGTransformer &transformer,
 	return expression;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

@@ -3,8 +3,7 @@
 #include "duckdb/parser/statement/connect_statement.hpp"
 #include "duckdb/parser/statement/disconnect_statement.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<ConnectInfo> PEGTransformerFactory::TransformLocalSessionTarget(PEGTransformer &transformer) {
 	auto result = make_uniq<ConnectInfo>();
@@ -51,4 +50,4 @@ unique_ptr<SQLStatement> PEGTransformerFactory::TransformDisconnectStatement(PEG
 	return std::move(result);
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

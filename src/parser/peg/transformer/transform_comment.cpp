@@ -2,8 +2,7 @@
 #include "duckdb/parser/statement/alter_statement.hpp"
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement> PEGTransformerFactory::TransformCommentStatement(PEGTransformer &transformer,
                                                                           const CatalogType &comment_on_type,
@@ -88,4 +87,4 @@ Value PEGTransformerFactory::TransformStringLiteralValue(PEGTransformer &transfo
 	return Value(string_literal);
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

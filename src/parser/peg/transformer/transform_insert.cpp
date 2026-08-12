@@ -10,8 +10,7 @@
 #include "duckdb/parser/expression/star_expression.hpp"
 #include "duckdb/parser/tableref/subqueryref.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 // InsertStatement <- WithClause? 'INSERT' OrAction? 'INTO' 'TABLE'? InsertTarget PartitionSpec? ByNameOrPosition?
 //                     InsertColumnList? InsertValues OnConflictClause? ReturningClause?
@@ -247,4 +246,4 @@ PEGTransformerFactory::TransformReturningClause(PEGTransformer &transformer,
 	return target_list;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

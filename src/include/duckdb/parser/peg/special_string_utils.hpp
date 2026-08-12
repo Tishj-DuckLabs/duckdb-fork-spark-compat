@@ -1,8 +1,7 @@
 #pragma once
 #include "duckdb/common/common.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 enum class SpecialStringCharacter { STANDARD = 0, NATIONAL_STRING, HEXADECIMAL_STRING, ESCAPE_STRING, BIT_STRING };
 
@@ -41,4 +40,4 @@ inline SpecialStringInfo GetSpecialStringInfo(const string &text) {
 	}
 	return {SpecialStringCharacter::STANDARD, 1};
 }
-} // namespace duckdb_fork
+} // namespace duckdb

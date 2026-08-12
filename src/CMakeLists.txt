@@ -141,6 +141,14 @@ install(
   FILES_MATCHING
   PATTERN "*.hpp"
   PATTERN "*.ipp")
+# Replace the canonical tracked parser headers with their build-only fork
+# namespace variants for installed consumers.
+install(
+  DIRECTORY "${FORK_PARSER_NAMESPACE_INCLUDE_DIR}/duckdb/parser"
+  DESTINATION "${INSTALL_INCLUDE_DIR}/duckdb"
+  FILES_MATCHING
+  PATTERN "*.hpp"
+  PATTERN "*.ipp")
 install(FILES "${PROJECT_SOURCE_DIR}/src/include/duckdb.hpp"
               "${PROJECT_SOURCE_DIR}/src/include/duckdb.h"
         DESTINATION "${INSTALL_INCLUDE_DIR}")

@@ -21,8 +21,7 @@
 #include "duckdb/parser/peg/inlined_grammar.hpp"
 #endif
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 optional_ptr<ParseResult> Matcher::MatchParseResult(MatchState &state) const {
 	if (state.packrat_cache) {
@@ -1846,4 +1845,4 @@ void ParserCache::Invalidate() {
 	transformer_factory = nullptr;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

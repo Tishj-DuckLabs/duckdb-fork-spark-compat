@@ -2,8 +2,7 @@
 #include "duckdb/parser/statement/attach_statement.hpp"
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement> PEGTransformerFactory::TransformAttachStatement(
     PEGTransformer &transformer, const optional<bool> &or_replace, const optional<bool> &if_not_exists,
@@ -53,4 +52,4 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformDatabasePath(PEGTra
 	return expression;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

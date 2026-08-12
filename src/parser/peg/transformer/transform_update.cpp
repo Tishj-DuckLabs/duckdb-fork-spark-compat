@@ -3,8 +3,7 @@
 #include "duckdb/parser/statement/update_statement.hpp"
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement> PEGTransformerFactory::TransformUpdateStatement(
     PEGTransformer &transformer, optional<CommonTableExpressionMap> with_clause, unique_ptr<TableRef> update_target,
@@ -106,4 +105,4 @@ string PEGTransformerFactory::TransformUpdateSetColumnTarget(PEGTransformer &tra
 	return column_name.GetIdentifierName();
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

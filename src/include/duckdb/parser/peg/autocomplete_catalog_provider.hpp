@@ -10,8 +10,7 @@
 
 #include "duckdb/parser/peg/matcher.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 //! Parameters for autocomplete suggestion generation.
 struct AutoCompleteParameters {
@@ -93,4 +92,4 @@ string GetSuggestionType(SuggestionState type);
 vector<AutoCompleteSuggestion> GenerateAutoCompleteSuggestions(AutoCompleteCatalogProvider &provider, const string &sql,
                                                                AutoCompleteParameters &parameters);
 
-} // namespace duckdb_fork
+} // namespace duckdb

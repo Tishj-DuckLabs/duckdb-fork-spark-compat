@@ -3,10 +3,9 @@
 #include "duckdb/common/vector.hpp"
 
 #include "duckdb/common/identifier.hpp"
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 struct TriggerEventInfo {
 	TriggerEventType event_type;
 	vector<Identifier> columns;
 };
-} // namespace duckdb_fork
+} // namespace duckdb

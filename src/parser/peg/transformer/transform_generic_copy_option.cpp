@@ -6,8 +6,7 @@
 #include "duckdb/parser/expression/operator_expression.hpp"
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 vector<GenericCopyOption>
 PEGTransformerFactory::TransformGenericCopyOptionList(PEGTransformer &transformer,
@@ -157,4 +156,4 @@ void PEGTransformerFactory::SplitGenericOptions(const vector<GenericCopyOption> 
 	}
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

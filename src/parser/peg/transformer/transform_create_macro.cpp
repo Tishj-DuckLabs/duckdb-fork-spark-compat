@@ -4,8 +4,7 @@
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 #include "duckdb/function/scalar_macro_function.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 unique_ptr<CreateStatement> PEGTransformerFactory::TransformCreateMacroStmt(
     PEGTransformer &transformer, const bool &macro_or_function, const optional<bool> &if_not_exists,
     const QualifiedName &qualified_name, vector<unique_ptr<MacroFunction>> macro_definition) {
@@ -108,4 +107,4 @@ MacroParameter PEGTransformerFactory::TransformSimpleParameter(PEGTransformer &t
 	return result;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

@@ -4,8 +4,7 @@
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 #include "duckdb/parser/peg/ast/extension_repository_info.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement> PEGTransformerFactory::TransformLoadStatement(PEGTransformer &transformer,
                                                                        const Identifier &col_id_or_string,
@@ -80,4 +79,4 @@ string PEGTransformerFactory::TransformVersionNumber(PEGTransformer &transformer
 	return identifier_or_string_literal.Name().GetIdentifierName();
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

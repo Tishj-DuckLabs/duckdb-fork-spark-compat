@@ -1,8 +1,7 @@
 #pragma once
 #include "duckdb/parser/peg/tokenizer/base_tokenizer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 struct MatcherToken;
 
 class HighlightTokenizer : public BaseTokenizer {
@@ -16,4 +15,4 @@ public:
 	vector<MatcherToken> tokens;
 };
 
-} // namespace duckdb_fork
+} // namespace duckdb

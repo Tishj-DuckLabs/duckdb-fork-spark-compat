@@ -1,8 +1,7 @@
 #include "duckdb/parser/peg/tokenizer/parser_tokenizer.hpp"
 #include "duckdb/common/exception/parser_exception.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 static bool IsEmptyQuotedIdentifier(const string &sql, idx_t start, idx_t end, TokenType type) {
 	return type == TokenType::IDENTIFIER && end == start + 2 && sql.substr(start, 2) == "\"\"";
@@ -36,4 +35,4 @@ void ParserTokenizer::OnLastToken(TokenizeState state, string last_word, idx_t l
 	BaseTokenizer::OnLastToken(state, std::move(last_word), last_pos);
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

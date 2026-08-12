@@ -3,8 +3,7 @@
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 #include "duckdb/parser/parsed_data/create_type_info.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<CreateStatement> PEGTransformerFactory::TransformCreateTypeStmt(PEGTransformer &transformer,
                                                                            const optional<bool> &if_not_exists,
@@ -50,4 +49,4 @@ PEGTransformerFactory::TransformEnumStringLiteralList(PEGTransformer &transforme
 	return result;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

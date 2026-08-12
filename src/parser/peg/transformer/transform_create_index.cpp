@@ -1,8 +1,7 @@
 #include "duckdb/parser/parsed_data/create_index_info.hpp"
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<CreateStatement> PEGTransformerFactory::TransformCreateIndexStmt(
     PEGTransformer &transformer, const optional<bool> &unique_index, const optional<bool> &if_not_exists,
@@ -151,4 +150,4 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformNoneLiteral(PEGTran
 	return make_uniq<ConstantExpression>(Value());
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

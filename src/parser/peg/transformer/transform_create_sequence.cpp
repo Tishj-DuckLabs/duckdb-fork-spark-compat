@@ -2,8 +2,7 @@
 #include "duckdb/common/string_util.hpp"
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<CreateStatement> PEGTransformerFactory::TransformCreateSequenceStmt(
     PEGTransformer &transformer, const optional<bool> &if_not_exists, const QualifiedName &qualified_name,
@@ -197,4 +196,4 @@ string PEGTransformerFactory::TransformMaxValue(PEGTransformer &transformer) {
 	return "maxvalue";
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

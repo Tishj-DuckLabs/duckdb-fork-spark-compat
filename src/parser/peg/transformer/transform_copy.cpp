@@ -5,8 +5,7 @@
 #include "duckdb/parser/statement/pragma_statement.hpp"
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement> PEGTransformerFactory::TransformCopyStatement(PEGTransformer &transformer,
                                                                        unique_ptr<SQLStatement> copy_variations) {
@@ -307,4 +306,4 @@ bool PEGTransformerFactory::TransformForceNotNull(PEGTransformer &transformer) {
 	return true;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb
