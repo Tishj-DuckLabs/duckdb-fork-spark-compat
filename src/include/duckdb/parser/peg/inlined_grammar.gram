@@ -1791,7 +1791,7 @@ WithClause <- 'WITH' Recursive? List(WithStatement)
 Recursive <- 'RECURSIVE'
 SelectClause <- 'SELECT' DistinctClause? TargetList?
 TargetList <- List(AliasedExpression)
-ColumnAliases <- Parens(List(ColIdOrString))
+ColumnAliases <- Parens(List(ColLabelOrString))
 
 DistinctClause <- DistinctOn
 DistinctOn <- 'DISTINCT' DistinctOnTargets?

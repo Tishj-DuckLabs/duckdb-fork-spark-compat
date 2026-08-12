@@ -7970,7 +7970,7 @@ public:
 	static unique_ptr<TransformResultValue> TransformColumnAliasesInternal(PEGTransformer &transformer,
 	                                                                       ParseResult &parse_result);
 	static vector<string> TransformColumnAliases(PEGTransformer &transformer,
-	                                             const vector<Identifier> &col_id_or_string);
+	                                             const vector<Identifier> &col_label_or_string);
 	static unique_ptr<TransformResultValue> TransformDistinctClauseInternal(PEGTransformer &transformer,
 	                                                                        ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformDistinctOnInternal(PEGTransformer &transformer,

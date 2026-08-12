@@ -21471,7 +21471,7 @@ void PEGTransformerFactory::InitializeColumnAliasesTrampoline(PEGTransformer &tr
 	frame.ReserveChildSlots(1 + dynamic_child_count - 1);
 	for (idx_t i = list_items.size(); i > 0; i--) {
 		auto child_idx = i - 1;
-		stack.PushFrame(list_items[child_idx].get(), COL_ID_OR_STRING_OPS,
+		stack.PushFrame(list_items[child_idx].get(), COL_LABEL_OR_STRING_OPS,
 		                TransformFrameResultTarget(frame.frame_index, 0 + child_idx));
 	}
 }
@@ -21482,11 +21482,11 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeColumnAliasesTra
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto dynamic_list_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
 	auto dynamic_child_count = dynamic_list_items.size();
-	vector<Identifier> col_id_or_string;
+	vector<Identifier> col_label_or_string;
 	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
-		col_id_or_string.push_back(frame.TakeResult<Identifier>(i));
+		col_label_or_string.push_back(frame.TakeResult<Identifier>(i));
 	}
-	auto result = TransformColumnAliases(transformer, col_id_or_string);
+	auto result = TransformColumnAliases(transformer, col_label_or_string);
 	return make_uniq<TypedTransformResult<vector<string>>>(result);
 }
 
