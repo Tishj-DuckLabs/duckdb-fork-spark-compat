@@ -17,9 +17,7 @@ def rewrite_outer_namespace(source, path):
     if f"namespace {FORK_NAMESPACE}" in source:
         raise ValueError(f"{path} already contains namespace {FORK_NAMESPACE}")
 
-    opening_matches = list(
-        re.finditer(rf"^namespace {HOST_NAMESPACE} \{{$", source, re.MULTILINE)
-    )
+    opening_matches = list(re.finditer(rf"^namespace {HOST_NAMESPACE} \{{$", source, re.MULTILINE))
     if not opening_matches:
         raise ValueError(f"{path} has no outer namespace {HOST_NAMESPACE}")
 
@@ -32,9 +30,7 @@ def rewrite_outer_namespace(source, path):
         )
     )
     if not closing_matches:
-        raise ValueError(
-            f"{path} has no closing namespace comment for {HOST_NAMESPACE}"
-        )
+        raise ValueError(f"{path} has no closing namespace comment for {HOST_NAMESPACE}")
 
     closing = closing_matches[-1]
     closing_start = opening.end() + closing.start()
@@ -65,9 +61,7 @@ def write_if_different(path, contents, mode):
 def add_file(files, source_path, destination_path, transform=False):
     contents = source_path.read_bytes()
     if transform:
-        contents = rewrite_outer_namespace(
-            contents.decode("utf-8"), source_path
-        ).encode("utf-8")
+        contents = rewrite_outer_namespace(contents.decode("utf-8"), source_path).encode("utf-8")
     files[destination_path] = (contents, source_path.stat().st_mode)
 
 
@@ -95,9 +89,7 @@ def collect_files(source_root, output_root):
     add_file(files, parser_cpp, output_root / "src" / "parser" / "parser.cpp", True)
     for source_path in (parser_source_root / "peg").rglob("*.cpp"):
         relative_path = source_path.relative_to(parser_source_root)
-        add_file(
-            files, source_path, output_root / "src" / "parser" / relative_path, True
-        )
+        add_file(files, source_path, output_root / "src" / "parser" / relative_path, True)
 
     return files
 
@@ -121,9 +113,7 @@ def materialize(source_root, output_root):
     source_root = source_root.resolve()
     output_root = output_root.resolve()
     if output_root == source_root or output_root in source_root.parents:
-        raise ValueError(
-            "output directory cannot be the source tree or one of its parents"
-        )
+        raise ValueError("output directory cannot be the source tree or one of its parents")
 
     files = collect_files(source_root, output_root)
     changed = 0
@@ -134,9 +124,7 @@ def materialize(source_root, output_root):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Materialize the DuckDB fork parser in namespace duckdb_fork"
-    )
+    parser = argparse.ArgumentParser(description="Materialize the DuckDB fork parser in namespace duckdb_fork")
     parser.add_argument("--source-root", required=True, type=Path)
     parser.add_argument("--output-root", required=True, type=Path)
     args = parser.parse_args()

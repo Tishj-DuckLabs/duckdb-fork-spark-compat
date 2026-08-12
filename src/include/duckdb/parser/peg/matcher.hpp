@@ -44,7 +44,7 @@ class ParseResultAllocator;
 class Matcher;
 class MatcherAllocator;
 // Declared here so PEGMatcher's `friend struct ParserCache` binds to this fork type,
-// not duckdb::ParserCache (visible via `using namespace duckdb`); MSVC mis-binds otherwise.
+// not duckdb::ParserCache (visible via `using namespace duckdb`); MSVC misbinds otherwise.
 struct ParserCache;
 
 enum class SuggestionState : uint8_t {
