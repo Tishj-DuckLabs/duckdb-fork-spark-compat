@@ -79,15 +79,11 @@ def collect_files(source_root, output_root):
     if not parser_include_root.is_dir() or not parser_source_root.is_dir():
         raise ValueError(f"{source_root} is not a DuckDB source tree")
 
-    for source_path in parser_include_root.rglob("*"):
-        if not source_path.is_file():
-            continue
+    parser_headers = [parser_include_root / "parser.hpp"]
+    parser_headers.extend((parser_include_root / "peg").rglob("*.hpp"))
+    for source_path in parser_headers:
         relative_path = source_path.relative_to(parser_include_root)
-        transform = source_path.suffix == ".hpp" and (
-            relative_path == Path("parser.hpp")
-            or relative_path.parts[0] == "peg"
-            and relative_path not in HOST_NAMESPACE_HEADERS
-        )
+        transform = relative_path not in HOST_NAMESPACE_HEADERS
         add_file(
             files,
             source_path,
