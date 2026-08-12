@@ -401,6 +401,7 @@ Expression:
     - BetweenClause
     - LikeClause
     - EscapeClause
+    - PositionStart
     - OtherOperatorExpression
     - BitwiseExpression
     - BitwiseAndExpression
@@ -1044,6 +1045,7 @@ String:
     - ReservedKeyword
     - VersionNumber
     - LikeVariations
+    - RLikeToken
     - LikeToken
     - ILikeToken
     - GlobToken

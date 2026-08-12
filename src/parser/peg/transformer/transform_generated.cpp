@@ -4809,7 +4809,14 @@ PEGTransformerFactory::TransformFunctionExpressionArgumentsInternal(PEGTransform
 	auto &list_pr = parse_result.Cast<ListParseResult>();
 	auto function_expression_argument_list =
 	    transformer.Transform<MethodArguments>(ExtractResultFromParens(list_pr.GetChild(0)));
-	auto result = TransformFunctionExpressionArguments(transformer, std::move(function_expression_argument_list));
+	optional<bool> ignore_or_respect_nulls {};
+	auto &ignore_or_respect_nulls_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (ignore_or_respect_nulls_opt.HasResult()) {
+		auto ignore_or_respect_nulls_value = transformer.Transform<bool>(ignore_or_respect_nulls_opt.GetResult());
+		ignore_or_respect_nulls = ignore_or_respect_nulls_value;
+	}
+	auto result = TransformFunctionExpressionArguments(transformer, std::move(function_expression_argument_list),
+	                                                   ignore_or_respect_nulls);
 	return make_uniq<TypedTransformResult<MethodArguments>>(std::move(result));
 }
 
@@ -6459,6 +6466,12 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformLikeVariationsI
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
+unique_ptr<TransformResultValue> PEGTransformerFactory::TransformRLikeTokenInternal(PEGTransformer &transformer,
+                                                                                    ParseResult &parse_result) {
+	auto result = TransformRLikeToken(transformer);
+	return make_uniq<TypedTransformResult<string>>(result);
+}
+
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformLikeTokenInternal(PEGTransformer &transformer,
                                                                                    ParseResult &parse_result) {
 	auto result = TransformLikeToken(transformer);
@@ -7417,8 +7430,23 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformPositionArgumen
 	auto &list_pr = parse_result.Cast<ListParseResult>();
 	auto other_operator_expression = transformer.Transform<unique_ptr<ParsedExpression>>(list_pr.GetChild(0));
 	auto expression = transformer.Transform<unique_ptr<ParsedExpression>>(list_pr.GetChild(2));
-	auto result = TransformPositionArguments(transformer, std::move(other_operator_expression), std::move(expression));
+	optional<unique_ptr<ParsedExpression>> position_start {};
+	auto &position_start_opt = list_pr.GetChild(3).Cast<OptionalParseResult>();
+	if (position_start_opt.HasResult()) {
+		auto position_start_value = transformer.Transform<unique_ptr<ParsedExpression>>(position_start_opt.GetResult());
+		position_start = std::move(position_start_value);
+	}
+	auto result = TransformPositionArguments(transformer, std::move(other_operator_expression), std::move(expression),
+	                                         std::move(position_start));
 	return make_uniq<TypedTransformResult<vector<unique_ptr<ParsedExpression>>>>(std::move(result));
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::TransformPositionStartInternal(PEGTransformer &transformer,
+                                                                                       ParseResult &parse_result) {
+	auto &list_pr = parse_result.Cast<ListParseResult>();
+	auto expression = transformer.Transform<unique_ptr<ParsedExpression>>(list_pr.GetChild(1));
+	auto result = TransformPositionStart(transformer, std::move(expression));
+	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformRowExpressionInternal(PEGTransformer &transformer,
@@ -11603,6 +11631,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"LikeClause", &PEGTransformerFactory::TransformLikeClauseInternal},
 	    {"EscapeClause", &PEGTransformerFactory::TransformEscapeClauseInternal},
 	    {"LikeVariations", &PEGTransformerFactory::TransformLikeVariationsInternal},
+	    {"RLikeToken", &PEGTransformerFactory::TransformRLikeTokenInternal},
 	    {"LikeToken", &PEGTransformerFactory::TransformLikeTokenInternal},
 	    {"ILikeToken", &PEGTransformerFactory::TransformILikeTokenInternal},
 	    {"GlobToken", &PEGTransformerFactory::TransformGlobTokenInternal},
@@ -11692,6 +11721,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"NullIfArguments", &PEGTransformerFactory::TransformNullIfArgumentsInternal},
 	    {"PositionExpression", &PEGTransformerFactory::TransformPositionExpressionInternal},
 	    {"PositionArguments", &PEGTransformerFactory::TransformPositionArgumentsInternal},
+	    {"PositionStart", &PEGTransformerFactory::TransformPositionStartInternal},
 	    {"RowExpression", &PEGTransformerFactory::TransformRowExpressionInternal},
 	    {"RowExpressionArg", &PEGTransformerFactory::TransformRowExpressionArgInternal},
 	    {"RowExpressionAlias", &PEGTransformerFactory::TransformRowExpressionAliasInternal},

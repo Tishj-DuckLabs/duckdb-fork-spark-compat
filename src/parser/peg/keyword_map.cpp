@@ -12,7 +12,6 @@ void PEGKeywordHelper::InitializeKeywordMaps() { // Renamed for clarity
 	reserved_keyword_map.insert("analyse");
 	reserved_keyword_map.insert("analyze");
 	reserved_keyword_map.insert("and");
-	reserved_keyword_map.insert("any");
 	reserved_keyword_map.insert("array");
 	reserved_keyword_map.insert("as");
 	reserved_keyword_map.insert("asc");
@@ -67,7 +66,6 @@ void PEGKeywordHelper::InitializeKeywordMaps() { // Renamed for clarity
 	reserved_keyword_map.insert("returning");
 	reserved_keyword_map.insert("select");
 	reserved_keyword_map.insert("show");
-	reserved_keyword_map.insert("some");
 	reserved_keyword_map.insert("sort");
 	reserved_keyword_map.insert("summarize");
 	reserved_keyword_map.insert("symmetric");

@@ -268,6 +268,15 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 		filter_expr = std::move(*filter_clause);
 	}
 	auto lowercase_name = StringUtil::Lower(qualified_function.Name().GetIdentifierName());
+	if (!over_clause && function_expression_arguments.has_ignore_nulls &&
+	    (lowercase_name == "first" || lowercase_name == "last" || lowercase_name == "any_value")) {
+		if (function_children.size() != 1) {
+			throw ParserException("IGNORE/RESPECT NULLS requires one argument for %s", qualified_function.Name());
+		}
+		function_children.emplace_back(
+		    make_uniq<ConstantExpression>(Value::BOOLEAN(function_expression_arguments.ignore_nulls)));
+		function_expression_arguments.has_ignore_nulls = false;
+  }
 	if (lowercase_name == "count") {
 		// COUNT(*) is the row count, not a splice of the columns
 		if (function_children.size() == 1 && ExpressionIsEmptyStar(*function_children[0].GetExpressionMutable()) &&
@@ -468,6 +477,9 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 		                         {"__spark_map_zip_with_hidden_key", "__spark_map_zip_with_hidden_left",
 		                          "__spark_map_zip_with_hidden_right"});
 	}
+	if (lowercase_name == "regexp_replace" && function_children.size() == 4) {
+		lowercase_name = "__spark_regexp_replace_position";
+	}
 	auto result = make_uniq<FunctionExpression>(
 	    QualifiedName(qualified_function.Catalog(), qualified_function.Schema(), Identifier(lowercase_name)),
 	    std::move(function_children), std::move(filter_expr), std::move(order_modifier), distinct, false,
@@ -499,7 +511,15 @@ MethodArguments PEGTransformerFactory::TransformFunctionExpressionArgumentList(
 
 MethodArguments
 PEGTransformerFactory::TransformFunctionExpressionArguments(PEGTransformer &transformer,
-                                                            MethodArguments function_expression_argument_list) {
+                                                            MethodArguments function_expression_argument_list,
+                                                            const optional<bool> &ignore_or_respect_nulls) {
+	if (ignore_or_respect_nulls) {
+		if (function_expression_argument_list.has_ignore_nulls) {
+			throw ParserException("Cannot specify IGNORE/RESPECT NULLS more than once");
+		}
+		function_expression_argument_list.has_ignore_nulls = true;
+		function_expression_argument_list.ignore_nulls = *ignore_or_respect_nulls;
+	}
 	return function_expression_argument_list;
 }
 
@@ -1369,6 +1389,10 @@ string PEGTransformerFactory::TransformLikeToken(PEGTransformer &transformer) {
 	return "~~";
 }
 
+string PEGTransformerFactory::TransformRLikeToken(PEGTransformer &transformer) {
+	return "regexp_matches";
+}
+
 string PEGTransformerFactory::TransformILikeToken(PEGTransformer &transformer) {
 	return "~~*";
 }
@@ -1627,11 +1651,25 @@ PEGTransformerFactory::TransformAdditiveExpression(PEGTransformer &transformer,
 	}
 	auto add_depth_guard = transformer.StackCheck(additive_expression_tail->size());
 	for (auto &term_expr : *additive_expression_tail) {
+		auto is_calendar_interval = [](const ParsedExpression &expression) {
+			if (expression.GetExpressionClass() != ExpressionClass::FUNCTION) {
+				return false;
+			}
+			auto &function = expression.Cast<FunctionExpression>();
+			return function.FunctionName() == "make_interval" || function.FunctionName() == "make_ym_interval";
+		};
+		auto function_name = std::move(term_expr.op);
+		if (function_name == "+" &&
+		    (is_calendar_interval(*expr) || is_calendar_interval(*term_expr.expression))) {
+			function_name = "__spark_add_calendar_interval";
+		}
+		auto is_operator = function_name != "__spark_add_calendar_interval";
 		vector<unique_ptr<ParsedExpression>> term_children;
 		term_children.push_back(std::move(expr));
 		term_children.push_back(std::move(term_expr.expression));
-		auto func_expr = make_uniq<FunctionExpression>(Identifier(std::move(term_expr.op)), std::move(term_children));
-		func_expr->IsOperatorMutable() = true;
+		auto func_expr =
+		    make_uniq<FunctionExpression>(Identifier(std::move(function_name)), std::move(term_children));
+		func_expr->IsOperatorMutable() = is_operator;
 		if (term_expr.query_location.IsValid()) {
 			transformer.SetQueryLocation(*func_expr, term_expr.query_location);
 		}
@@ -2936,17 +2974,33 @@ PEGTransformerFactory::TransformOverlayExpressionList(PEGTransformer &transforme
 unique_ptr<ParsedExpression>
 PEGTransformerFactory::TransformPositionExpression(PEGTransformer &transformer,
                                                    vector<unique_ptr<ParsedExpression>> position_arguments) {
+	if (position_arguments.size() == 3) {
+		vector<unique_ptr<ParsedExpression>> locate_arguments;
+		locate_arguments.push_back(std::move(position_arguments[1]));
+		locate_arguments.push_back(std::move(position_arguments[0]));
+		locate_arguments.push_back(std::move(position_arguments[2]));
+		return make_uniq<FunctionExpression>("locate", std::move(locate_arguments));
+	}
 	return make_uniq<FunctionExpression>("position", std::move(position_arguments));
 }
 
 vector<unique_ptr<ParsedExpression>>
 PEGTransformerFactory::TransformPositionArguments(PEGTransformer &transformer,
                                                   unique_ptr<ParsedExpression> other_operator_expression,
-                                                  unique_ptr<ParsedExpression> expression) {
+                                                  unique_ptr<ParsedExpression> expression,
+                                                  optional<unique_ptr<ParsedExpression>> position_start) {
 	vector<unique_ptr<ParsedExpression>> result;
 	result.push_back(std::move(expression));
 	result.push_back(std::move(other_operator_expression));
+	if (position_start) {
+		result.push_back(std::move(*position_start));
+	}
 	return result;
+}
+
+unique_ptr<ParsedExpression>
+PEGTransformerFactory::TransformPositionStart(PEGTransformer &transformer, unique_ptr<ParsedExpression> expression) {
+	return expression;
 }
 
 unique_ptr<ParsedExpression> PEGTransformerFactory::TransformCastExpression(PEGTransformer &transformer,

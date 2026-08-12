@@ -3071,6 +3071,10 @@ public:
 	                                               TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeLikeVariationsTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeRLikeTokenTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                           TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeRLikeTokenTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
 	static void InitializeLikeTokenTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                          TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -3461,6 +3465,10 @@ public:
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizePositionArgumentsTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializePositionStartTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                              TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizePositionStartTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
 	static void InitializeRowExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -6540,7 +6548,8 @@ public:
 	static unique_ptr<TransformResultValue> TransformFunctionExpressionArgumentsInternal(PEGTransformer &transformer,
 	                                                                                     ParseResult &parse_result);
 	static MethodArguments TransformFunctionExpressionArguments(PEGTransformer &transformer,
-	                                                            MethodArguments function_expression_argument_list);
+	                                                            MethodArguments function_expression_argument_list,
+	                                                            const optional<bool> &ignore_or_respect_nulls);
 	static unique_ptr<TransformResultValue> TransformFunctionExpressionArgumentListInternal(PEGTransformer &transformer,
 	                                                                                        ParseResult &parse_result);
 	static MethodArguments
@@ -7130,6 +7139,9 @@ public:
 	                                                          unique_ptr<ParsedExpression> comparison_expression);
 	static unique_ptr<TransformResultValue> TransformLikeVariationsInternal(PEGTransformer &transformer,
 	                                                                        ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformRLikeTokenInternal(PEGTransformer &transformer,
+	                                                                    ParseResult &parse_result);
+	static string TransformRLikeToken(PEGTransformer &transformer);
 	static unique_ptr<TransformResultValue> TransformLikeTokenInternal(PEGTransformer &transformer,
 	                                                                   ParseResult &parse_result);
 	static string TransformLikeToken(PEGTransformer &transformer);
@@ -7448,7 +7460,12 @@ public:
 	                                                                           ParseResult &parse_result);
 	static vector<unique_ptr<ParsedExpression>>
 	TransformPositionArguments(PEGTransformer &transformer, unique_ptr<ParsedExpression> other_operator_expression,
-	                           unique_ptr<ParsedExpression> expression);
+	                           unique_ptr<ParsedExpression> expression,
+	                           optional<unique_ptr<ParsedExpression>> position_start);
+	static unique_ptr<TransformResultValue> TransformPositionStartInternal(PEGTransformer &transformer,
+	                                                                       ParseResult &parse_result);
+	static unique_ptr<ParsedExpression> TransformPositionStart(PEGTransformer &transformer,
+	                                                           unique_ptr<ParsedExpression> expression);
 	static unique_ptr<TransformResultValue> TransformRowExpressionInternal(PEGTransformer &transformer,
 	                                                                       ParseResult &parse_result);
 	static unique_ptr<ParsedExpression>
