@@ -210,14 +210,23 @@ void RewriteSparkGroupByAliasReferences(SelectNode &node) {
 }
 
 //! A spark generator call is only rewritten in its bare form: no alias, no schema qualification, no
-//! aggregate decorations, and a single positional collection argument.
-bool IsBareGeneratorCall(const FunctionExpression &func) {
+//! aggregate decorations, and only positional arguments.
+bool IsUndecoratedGeneratorCall(const FunctionExpression &func) {
 	if (!func.GetAlias().empty() || !func.GetQualifiedName().Schema().empty() || func.Distinct() || func.Filter() ||
 	    !func.OrderBy()->orders.empty()) {
 		return false;
 	}
-	auto &args = func.GetArguments();
-	return args.size() == 1 && !args[0].HasName();
+	for (auto &arg : func.GetArguments()) {
+		if (arg.HasName()) {
+			return false;
+		}
+	}
+	return true;
+}
+
+//! The collection generators additionally take exactly one argument.
+bool IsBareGeneratorCall(const FunctionExpression &func) {
+	return IsUndecoratedGeneratorCall(func) && func.GetArguments().size() == 1;
 }
 
 //! The __spark_*_entries helper that yields a generator's rows as a LIST of STRUCTs, one struct per output
@@ -244,6 +253,26 @@ const char *GeneratorEntriesFunction(const string &lower_name) {
 	return nullptr;
 }
 
+//! Spark's json_tuple(json, k1, ..., kn) is a generator that extracts n keys into n output columns named
+//! c0..c{n-1}, one output row per input row. Build that row as a STRUCT of one __spark_json_tuple_value call
+//! per key; the root unnest then expands it into the output columns. A plain unnest suffices because every
+//! field is a string, so there is no nested collection for a deeper unnest to descend into.
+unique_ptr<ParsedExpression> RewriteJsonTupleGenerator(FunctionExpression &func) {
+	auto &args = func.GetArgumentsMutable();
+	vector<FunctionArgument> row_fields;
+	for (idx_t i = 1; i < args.size(); i++) {
+		vector<unique_ptr<ParsedExpression>> value_args;
+		value_args.push_back(args[0].GetExpression().Copy());
+		value_args.push_back(std::move(args[i].GetExpressionMutable()));
+		row_fields.emplace_back(
+		    Identifier("c" + to_string(i - 1)),
+		    make_uniq<FunctionExpression>(Identifier("__spark_json_tuple_value"), std::move(value_args)));
+	}
+	vector<unique_ptr<ParsedExpression>> unnest_args;
+	unnest_args.push_back(make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(row_fields)));
+	return make_uniq<FunctionExpression>(Identifier("unnest"), std::move(unnest_args));
+}
+
 //! Spark's explode()/posexplode()/inline() and their _outer variants are generators in SELECT position: one
 //! output row per element, arrays yielding a single column, maps key/value columns and arrays of structs one
 //! column per struct field, with the posexplode variants adding a leading element position column. Rewrite a
@@ -258,7 +287,14 @@ void RewriteSparkSelectGenerators(SelectNode &node) {
 			continue;
 		}
 		auto &func = select_expr->Cast<FunctionExpression>();
-		auto entries_fn = GeneratorEntriesFunction(StringUtil::Lower(func.FunctionName().GetIdentifierName()));
+		auto lower_name = StringUtil::Lower(func.FunctionName().GetIdentifierName());
+		if (lower_name == "json_tuple") {
+			if (func.GetArguments().size() >= 2 && IsUndecoratedGeneratorCall(func)) {
+				select_expr = RewriteJsonTupleGenerator(func);
+			}
+			continue;
+		}
+		auto entries_fn = GeneratorEntriesFunction(lower_name);
 		if (!entries_fn || !IsBareGeneratorCall(func)) {
 			continue;
 		}
