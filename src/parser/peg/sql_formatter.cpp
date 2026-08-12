@@ -15,8 +15,7 @@
 
 #include <unordered_set>
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SQLFormatter class declaration
@@ -1636,4 +1635,4 @@ string FormatSQL(const string &sql, const FormatterConfig &config) {
 	return SQLFormatter(config).Format(sql);
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

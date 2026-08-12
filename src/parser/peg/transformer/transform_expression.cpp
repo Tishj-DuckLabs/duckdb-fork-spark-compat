@@ -19,8 +19,7 @@
 #include "duckdb/common/string_util.hpp"
 #include "duckdb/common/types/interval.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement>
 PEGTransformerFactory::TransformExpressionStatement(PEGTransformer &transformer,
@@ -272,9 +271,9 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 	if (lowercase_name == "count") {
 		// COUNT(*) is the row count, not a splice of the columns
 		if (function_children.size() == 1 && ExpressionIsEmptyStar(*function_children[0].GetExpressionMutable()) &&
-			!distinct && order_modifier->orders.empty()) {
+		    !distinct && order_modifier->orders.empty()) {
 			function_children.clear();
-			}
+		}
 	} else {
 		UnpackStarArguments(function_children);
 	}
@@ -572,9 +571,8 @@ PEGTransformerFactory::TransformFilterClauseContents(PEGTransformer &transformer
 	return expression;
 }
 
-unique_ptr<ParsedExpression>
-PEGTransformerFactory::TransformParenthesisExpression(PEGTransformer &transformer,
-                                                      optional<vector<unique_ptr<ParsedExpression>>> row_expression_arg) {
+unique_ptr<ParsedExpression> PEGTransformerFactory::TransformParenthesisExpression(
+    PEGTransformer &transformer, optional<vector<unique_ptr<ParsedExpression>>> row_expression_arg) {
 	// ParenthesisExpression <- Parens(List(RowExpressionArg))
 	vector<unique_ptr<ParsedExpression>> children;
 
@@ -848,7 +846,7 @@ PEGTransformerFactory::TransformLogicalNotExpression(PEGTransformer &transformer
 }
 
 vector<bool> PEGTransformerFactory::TransformNotExpression(PEGTransformer &transformer,
-														   vector<unique_ptr<ParsedExpression>> spark_not_expression) {
+                                                           vector<unique_ptr<ParsedExpression>> spark_not_expression) {
 	return vector<bool>(spark_not_expression.size(), true);
 }
 
@@ -2291,13 +2289,13 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformStarExpression(
 			// A StarExpression only carries a single relation name, so a star target with more
 			// qualifiers (db.tbl.*, tbl.struct_col.*, ...) becomes unnest over a column reference: ...
 			if (exclude_list || replace_list || rename_list) {
-			        throw ParserException(
-			            "EXCLUDE/REPLACE/RENAME are not supported on a star expression with a qualified relation name");
-			    }
+				throw ParserException(
+				    "EXCLUDE/REPLACE/RENAME are not supported on a star expression with a qualified relation name");
+			}
 			vector<Identifier> column_names;
 			for (auto &qualifier : *star_qualifier_list) {
-			        column_names.emplace_back(qualifier);
-			    }
+				column_names.emplace_back(qualifier);
+			}
 			vector<unique_ptr<ParsedExpression>> children;
 			children.push_back(make_uniq<ColumnRefExpression>(std::move(column_names)));
 			return make_uniq<FunctionExpression>("unnest", std::move(children));
@@ -3140,10 +3138,8 @@ static int64_t IntervalYearMonthMonths(DatePartSpecifier unit) {
 	}
 }
 
-pair<unique_ptr<ParsedExpression>, DatePartSpecifier>
-PEGTransformerFactory::TransformIntervalUnitPair(PEGTransformer &transformer,
-                                                 unique_ptr<ParsedExpression> number_literal,
-                                                 const DatePartSpecifier &interval) {
+pair<unique_ptr<ParsedExpression>, DatePartSpecifier> PEGTransformerFactory::TransformIntervalUnitPair(
+    PEGTransformer &transformer, unique_ptr<ParsedExpression> number_literal, const DatePartSpecifier &interval) {
 	return std::make_pair(std::move(number_literal), interval);
 }
 
@@ -3177,10 +3173,11 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformIntervalMultiUnitLi
 	if (has_year_month) {
 		unique_ptr<ParsedExpression> total_months;
 		for (auto &p : pairs) {
-			auto months = IntervalBinaryOp("*", std::move(p.first),
-			                               make_uniq<ConstantExpression>(Value::BIGINT(IntervalYearMonthMonths(p.second))));
-			total_months = total_months ? IntervalBinaryOp("+", std::move(total_months), std::move(months))
-			                            : std::move(months);
+			auto months =
+			    IntervalBinaryOp("*", std::move(p.first),
+			                     make_uniq<ConstantExpression>(Value::BIGINT(IntervalYearMonthMonths(p.second))));
+			total_months =
+			    total_months ? IntervalBinaryOp("+", std::move(total_months), std::move(months)) : std::move(months);
 		}
 		return IntervalCall("to_months", std::move(total_months));
 	}
@@ -3192,10 +3189,12 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformIntervalMultiUnitLi
 		auto scaled = IntervalBinaryOp("*", std::move(p.first),
 		                               make_uniq<ConstantExpression>(Value::BIGINT(IntervalDayTimeMicros(p.second))));
 		auto micros = make_uniq<CastExpression>(LogicalType::BIGINT, std::move(scaled));
-		total_micros = total_micros ? IntervalBinaryOp("+", std::move(total_micros), std::move(micros))
-		                            : std::move(micros);
+		total_micros =
+		    total_micros ? IntervalBinaryOp("+", std::move(total_micros), std::move(micros)) : std::move(micros);
 	}
-	auto micros_per_day = [] { return make_uniq<ConstantExpression>(Value::BIGINT(Interval::MICROS_PER_DAY)); };
+	auto micros_per_day = [] {
+		return make_uniq<ConstantExpression>(Value::BIGINT(Interval::MICROS_PER_DAY));
+	};
 	auto days = IntervalCall("to_days", IntervalBinaryOp("//", total_micros->Copy(), micros_per_day()));
 	auto rem = IntervalCall("to_microseconds", IntervalBinaryOp("%", std::move(total_micros), micros_per_day()));
 	return IntervalBinaryOp("+", std::move(days), std::move(rem));
@@ -3445,4 +3444,4 @@ bool PEGTransformerFactory::TransformRespectNulls(PEGTransformer &transformer) {
 	return false;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

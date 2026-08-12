@@ -16,8 +16,7 @@
 #include "duckdb/parser/peg/tokenizer/highlight_tokenizer.hpp"
 #include "utf8proc_wrapper.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 Parser::Parser(ParserOptions options_p) : options(options_p) {
 }
@@ -691,4 +690,4 @@ ColumnDefinition Parser::ParseColumnDefinition(const string &column_definition, 
 	return column_list.GetColumn(LogicalIndex(0)).Copy();
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

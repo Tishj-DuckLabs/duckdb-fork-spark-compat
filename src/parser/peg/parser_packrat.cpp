@@ -2,8 +2,7 @@
 
 #include "duckdb/parser/peg/matcher.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 size_t ParserPackratKeyHash::operator()(const ParserPackratKey &key) const {
 	return std::hash<idx_t>()(key.matcher_id) ^ (std::hash<idx_t>()(key.token_index) << 1);
@@ -46,4 +45,4 @@ optional_ptr<ParseResult> ParserPackratCache::Match(const Matcher &matcher, Matc
 	return result;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

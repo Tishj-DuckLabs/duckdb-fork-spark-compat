@@ -1,8 +1,7 @@
 #include "duckdb/parser/peg/peg_parser.hpp"
 #include "duckdb/common/numeric_utils.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 void PEGParser::AddRule(string_t rule_name, PEGRule rule) {
 	auto entry = rules.find(rule_name.GetString());
@@ -199,4 +198,4 @@ void PEGParser::ParseRules(const char *grammar) {
 	}
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

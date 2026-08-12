@@ -2,8 +2,7 @@
 
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 static const TransformFrameOps STATEMENT_OPS = {"Statement", &PEGTransformerFactory::InitializeStatementTrampoline,
                                                 &PEGTransformerFactory::FinalizeStatementTrampoline};
@@ -25283,4 +25282,4 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNameListTrampoli
 	return make_uniq<TypedTransformResult<vector<string>>>(result);
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

@@ -12,8 +12,7 @@
 #include "duckdb/parser/statement/vacuum_statement.hpp"
 #include "duckdb/parser/query_node/update_query_node.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement> PEGTransformerFactory::TransformAlterStatement(PEGTransformer &transformer,
                                                                         unique_ptr<AlterInfo> alter_options) {
@@ -75,9 +74,9 @@ PEGTransformerFactory::TransformSparkAlterTblPropertiesStmt(PEGTransformer &tran
 	auto comment_value = spark_tbl_properties_action.unset ? Value() : Value(comment_entry->second);
 	auto qualified_name = base_table_name->GetQualifiedName();
 	auto result = make_uniq<AlterStatement>();
-	result->info = make_uniq<SetCommentInfo>(CatalogType::TABLE_ENTRY, qualified_name.Catalog(),
-	                                         qualified_name.Schema(), qualified_name.Name(), std::move(comment_value),
-	                                         OnEntryNotFound::THROW_EXCEPTION);
+	result->info =
+	    make_uniq<SetCommentInfo>(CatalogType::TABLE_ENTRY, qualified_name.Catalog(), qualified_name.Schema(),
+	                              qualified_name.Name(), std::move(comment_value), OnEntryNotFound::THROW_EXCEPTION);
 	return std::move(result);
 }
 
@@ -495,4 +494,4 @@ string PEGTransformerFactory::TransformSetNullability(PEGTransformer &transforme
 	return "set";
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

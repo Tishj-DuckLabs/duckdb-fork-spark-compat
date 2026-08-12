@@ -19,10 +19,9 @@
 
 namespace duckdb {
 class GroupByNode;
-}// namespace duckdb
+} // namespace duckdb
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 struct ParserCache;
 struct MatcherToken;
@@ -113,4 +112,4 @@ private:
 
 	ParserOptions options;
 };
-} // namespace duckdb_fork
+} // namespace duckdb

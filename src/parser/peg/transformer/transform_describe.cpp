@@ -7,8 +7,7 @@
 #include "duckdb/common/serializer/binary_serializer.hpp"
 #include "duckdb/common/serializer/memory_stream.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 // Build `SELECT * FROM <function_name>(<arguments>)` — the shape every DESCRIBE form is rerouted into.
 static unique_ptr<QueryNode> MakeDescribeSelect(const string &function_name, vector<Value> arguments) {
@@ -94,7 +93,8 @@ static unique_ptr<QueryNode> BuildDescribeFunctionSelect(const QualifiedName &fu
 
 // DescribeStatement <- ShowTables / ShowAllTables / DescribeQuery / DescribeTable / ShowSelect / ShowQualifiedName
 // Hand-written: the DescribeTable/DescribeQuery alternatives make the generator skip this rule.
-unique_ptr<SelectStatement> PEGTransformerFactory::TransformDescribeStatement(PEGTransformer &transformer, unique_ptr<QueryNode> child) {
+unique_ptr<SelectStatement> PEGTransformerFactory::TransformDescribeStatement(PEGTransformer &transformer,
+                                                                              unique_ptr<QueryNode> child) {
 	auto select_statement = make_uniq<SelectStatement>();
 	select_statement->node = std::move(child);
 	return select_statement;
@@ -254,7 +254,12 @@ ShowType PEGTransformerFactory::TransformDescRule(PEGTransformer &transformer) {
 // Hand-written (the inlined keyword-choice modifier makes the generator skip this rule).
 // partition_spec (DESC ... PARTITION (...)) is accepted and ignored — DuckDB has no per-partition describe, so we
 // describe the whole table.
-unique_ptr<QueryNode> PEGTransformerFactory::TransformDescribeTable(PEGTransformer &transformer, const ShowType &describe_rule, const bool &has_result, const bool &has_result_1, DescribeTarget describe_target, optional<vector<PartitionSpecEntry>> partition_spec, const optional<vector<string>> &dotted_identifier) {
+unique_ptr<QueryNode> PEGTransformerFactory::TransformDescribeTable(PEGTransformer &transformer,
+                                                                    const ShowType &describe_rule,
+                                                                    const bool &has_result, const bool &has_result_1,
+                                                                    DescribeTarget describe_target,
+                                                                    optional<vector<PartitionSpecEntry>> partition_spec,
+                                                                    const optional<vector<string>> &dotted_identifier) {
 	// child 0: DescribeRule, child 1: optional 'TABLE', child 2: optional EXTENDED/FORMATTED, child 3: DescribeTarget
 	bool extended = has_result_1;
 	if (dotted_identifier) {
@@ -269,15 +274,20 @@ unique_ptr<QueryNode> PEGTransformerFactory::TransformDescribeTable(PEGTransform
 
 // DescribeQuery <- DescribeRule 'QUERY' SelectStatementInternal
 // Hand-written (referenced by DescribeStatement, which the generator skips).
-unique_ptr<QueryNode> PEGTransformerFactory::TransformDescribeQuery(PEGTransformer &transformer, const ShowType &describe_rule, unique_ptr<SelectStatement> select_statement_internal) {
+unique_ptr<QueryNode>
+PEGTransformerFactory::TransformDescribeQuery(PEGTransformer &transformer, const ShowType &describe_rule,
+                                              unique_ptr<SelectStatement> select_statement_internal) {
 	return BuildDescribeQuerySelect(std::move(select_statement_internal));
 }
 
 // DescribeFunction <- DescribeRule 'FUNCTION' 'EXTENDED'? FunctionIdentifier
 // Hand-written (referenced by DescribeStatement, which the generator skips).
-unique_ptr<QueryNode> PEGTransformerFactory::TransformDescribeFunction(PEGTransformer &transformer, const ShowType &describe_rule, const bool &has_result, const QualifiedName &function_identifier) {
+unique_ptr<QueryNode> PEGTransformerFactory::TransformDescribeFunction(PEGTransformer &transformer,
+                                                                       const ShowType &describe_rule,
+                                                                       const bool &has_result,
+                                                                       const QualifiedName &function_identifier) {
 	bool extended = has_result;
 	return BuildDescribeFunctionSelect(function_identifier, extended);
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

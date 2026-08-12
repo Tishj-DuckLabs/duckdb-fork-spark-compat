@@ -11,8 +11,7 @@
 #include "duckdb/common/optional_ptr.hpp"
 #include "duckdb/common/unordered_map.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 class Matcher;
 struct MatchState;
 class ParseResult;
@@ -48,4 +47,4 @@ private:
 	unordered_map<ParserPackratKey, ParserPackratEntry, ParserPackratKeyHash> entries;
 };
 
-} // namespace duckdb_fork
+} // namespace duckdb

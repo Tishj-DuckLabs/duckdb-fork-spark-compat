@@ -11,8 +11,7 @@
 #include "duckdb/common/string.hpp"
 #include "duckdb/common/typedefs.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 //! Controls how SQL keywords are cased in the formatted output.
 enum class KeywordCase : uint8_t {
@@ -47,4 +46,4 @@ struct FormatterConfig {
 //! FormatterConfig::inline_threshold.
 string FormatSQL(const string &sql, const FormatterConfig &config = FormatterConfig {});
 
-} // namespace duckdb_fork
+} // namespace duckdb

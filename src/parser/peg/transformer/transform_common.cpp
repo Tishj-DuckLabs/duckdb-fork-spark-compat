@@ -11,8 +11,7 @@
 #include "duckdb/parser/expression/type_expression.hpp"
 #include "duckdb/common/types/bignum.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 string PEGTransformerFactory::TransformIdentifierOrKeyword(PEGTransformer &transformer, ParseResult &parse_result) {
 	if (parse_result.type == ParseResultType::IDENTIFIER) {
@@ -775,9 +774,9 @@ Identifier PEGTransformerFactory::TransformConstraintName(PEGTransformer &transf
 
 // PartitionSpecEntry <- ColId PartitionSpecValue?
 // A partition column with an optional static value (col = value); a bare column is a dynamic partition.
-PartitionSpecEntry PEGTransformerFactory::TransformPartitionSpecEntry(PEGTransformer &transformer,
-                                                                      const Identifier &col_id,
-                                                                      optional<unique_ptr<ParsedExpression>> partition_spec_value) {
+PartitionSpecEntry
+PEGTransformerFactory::TransformPartitionSpecEntry(PEGTransformer &transformer, const Identifier &col_id,
+                                                   optional<unique_ptr<ParsedExpression>> partition_spec_value) {
 	PartitionSpecEntry entry;
 	entry.name = col_id;
 	if (partition_spec_value) {
@@ -787,8 +786,9 @@ PartitionSpecEntry PEGTransformerFactory::TransformPartitionSpecEntry(PEGTransfo
 }
 
 // PartitionSpec <- 'PARTITION' Parens(List(PartitionSpecEntry))
-vector<PartitionSpecEntry> PEGTransformerFactory::TransformPartitionSpec(PEGTransformer &transformer,
-                                                                         vector<PartitionSpecEntry> partition_spec_entry) {
+vector<PartitionSpecEntry>
+PEGTransformerFactory::TransformPartitionSpec(PEGTransformer &transformer,
+                                              vector<PartitionSpecEntry> partition_spec_entry) {
 	return partition_spec_entry;
 }
-} // namespace duckdb_fork
+} // namespace duckdb

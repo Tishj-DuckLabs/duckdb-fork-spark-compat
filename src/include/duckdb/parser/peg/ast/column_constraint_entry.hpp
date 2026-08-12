@@ -5,8 +5,7 @@
 #include "duckdb/parser/constraint.hpp"
 #include "duckdb/parser/parsed_expression.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 struct ColumnConstraintEntry {
 	string constraint_name;
@@ -20,4 +19,4 @@ struct ColumnConstraintEntry {
 	}
 };
 
-} // namespace duckdb_fork
+} // namespace duckdb

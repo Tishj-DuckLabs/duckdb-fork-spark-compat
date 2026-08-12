@@ -1,8 +1,7 @@
 #pragma once
 
 #include "duckdb/parser/parsed_expression.hpp"
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 struct IsDistinctFromTail {
 	ExpressionType comparison_type;
@@ -37,4 +36,4 @@ struct BinaryExpressionTail {
 	optional_idx query_location;
 };
 
-} // namespace duckdb_fork
+} // namespace duckdb

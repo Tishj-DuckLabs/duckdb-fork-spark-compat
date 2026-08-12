@@ -5,8 +5,7 @@
 #include "duckdb/parser/constraint.hpp"
 #include "duckdb/parser/parsed_expression.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 struct ColumnElements {
 	ColumnList columns {false};
 	vector<unique_ptr<Constraint>> constraints;
@@ -14,4 +13,4 @@ struct ColumnElements {
 	vector<unique_ptr<ParsedExpression>> sort_keys;
 	case_insensitive_map_t<unique_ptr<ParsedExpression>> options;
 };
-} // namespace duckdb_fork
+} // namespace duckdb

@@ -6,8 +6,7 @@
 #include "duckdb/parser/expression/constant_expression.hpp"
 
 #include "duckdb/common/identifier.hpp"
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 struct GenericCopyOption {
 	Identifier name;
@@ -52,4 +51,4 @@ struct GenericCopyOption {
 	}
 };
 
-} // namespace duckdb_fork
+} // namespace duckdb

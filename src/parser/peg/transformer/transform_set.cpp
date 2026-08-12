@@ -8,8 +8,7 @@
 #include "duckdb/parser/statement/select_statement.hpp"
 #include "duckdb/parser/tableref/emptytableref.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 static bool ExpressionReferencesColumn(const ParsedExpression &expr) {
 	bool found = false;
@@ -35,7 +34,8 @@ PEGTransformerFactory::TransformReadSettingStatement(PEGTransformer &transformer
 	vector<unique_ptr<ParsedExpression>> children;
 	children.push_back(make_uniq<ConstantExpression>(Value(set_variable_or_setting.name.GetIdentifierName())));
 	auto select_node = make_uniq<SelectNode>();
-	select_node->select_list.push_back(make_uniq<FunctionExpression>(Identifier("current_setting"), std::move(children)));
+	select_node->select_list.push_back(
+	    make_uniq<FunctionExpression>(Identifier("current_setting"), std::move(children)));
 	select_node->from_table = make_uniq<EmptyTableRef>();
 	auto select_statement = make_uniq<SelectStatement>();
 	select_statement->node = std::move(select_node);
@@ -242,4 +242,4 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformZoneIntervalWithPre
 	return WrapIntervalStringAsTimezone(string_literal);
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

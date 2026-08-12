@@ -67,8 +67,7 @@ namespace duckdb {
 struct QualifiedName;
 } // namespace duckdb
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 // Forward declare
 struct MatcherToken;
@@ -8649,4 +8648,4 @@ private:
 	case_insensitive_map_t<PEGTransformer::AnyTransformFunction> trampoline_transform_functions;
 };
 
-} // namespace duckdb_fork
+} // namespace duckdb

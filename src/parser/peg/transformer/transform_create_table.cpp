@@ -20,8 +20,7 @@
 #include "duckdb/parser/expression/type_expression.hpp"
 #include "duckdb/catalog/default/default_types.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement>
 PEGTransformerFactory::TransformCreateStatement(PEGTransformer &transformer, const optional<bool> &or_replace,
@@ -644,9 +643,10 @@ PartitionSortedOptions PEGTransformerFactory::TransformPartitionOptSortedOptions
 	return result;
 }
 
-PartitionSortedOptions PEGTransformerFactory::TransformSortedOptPartitionOptions(
-    PEGTransformer &transformer, vector<unique_ptr<ParsedExpression>> sorted_options,
-    optional<vector<PartitionFieldEntry>> partition_options) {
+PartitionSortedOptions
+PEGTransformerFactory::TransformSortedOptPartitionOptions(PEGTransformer &transformer,
+                                                          vector<unique_ptr<ParsedExpression>> sorted_options,
+                                                          optional<vector<PartitionFieldEntry>> partition_options) {
 	PartitionSortedOptions result;
 	result.sort_keys = std::move(sorted_options);
 	if (partition_options) {
@@ -655,4 +655,4 @@ PartitionSortedOptions PEGTransformerFactory::TransformSortedOptPartitionOptions
 	return result;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

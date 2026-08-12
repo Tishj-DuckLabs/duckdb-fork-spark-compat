@@ -22,8 +22,7 @@ namespace duckdb {
 class ClientContext;
 } // namespace duckdb
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 //! Spark-compat parser helper (formerly its own header duckdb/spark_compat.h).
 //! Recognises Spark numeric-literal suffixes (1L, 1S, 1BD, ...) during parsing.
@@ -45,7 +44,7 @@ class ParseResultAllocator;
 class Matcher;
 class MatcherAllocator;
 // Declared here so PEGMatcher's `friend struct ParserCache` binds to this fork type,
-// not duckdb::ParserCache (visible via `using namespace duckdb`); MSVC mis-binds otherwise.
+// not duckdb::ParserCache (visible via `using namespace duckdb`); MSVC misbinds otherwise.
 struct ParserCache;
 
 enum class SuggestionState : uint8_t {
@@ -306,4 +305,4 @@ private:
 	shared_ptr<PEGTransformerFactory> transformer_factory;
 };
 
-} // namespace duckdb_fork
+} // namespace duckdb

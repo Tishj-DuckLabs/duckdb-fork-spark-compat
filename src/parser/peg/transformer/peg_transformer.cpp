@@ -6,8 +6,7 @@
 #include "duckdb/parser/expression/cast_expression.hpp"
 #include "duckdb/parser/expression/operator_expression.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 TransformFrameResultTarget::TransformFrameResultTarget(transform_frame_index_t frame_index_p, idx_t slot_p)
     : frame_index(frame_index_p), slot(slot_p) {
@@ -344,4 +343,4 @@ void PEGTransformer::SetQueryLocation(TableRef &ref, optional_idx query_location
 	ref.query_location = query_location;
 }
 
-} // namespace duckdb_fork
+} // namespace duckdb

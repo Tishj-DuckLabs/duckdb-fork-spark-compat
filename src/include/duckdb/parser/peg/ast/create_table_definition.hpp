@@ -6,8 +6,7 @@
 #include "duckdb/parser/parsed_expression.hpp"
 #include "duckdb/parser/statement/select_statement.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 struct CreateTableDefinition {
 	unique_ptr<SelectStatement> select_statement;
 	ColumnList columns;
@@ -18,4 +17,4 @@ struct CreateTableDefinition {
 	//! spark's table-level COMMENT clause; NULL when absent
 	Value comment;
 };
-} // namespace duckdb_fork
+} // namespace duckdb

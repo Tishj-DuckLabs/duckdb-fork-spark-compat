@@ -1,8 +1,7 @@
 #include "duckdb/parser/statement/transaction_statement.hpp"
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 
-namespace duckdb_fork {
-using namespace duckdb;
+namespace duckdb {
 
 unique_ptr<SQLStatement>
 PEGTransformerFactory::TransformBeginTransaction(PEGTransformer &transformer, const bool &has_result,
@@ -37,4 +36,4 @@ unique_ptr<SQLStatement> PEGTransformerFactory::TransformRollbackTransaction(PEG
                                                                              const bool &has_result) {
 	return make_uniq<TransactionStatement>(make_uniq<TransactionInfo>(TransactionType::ROLLBACK));
 }
-} // namespace duckdb_fork
+} // namespace duckdb
