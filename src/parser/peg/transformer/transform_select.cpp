@@ -235,16 +235,22 @@ const char *GeneratorEntriesFunction(const string &lower_name) {
 	if (lower_name == "posexplode_outer") {
 		return "__spark_posexplode_outer_entries";
 	}
+	if (lower_name == "inline") {
+		return "__spark_inline_entries";
+	}
+	if (lower_name == "inline_outer") {
+		return "__spark_inline_outer_entries";
+	}
 	return nullptr;
 }
 
-//! Spark's explode()/explode_outer()/posexplode()/posexplode_outer() in SELECT position are generators: one
-//! output row per element, arrays yielding a single column and maps yielding key/value columns, with the
-//! posexplode variants adding a leading element position column. Rewrite a top-level, unaliased generator
-//! select item to `unnest(<entries>(x), max_depth := 2)` so the struct-expanding unnest sits at the
-//! select-item root - a scalar macro body binds as a non-root expression, which rejects the struct expansion
-//! - while the entries function dispatches the array/map column shape (the _outer helpers additionally emit
-//! one all-NULL row for a NULL/empty collection).
+//! Spark's explode()/posexplode()/inline() and their _outer variants are generators in SELECT position: one
+//! output row per element, arrays yielding a single column, maps key/value columns and arrays of structs one
+//! column per struct field, with the posexplode variants adding a leading element position column. Rewrite a
+//! top-level, unaliased generator select item to `unnest(<entries>(x), max_depth := 2)` so the struct-expanding
+//! unnest sits at the select-item root - a scalar macro body binds as a non-root expression, which rejects the
+//! struct expansion - while the entries function dispatches the output column shape (the _outer helpers
+//! additionally emit one all-NULL row for a NULL/empty collection).
 //! Aliased calls are left to the scalar explode/explode_outer macros, which unnest a list under the alias.
 void RewriteSparkSelectGenerators(SelectNode &node) {
 	for (auto &select_expr : node.select_list) {
