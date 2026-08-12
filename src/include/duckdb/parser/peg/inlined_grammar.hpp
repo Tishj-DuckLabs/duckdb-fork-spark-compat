@@ -1647,7 +1647,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"Recursive <- 'RECURSIVE'\n"
 	"SelectClause <- 'SELECT' DistinctClause? TargetList?\n"
 	"TargetList <- List(AliasedExpression)\n"
-	"ColumnAliases <- Parens(List(ColIdOrString))\n"
+	"ColumnAliases <- Parens(List(ColLabelOrString))\n"
 	"DistinctClause <- DistinctOn\n"
 	"DistinctOn <- 'DISTINCT' DistinctOnTargets?\n"
 	"DistinctOnTargets <- 'ON' Parens(List(Expression))\n"

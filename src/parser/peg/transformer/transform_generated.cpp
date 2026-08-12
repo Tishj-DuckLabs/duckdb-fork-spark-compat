@@ -9006,13 +9006,13 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformTargetListInter
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformColumnAliasesInternal(PEGTransformer &transformer,
                                                                                        ParseResult &parse_result) {
 	auto &list_pr = parse_result.Cast<ListParseResult>();
-	vector<Identifier> col_id_or_string;
-	auto col_id_or_string_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
-	for (auto &col_id_or_string_item : col_id_or_string_items) {
-		auto col_id_or_string_value = transformer.Transform<Identifier>(col_id_or_string_item.get());
-		col_id_or_string.push_back(col_id_or_string_value);
+	vector<Identifier> col_label_or_string;
+	auto col_label_or_string_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
+	for (auto &col_label_or_string_item : col_label_or_string_items) {
+		auto col_label_or_string_value = transformer.Transform<Identifier>(col_label_or_string_item.get());
+		col_label_or_string.push_back(col_label_or_string_value);
 	}
-	auto result = TransformColumnAliases(transformer, col_id_or_string);
+	auto result = TransformColumnAliases(transformer, col_label_or_string);
 	return make_uniq<TypedTransformResult<vector<string>>>(result);
 }
 

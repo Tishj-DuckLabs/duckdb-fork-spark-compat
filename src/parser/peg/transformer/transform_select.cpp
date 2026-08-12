@@ -28,6 +28,7 @@
 #include "duckdb/parser/expression/constant_expression.hpp"
 #include "duckdb/parser/expression/lambda_expression.hpp"
 #include "duckdb/common/unordered_map.hpp"
+#include "duckdb/main/query_result.hpp"
 
 namespace duckdb_fork {
 using namespace duckdb;
@@ -1796,8 +1797,8 @@ PEGTransformerFactory::TransformTargetList(PEGTransformer &transformer,
 }
 
 vector<string> PEGTransformerFactory::TransformColumnAliases(PEGTransformer &transformer,
-                                                             const vector<Identifier> &col_id_or_string) {
-	return IdentifiersToStrings(col_id_or_string);
+                                                             const vector<Identifier> &col_label_or_string) {
+	return IdentifiersToStrings(col_label_or_string);
 }
 
 DistinctClause PEGTransformerFactory::TransformDistinctAll(PEGTransformer &transformer, ParseResult &parse_result) {
@@ -2313,13 +2314,17 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExpressionAsColumnA
 	auto entries = make_uniq<FunctionExpression>(Identifier(entries_fn), std::move(entries_args));
 
 	// row -> struct_pack(alias_0 := struct_extract_at(row, 1), ..., alias_{n-1} := struct_extract_at(row, n))
+	// Spark allows the same alias twice, but struct fields cannot repeat a name: a repeated alias takes
+	// the `_1` suffix duckdb gives any other duplicate column label.
+	auto field_names = column_aliases;
+	QueryResult::DeduplicateColumns(field_names);
 	const string lambda_param = "__spark_gen_row";
 	vector<FunctionArgument> struct_fields;
-	for (idx_t i = 0; i < column_aliases.size(); i++) {
+	for (idx_t i = 0; i < field_names.size(); i++) {
 		vector<unique_ptr<ParsedExpression>> extract_args;
 		extract_args.push_back(make_uniq<ColumnRefExpression>(Identifier(lambda_param)));
 		extract_args.push_back(make_uniq<ConstantExpression>(Value::INTEGER(UnsafeNumericCast<int32_t>(i + 1))));
-		struct_fields.emplace_back(Identifier(column_aliases[i]),
+		struct_fields.emplace_back(Identifier(field_names[i]),
 		                           make_uniq<FunctionExpression>(Identifier("struct_extract_at"), std::move(extract_args)));
 	}
 	auto struct_pack = make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(struct_fields));
