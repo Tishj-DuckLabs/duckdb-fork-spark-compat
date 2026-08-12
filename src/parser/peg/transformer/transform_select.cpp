@@ -220,13 +220,31 @@ bool IsBareGeneratorCall(const FunctionExpression &func) {
 	return args.size() == 1 && !args[0].HasName();
 }
 
-//! Spark's explode()/explode_outer()/posexplode() in SELECT position are generators: one output row per
-//! element, arrays yielding a single column and maps yielding key/value columns, with posexplode adding a
-//! leading element position column. Rewrite a top-level, unaliased generator select item to
-//! `unnest(<entries>(x), max_depth := 2)` so the struct-expanding unnest sits at the select-item root - a
-//! scalar macro body binds as a non-root expression, which rejects the struct expansion - while the entries
-//! function dispatches the array/map column shape (the _outer helper additionally emits one all-NULL row for
-//! a NULL/empty collection).
+//! The __spark_*_entries helper that yields a generator's rows as a LIST of STRUCTs, one struct per output
+//! row and one struct field per output column, or nullptr if the name is not a rewritable spark generator.
+const char *GeneratorEntriesFunction(const string &lower_name) {
+	if (lower_name == "explode") {
+		return "__spark_explode_entries";
+	}
+	if (lower_name == "explode_outer") {
+		return "__spark_explode_outer_entries";
+	}
+	if (lower_name == "posexplode") {
+		return "__spark_posexplode_entries";
+	}
+	if (lower_name == "posexplode_outer") {
+		return "__spark_posexplode_outer_entries";
+	}
+	return nullptr;
+}
+
+//! Spark's explode()/explode_outer()/posexplode()/posexplode_outer() in SELECT position are generators: one
+//! output row per element, arrays yielding a single column and maps yielding key/value columns, with the
+//! posexplode variants adding a leading element position column. Rewrite a top-level, unaliased generator
+//! select item to `unnest(<entries>(x), max_depth := 2)` so the struct-expanding unnest sits at the
+//! select-item root - a scalar macro body binds as a non-root expression, which rejects the struct expansion
+//! - while the entries function dispatches the array/map column shape (the _outer helpers additionally emit
+//! one all-NULL row for a NULL/empty collection).
 //! Aliased calls are left to the scalar explode/explode_outer macros, which unnest a list under the alias.
 void RewriteSparkSelectGenerators(SelectNode &node) {
 	for (auto &select_expr : node.select_list) {
@@ -234,15 +252,7 @@ void RewriteSparkSelectGenerators(SelectNode &node) {
 			continue;
 		}
 		auto &func = select_expr->Cast<FunctionExpression>();
-		auto func_name = StringUtil::Lower(func.FunctionName().GetIdentifierName());
-		const char *entries_fn = nullptr;
-		if (func_name == "explode") {
-			entries_fn = "__spark_explode_entries";
-		} else if (func_name == "explode_outer") {
-			entries_fn = "__spark_explode_outer_entries";
-		} else if (func_name == "posexplode") {
-			entries_fn = "__spark_posexplode_entries";
-		}
+		auto entries_fn = GeneratorEntriesFunction(StringUtil::Lower(func.FunctionName().GetIdentifierName()));
 		if (!entries_fn || !IsBareGeneratorCall(func)) {
 			continue;
 		}
@@ -2302,9 +2312,7 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExpressionAsColumnA
 	const char *entries_fn = nullptr;
 	if (expression->GetExpressionClass() == ExpressionClass::FUNCTION) {
 		auto &func = expression->Cast<FunctionExpression>();
-		if (StringUtil::Lower(func.FunctionName().GetIdentifierName()) == "posexplode") {
-			entries_fn = "__spark_posexplode_entries";
-		}
+		entries_fn = GeneratorEntriesFunction(StringUtil::Lower(func.FunctionName().GetIdentifierName()));
 		if (!IsBareGeneratorCall(func)) {
 			entries_fn = nullptr;
 		}
