@@ -1,10 +1,11 @@
 SetStatement <- 'SET' SetAssignmentOrTimeZone
-SetAssignmentOrTimeZone <- StandardAssignment / SetTimeZone
+SetAssignmentOrTimeZone <- SetSchema / StandardAssignment / SetTimeZone
 
 # Spark's value-less SET reads (gets) a config value instead of assigning one
 ReadSettingStatement <- 'SET' SetVariableOrSetting
 
 ResetStatement <- 'RESET' SetVariableOrSetting
+SetSchema <- 'SCHEMA' StringLiteral
 StandardAssignment <- SetVariableOrSetting SetAssignment
 SetVariableOrSetting <- SetVariable / SetSetting
 SetTimeZone <- 'TIME' 'ZONE' ZoneValue
@@ -33,4 +34,3 @@ SetAssignment <- VariableAssign VariableList
 
 VariableAssign <- '=' / 'TO'
 VariableList <- List(Expression)
-

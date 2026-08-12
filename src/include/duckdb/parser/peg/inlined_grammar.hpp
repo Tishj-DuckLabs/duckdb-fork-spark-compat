@@ -8,6 +8,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"Program <- TopLevelStatement*\n"
 	"TopLevelStatement <- Statement? (';'+ / EndOfInput)\n"
 	"Statement <-\n"
+	"	ExternalResourceStatement /\n"
 	"	CreateStatement /\n"
 	"	MultiInsertStatement /\n"
 	"	SelectStatement /\n"
@@ -47,6 +48,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"	ConnectStatement /\n"
 	"	DisconnectStatement /\n"
 	"	ExpressionStatement\n"
+	"AnalyzeKeyword <- 'ANALYZE' / 'ANALYSE'\n"
 	"ExpressionStatement <- List(ExpressionAlias)\n"
 	"ExpressionAlias <- ColIdExpression / ExpressionAsCollabel / Expression\n"
 	"CatalogName <- Identifier\n"
@@ -163,6 +165,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"RowType <- RowOrStruct ColIdTypeList?\n"
 	"SetofType <- 'SETOF' Type\n"
 	"UnionType <- 'UNION' ColIdTypeList\n"
+<<<<<<< HEAD
 	"ColIdTypeList <- ColIdParensTypeList / ColIdAngleBracketsTypeList\n"
 	"ColIdParensTypeList <- Parens(List(ColIdType))\n"
 	"ColIdAngleBracketsTypeList <- AngleBrackets(List(ColIdColonType))\n"
@@ -174,7 +177,15 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"ColIdType <- ColId Type\n"
 	"ColIdColonType <- ColId ':' Type\n"
 	"ArrayBounds <- SquareBracketsArray / ArrayKeyword\n"
+=======
+	"ColIdTypeList <- Parens(List(ColIdType))\n"
+	"MapType <- 'MAP' Parens(List(Type))?\n"
+	"TupleType <- 'TUPLE' Parens(List(Type))\n"
+	"ColIdType <- ColId Type\n"
+	"ArrayBounds <- ArrayKeywordWithBounds / SquareBracketsArray / ArrayKeyword\n"
+>>>>>>> duckdb_upstream/main
 	"ArrayKeyword <- 'ARRAY'\n"
+	"ArrayKeywordWithBounds <- 'ARRAY' SquareBracketsArray\n"
 	"SquareBracketsArray <- '[' Expression? ']'\n"
 	"TimeType <- TimeOrTimestamp TypeModifiers? TimeZone?\n"
 	"TimeOrTimestamp <- TimeTypeId / TimestampTypeId\n"
@@ -193,6 +204,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"%whitespace <- [ \\t\\n\\r]*\n"
 	"List(D) <- D (',' D)* ','?\n"
 	"Parens(D) <- '(' D ')'\n"
+<<<<<<< HEAD
 	"AngleBrackets(D) <- '<' D CloseAngleBracket\n"
 	"# Closes an angle-bracket type. The tokenizer splits '>'-led operator runs into individual '>'\n"
 	"# tokens (keeping a trailing '>=' glued), and the keyword/operator matchers re-glue adjacent pieces\n"
@@ -200,6 +212,8 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"# ignoring run adjacency - so nested closers (array<array<int>>) and a trailing operator\n"
 	"# (x::array<int>>y) both resolve.\n"
 	"CloseAngleBracket <- '>'\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"ColumnNameKeyword <- 'BETWEEN' /\n"
 	"'BIGINT' /\n"
 	"'BIT' /\n"
@@ -210,7 +224,10 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'COLUMNS' /\n"
 	"'DEC' /\n"
 	"'DECIMAL' /\n"
+<<<<<<< HEAD
 	"'DIV' /\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"'EXISTS' /\n"
 	"'EXTRACT' /\n"
 	"'FLOAT' /\n"
@@ -235,12 +252,18 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'ROW' /\n"
 	"'SETOF' /\n"
 	"'SMALLINT' /\n"
+<<<<<<< HEAD
 	"'SUBSTR' /\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"'SUBSTRING' /\n"
 	"'STRUCT' /\n"
 	"'TIME' /\n"
 	"'TIMESTAMP' /\n"
+<<<<<<< HEAD
 	"'TIMESTAMPDIFF' /\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"'TREAT' /\n"
 	"'TRIM' /\n"
 	"'TRY_CAST' /\n"
@@ -258,6 +281,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'XMLROOT' /\n"
 	"'XMLSERIALIZE' /\n"
 	"'XMLTABLE'\n"
+<<<<<<< HEAD
 	"FuncNameKeyword <- 'ANY' /\n"
 	"'ARRAY' /\n"
 	"'ASOF' /\n"
@@ -274,13 +298,25 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'DOUBLE' /\n"
 	"'EXISTS' /\n"
 	"'FLOAT' /\n"
+=======
+	"FuncNameKeyword <- 'ASOF' /\n"
+	"'AT' /\n"
+	"'AUTHORIZATION' /\n"
+	"'BINARY' /\n"
+	"'COLLATION' /\n"
+	"'CONCURRENTLY' /\n"
+	"'CROSS' /\n"
+>>>>>>> duckdb_upstream/main
 	"'FREEZE' /\n"
 	"'FULL' /\n"
 	"'GENERATED' /\n"
 	"'GLOB' /\n"
 	"'ILIKE' /\n"
 	"'INNER' /\n"
+<<<<<<< HEAD
 	"'INT' /\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"'IS' /\n"
 	"'ISNULL' /\n"
 	"'JOIN' /\n"
@@ -294,6 +330,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'POSITIONAL' /\n"
 	"'RIGHT' /\n"
 	"'SIMILAR' /\n"
+<<<<<<< HEAD
 	"'SMALLINT' /\n"
 	"'SOME' /\n"
 	"'STRING' /\n"
@@ -304,6 +341,14 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'TUPLE' /\n"
 	"'VERBOSE'\n"
 	"ReservedKeyword <- 'ANALYSE' /\n"
+=======
+	"'STRUCT' /\n"
+	"'TABLESAMPLE' /\n"
+	"'TUPLE' /\n"
+	"'VERBOSE'\n"
+	"ReservedKeyword <- 'ALL' /\n"
+	"'ANALYSE' /\n"
+>>>>>>> duckdb_upstream/main
 	"'ANALYZE' /\n"
 	"'AND' /\n"
 	"'ANY' /\n"
@@ -344,7 +389,10 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'LATERAL' /\n"
 	"'LEADING' /\n"
 	"'LIMIT' /\n"
+<<<<<<< HEAD
 	"'MINUS' /\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"'NOT' /\n"
 	"'NULL' /\n"
 	"'OFFSET' /\n"
@@ -362,7 +410,10 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'SELECT' /\n"
 	"'SHOW' /\n"
 	"'SOME' /\n"
+<<<<<<< HEAD
 	"'SORT' /\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"'SUMMARIZE' /\n"
 	"'SYMMETRIC' /\n"
 	"'TABLE' /\n"
@@ -388,7 +439,10 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'COLUMNS' /\n"
 	"'CONCURRENTLY' /\n"
 	"'CROSS' /\n"
+<<<<<<< HEAD
 	"'DOUBLE' /\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"'FREEZE' /\n"
 	"'FULL' /\n"
 	"'GLOB' /\n"
@@ -407,9 +461,13 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'RIGHT' /\n"
 	"'UNPACK' /\n"
 	"'SIMILAR' /\n"
+<<<<<<< HEAD
 	"'STRING' /\n"
 	"'TABLESAMPLE' /\n"
 	"'TINYINT' /\n"
+=======
+	"'TABLESAMPLE' /\n"
+>>>>>>> duckdb_upstream/main
 	"'TRY_CAST' /\n"
 	"'VERBOSE' /\n"
 	"'SEMI' /\n"
@@ -425,6 +483,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'ALSO' /\n"
 	"'ALTER' /\n"
 	"'ALWAYS' /\n"
+	"'APPROX' /\n"
 	"'ASSERTION' /\n"
 	"'ASSIGNMENT' /\n"
 	"'ATTACH' /\n"
@@ -488,6 +547,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'DISABLE' /\n"
 	"'DISCARD' /\n"
 	"'DISCONNECT' /\n"
+	"'DISTANCE' /\n"
 	"'DOCUMENT' /\n"
 	"'DOMAIN' /\n"
 	"'DOUBLE' /\n"
@@ -500,7 +560,11 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'ERROR' /\n"
 	"'ESCAPE' /\n"
 	"'EVENT' /\n"
+<<<<<<< HEAD
 	"'EVOLUTION' /\n"
+=======
+	"'EXACT' /\n"
+>>>>>>> duckdb_upstream/main
 	"'EXCLUDE' /\n"
 	"'EXCLUDING' /\n"
 	"'EXCLUSIVE' /\n"
@@ -591,6 +655,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'MOVE' /\n"
 	"'NAME' /\n"
 	"'NAMES' /\n"
+	"'NEAREST' /\n"
 	"'NEW' /\n"
 	"'NEXT' /\n"
 	"'NO' /\n"
@@ -654,6 +719,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'REPLACE' /\n"
 	"'REPLICA' /\n"
 	"'RESET' /\n"
+	"'RESOURCE' /\n"
 	"'RESPECT' /\n"
 	"'RESTART' /\n"
 	"'RESTRICT' /\n"
@@ -683,6 +749,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"'SET' /\n"
 	"'SETS' /\n"
 	"'SHARE' /\n"
+	"'SIMILARITY' /\n"
 	"'SIMPLE' /\n"
 	"'SKIP' /\n"
 	"'SNAPSHOT' /\n"
@@ -759,6 +826,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"AlterOptions <- AlterTableStmt / AlterViewStmt / AlterSequenceStmt / AlterDatabaseStmt / AlterSchemaStmt\n"
 	"AlterTableStmt <- 'TABLE' IfExists? BaseTableName List(AlterTableOptions)\n"
 	"AlterSchemaStmt <- 'SCHEMA' IfExists? QualifiedName RenameAlter\n"
+<<<<<<< HEAD
 	"# Spark's ALTER TABLE ... SET/UNSET TBLPROPERTIES. Only the reserved 'comment' property maps onto a duckdb\n"
 	"# concept (the table comment); every other property is accepted and dropped. Lives at the Statement level\n"
 	"# because it yields either an AlterStatement or, with no 'comment' property, a no-op VacuumStatement.\n"
@@ -768,6 +836,8 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"SparkUnsetTblProperties <- 'UNSET' 'TBLPROPERTIES' IfExists? Parens(List(ColIdOrString))\n"
 	"SparkTblProperty <- ColIdOrString SparkTblPropertyValue?\n"
 	"SparkTblPropertyValue <- '='? ColIdOrString\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"AlterTableOptions <- AddColumn / DropColumn / AlterColumn / AddConstraint / ChangeNullability /\n"
 	"        RenameColumn / RenameAlter / SetPartitionedBy / ResetPartitionedBy / SetSortedBy / ResetSortedBy / SetOptions / ResetOptions\n"
 	"AddConstraint <- 'ADD' TopLevelConstraint\n"
@@ -803,6 +873,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"RenameAlterSequenceOptions <- RenameAlter\n"
 	"SetSequenceOption <- SequenceOption+\n"
 	"AlterDatabaseStmt <- 'DATABASE' IfExists? Identifier 'SET' 'ALIAS' 'TO' Identifier\n"
+<<<<<<< HEAD
 	"AnalyzeStatement <- 'ANALYZE' AnalyzeVerbose? 'TABLE'? AnalyzeTarget? PartitionSpec? AnalyzeComputeStatistics?\n"
 	"AnalyzeTarget <- BaseTableName NameList?\n"
 	"AnalyzeVerbose <- 'VERBOSE'\n"
@@ -810,6 +881,11 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"# and ignored (AnalyzeComputeStatistics / AnalyzeStatsScope are excluded_rules: matched but not transformed).\n"
 	"AnalyzeComputeStatistics <- 'COMPUTE' 'STATISTICS' AnalyzeStatsScope?\n"
 	"AnalyzeStatsScope <- 'NOSCAN' / ('FOR' 'ALL' 'COLUMNS') / ('FOR' 'COLUMNS' NameList)\n"
+=======
+	"AnalyzeStatement <- AnalyzeKeyword AnalyzeVerbose? AnalyzeTarget?\n"
+	"AnalyzeTarget <- BaseTableName NameList?\n"
+	"AnalyzeVerbose <- 'VERBOSE'\n"
+>>>>>>> duckdb_upstream/main
 	"AttachStatement <- 'ATTACH' OrReplace? IfNotExists? Database? DatabasePath AttachAlias? AttachOptions?\n"
 	"Database <- 'DATABASE'\n"
 	"DatabasePath <- Expression\n"
@@ -920,7 +996,11 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"SimpleParameter <- TypeFuncName Type?\n"
 	"ScalarMacroDefinition <- Expression\n"
 	"TableMacroDefinition <- 'TABLE' SelectStatementInternal\n"
+<<<<<<< HEAD
 	"CreateSchemaStmt <- ('SCHEMA' / 'DATABASE') IfNotExists? QualifiedName\n"
+=======
+	"CreateSchemaStmt <- 'SCHEMA' IfNotExists? QualifiedName\n"
+>>>>>>> duckdb_upstream/main
 	"CreateSecretStmt <- 'SECRET' IfNotExists? SecretName? SecretStorageSpecifier? GenericCopyOptionList\n"
 	"SecretStorageSpecifier <- 'IN' Identifier\n"
 	"SecretName <- ColId\n"
@@ -952,6 +1032,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"TemporaryPersistent <- 'TEMPORARY'\n"
 	"CreateTableStmt <- 'TABLE' IfNotExists? QualifiedName CreateTableDefinition CommitAction?\n"
 	"CreateTableDefinition <- CreateTableAs / CreateColumnList\n"
+<<<<<<< HEAD
 	"SparkUsing <- 'USING' Identifier SparkLocation?\n"
 	"SparkLocation <- 'LOCATION' StringLiteral\n"
 	"# Spark's table-level COMMENT clause. ColIdOrString accepts both 'text' and spark's double-quoted \"text\".\n"
@@ -962,12 +1043,23 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"SortedOptPartitionOptions <- SortedOptions PartitionOptions?\n"
 	"PartitionOptions <- 'PARTITIONED' 'BY' Parens(List(PartitionField))\n"
 	"PartitionField <- Expression Type?\n"
+=======
+	"CreateTableAs <- IdentifierList? PartitionSortedOptions? WithList? 'AS' Statement WithData?\n"
+	"PartitionSortedOptions <- PartitionOptSortedOptions / SortedOptPartitionOptions\n"
+	"PartitionOptSortedOptions <- PartitionOptions SortedOptions?\n"
+	"SortedOptPartitionOptions <- SortedOptions PartitionOptions?\n"
+	"PartitionOptions <- 'PARTITIONED' 'BY' Parens(List(Expression))\n"
+>>>>>>> duckdb_upstream/main
 	"SortedOptions <- 'SORTED' 'BY' Parens(List(Expression))\n"
 	"WithData <- WithDataOnly / WithNoData\n"
 	"WithDataOnly <- 'WITH' 'DATA'\n"
 	"WithNoData <- 'WITH' 'NO' 'DATA'\n"
 	"IdentifierList <- Parens(List(Identifier))\n"
+<<<<<<< HEAD
 	"CreateColumnList <- Parens(CreateTableColumnList?) SparkUsing? PartitionSortedOptions? SparkTableComment? WithList?\n"
+=======
+	"CreateColumnList <- Parens(CreateTableColumnList?) PartitionSortedOptions? WithList?\n"
+>>>>>>> duckdb_upstream/main
 	"IfNotExists <- 'IF' 'NOT' 'EXISTS'\n"
 	"QualifiedName <- CatalogReservedSchemaIdentifier / SchemaReservedIdentifierOrStringLiteral / IdentifierOrStringLiteral\n"
 	"SchemaReservedIdentifierOrStringLiteral <- SchemaQualification ReservedIdentifierOrStringLiteral\n"
@@ -984,8 +1076,12 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"CreateTableColumnDefinition <- ColumnDefinition\n"
 	"CreateTableConstraint <- TopLevelConstraint\n"
 	"ColumnDefinition <- DottedIdentifier Type? GeneratedColumn? ConstraintNameClause? ColumnConstraint*\n"
+<<<<<<< HEAD
 	"ColumnConstraint <- NotNullConstraint / UniqueConstraint / PrimaryKeyConstraint / DefaultValue / CheckConstraint / ForeignKeyConstraint / ColumnCollation / ColumnCompression / ColumnComment\n"
 	"ColumnComment <- 'COMMENT' StringLiteral\n"
+=======
+	"ColumnConstraint <- NotNullConstraint / UniqueConstraint / PrimaryKeyConstraint / DefaultValue / CheckConstraint / ForeignKeyConstraint / ColumnCollation / ColumnCompression\n"
+>>>>>>> duckdb_upstream/main
 	"NotNullConstraint <- NullConstraint / NotNullColumnConstraint\n"
 	"NullConstraint <- 'NULL'\n"
 	"NotNullColumnConstraint <- 'NOT' 'NULL'\n"
@@ -1061,6 +1157,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"CreateTypeFromType <- Type\n"
 	"EnumSelectType <- 'ENUM' Parens(SelectStatementInternal)\n"
 	"EnumStringLiteralList <- 'ENUM' Parens(List(StringLiteral)?)\n"
+<<<<<<< HEAD
 	"CreateViewStmt <- CreateRecursive? 'VIEW' IfNotExists? QualifiedName ViewColumnList? WithSchemaMode? InsertColumnList? WithList? 'AS' SelectStatementInternal\n"
 	"CreateRecursive <- 'RECURSIVE'\n"
 	"ViewColumnList <- Parens(List(ViewColumn))\n"
@@ -1073,10 +1170,17 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"DeclareStatement <- 'DECLARE' OrReplace? 'VARIABLE'? Identifier Type? DeclareValue?\n"
 	"DeclareValue <- ('DEFAULT' / '=') Expression\n"
 	"DropVariableStatement <- 'DROP' ('TEMPORARY' / 'TEMP')? 'VARIABLE' IfExists? Identifier\n"
+=======
+	"CreateViewStmt <- CreateRecursive? 'VIEW' IfNotExists? QualifiedName InsertColumnList? WithList? 'AS' SelectStatementInternal\n"
+	"CreateRecursive <- 'RECURSIVE'\n"
+	"DeallocateStatement <- 'DEALLOCATE' DeallocatePrepare? Identifier\n"
+	"DeallocatePrepare <- 'PREPARE'\n"
+>>>>>>> duckdb_upstream/main
 	"DeleteStatement <- WithClause? 'DELETE' 'FROM' TargetOptAlias DeleteUsingClause? WhereClause? ReturningClause?\n"
 	"TruncateStatement <- 'TRUNCATE' 'TABLE'? BaseTableName\n"
 	"TargetOptAlias <- BaseTableName 'AS'? ColId?\n"
 	"DeleteUsingClause <- 'USING' List(TableRef)\n"
+<<<<<<< HEAD
 	"DescribeStatement <- ShowTables / ShowAllTables / DescribeQuery / DescribeFunction / DescribeTable / ShowSelect / ShowQualifiedName\n"
 	"ShowSelect <- ShowOrDescribeOrSummarize SelectStatementInternal\n"
 	"ShowAllTables <- ShowOrDescribe 'ALL' 'TABLES'\n"
@@ -1092,6 +1196,11 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"# The trailing DottedIdentifier is Spark's describeColName (a possibly nested column path): it describes that one\n"
 	"# column instead of the table, and is routed to spark_describe_column[_extended] by the transformer.\n"
 	"DescribeTable <- DescribeRule 'TABLE'? ('EXTENDED' / 'FORMATTED')? DescribeTarget PartitionSpec? DottedIdentifier?\n"
+=======
+	"DescribeStatement <- ShowTables / ShowSelect / ShowAllTables / ShowQualifiedName\n"
+	"ShowSelect <- ShowOrDescribeOrSummarize SelectStatementInternal\n"
+	"ShowAllTables <- ShowOrDescribe 'ALL' 'TABLES'?\n"
+>>>>>>> duckdb_upstream/main
 	"ShowQualifiedName <- ShowOrDescribeOrSummarize DescribeTarget?\n"
 	"ShowTables <- ShowOrDescribe 'TABLES' 'FROM' QualifiedName\n"
 	"DescribeTarget <- DescribeBaseTableName / DescribeStringLiteral\n"
@@ -1122,7 +1231,11 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"DropTable <- TableOrView IfExists? List(BaseTableName)\n"
 	"DropTableFunction <- CommentMacroTable IfExists? List(TableFunctionName)\n"
 	"DropFunction <- FunctionTypeMacro IfExists? List(FunctionIdentifier)\n"
+<<<<<<< HEAD
 	"DropSchema <- ('SCHEMA' / 'DATABASE') IfExists? List(QualifiedName)\n"
+=======
+	"DropSchema <- 'SCHEMA' IfExists? List(QualifiedName)\n"
+>>>>>>> duckdb_upstream/main
 	"DropIndex <- 'INDEX' IfExists? List(QualifiedIndexName)\n"
 	"QualifiedIndexName <- CatalogReservedSchemaIndex / SchemaReservedIndex / QualifiedIndexNameString\n"
 	"QualifiedIndexNameString <- IndexName\n"
@@ -1143,12 +1256,19 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"IfExists <- 'IF' 'EXISTS'\n"
 	"DropSecretStorage <- 'FROM' Identifier\n"
 	"ExecuteStatement <- 'EXECUTE' Identifier TableFunctionArguments?\n"
+<<<<<<< HEAD
 	"ExplainStatement <- 'EXPLAIN' ExplainAnalyze? ExplainOptionList? ExplainMode? ExplainableStatements\n"
 	"ExplainAnalyze <- 'ANALYZE'\n"
 	"ExplainMode <- 'EXTENDED' / 'CODEGEN' / 'COST' / 'FORMATTED'\n"
 	"ExplainOptionList <- Parens(List(ExplainOption))\n"
 	"ExplainOption <- ExplainOptionName Expression?\n"
 	"ExplainOptionName <- 'ANALYZE' / 'ANALYSE' / ColId / FuncNameKeyword / TypeNameKeyword\n"
+=======
+	"ExplainStatement <- 'EXPLAIN' AnalyzeKeyword? ExplainOptionList? ExplainableStatements\n"
+	"ExplainOptionList <- Parens(List(ExplainOption))\n"
+	"ExplainOption <- ExplainOptionName Expression?\n"
+	"ExplainOptionName <- AnalyzeKeyword / ColId / FuncNameKeyword / TypeNameKeyword\n"
+>>>>>>> duckdb_upstream/main
 	"ExplainSelectStatement <- SelectStatementInternal\n"
 	"ExplainableStatements <-\n"
 	"    AlterStatement /\n"
@@ -1198,7 +1318,11 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"IgnoreOrRespectNulls <- IgnoreNulls / RespectNulls\n"
 	"IgnoreNulls <- 'IGNORE' 'NULLS'\n"
 	"RespectNulls <- 'RESPECT' 'NULLS'\n"
+<<<<<<< HEAD
 	"ParenthesisExpression <- Parens(List(RowExpressionArg)?)\n"
+=======
+	"ParenthesisExpression <- Parens(List(Expression)?)\n"
+>>>>>>> duckdb_upstream/main
 	"LiteralExpression <- StringLiteral / NumberLiteral / ConstantLiteral\n"
 	"ConstantLiteral <- NullLiteral / TrueLiteral / FalseLiteral\n"
 	"NullLiteral <- 'NULL'\n"
@@ -1236,12 +1360,19 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"CaseExpression <- 'CASE' Expression? CaseWhenThen+ CaseElse? 'END'\n"
 	"CaseWhenThen <- 'WHEN' Expression 'THEN' Expression\n"
 	"CaseElse <- 'ELSE' Expression\n"
+<<<<<<< HEAD
 	"TypeLiteral <- ColId StringLiteral\n"
 	"IntervalLiteral <- 'INTERVAL' IntervalParameter Interval?\n"
 	"IntervalParameter <- IntervalStringParameter / NumberLiteral / ParensExpression\n"
 	"IntervalStringParameter <- StringLiteral\n"
 	"IntervalMultiUnitLiteral <- 'INTERVAL' IntervalUnitPair IntervalUnitPair+\n"
 	"IntervalUnitPair <- NumberLiteral Interval\n"
+=======
+	"TypeLiteral <- Type StringLiteral\n"
+	"IntervalLiteral <- 'INTERVAL' IntervalParameter Interval?\n"
+	"IntervalParameter <- IntervalStringParameter / NumberLiteral / ParensExpression\n"
+	"IntervalStringParameter <- StringLiteral\n"
+>>>>>>> duckdb_upstream/main
 	"FrameClause <- Framing FrameExtent WindowExcludeClause?\n"
 	"Framing <- RowsFraming / RangeFraming / GroupsFraming\n"
 	"RowsFraming <- 'ROWS'\n"
@@ -1304,7 +1435,10 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"    SubqueryExpression /\n"
 	"    SpecialFunctionExpression /\n"
 	"    ParenthesisExpression /\n"
+<<<<<<< HEAD
 	"    IntervalMultiUnitLiteral /\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"    IntervalLiteral /\n"
 	"    TypeLiteral /\n"
 	"    CaseExpression /\n"
@@ -1336,8 +1470,13 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"ColDefAndExpressionTail <- 'AND' IsDistinctFromExpression\n"
 	"# LEVEL 3\n"
 	"LogicalNotExpression <- NotExpression? IsExpression\n"
+<<<<<<< HEAD
 	"NotExpression <- SparkNotExpression+\n"
 	"SparkNotExpression <- 'NOT' / '!'\n"
+=======
+	"NotExpression <- NotKeyword+\n"
+	"NotKeyword <- 'NOT'\n"
+>>>>>>> duckdb_upstream/main
 	"# LEVEL 4\n"
 	"IsExpression <- IsDistinctFromExpression IsTest*\n"
 	"IsTest <- IsLiteral / NotNull / IsNull\n"
@@ -1372,11 +1511,15 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"# LEVEL 7\n"
 	"BetweenInLikeExpression <- OtherOperatorExpression BetweenInLikeOp?\n"
 	"BetweenInLikeOp <- 'NOT'? BetweenInLikeOpExpression\n"
+<<<<<<< HEAD
 	"BetweenInLikeOpExpression <- BetweenClause / InClause / LikeAnyAllClause / LikeClause\n"
 	"LikeAnyAllClause <- LikeVariations LikeAnyOrAll Parens(List(Expression))\n"
 	"LikeAnyOrAll <- LikeAny / LikeAll\n"
 	"LikeAny <- 'ANY'\n"
 	"LikeAll <- 'ALL'\n"
+=======
+	"BetweenInLikeOpExpression <- BetweenClause / InClause / LikeClause\n"
+>>>>>>> duckdb_upstream/main
 	"LikeClause <- LikeVariations OtherOperatorExpression EscapeClause?\n"
 	"EscapeClause <- 'ESCAPE' ComparisonExpression\n"
 	"LikeVariations <- SimilarToToken / RegexInsensitiveMatchToken / RegexMatchToken / ILikeToken / LikeToken / GlobToken / NotILikeOp / NotLikeOp / NotRegexInsensitiveMatchOp / NotSimilarToOp\n"
@@ -1405,7 +1548,11 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"NamedOtherOperator <-\n"
 	"    QualifiedOperator / InetOperator / JsonOperator / ListOperator / StringOperator / OperatorLiteral\n"
 	"OperatorLiteral <- Identifier\n"
+<<<<<<< HEAD
 	"AnyAllOperator <- AnyAllOp AnyOrAll\n"
+=======
+	"AnyAllOperator <- AnyOp AnyOrAll\n"
+>>>>>>> duckdb_upstream/main
 	"AnyOrAll <- SubqueryAny / SubqueryAll\n"
 	"SubqueryAny <- 'ANY'\n"
 	"SubqueryAll <- 'ALL'\n"
@@ -1416,6 +1563,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"QualifiedOperator <- 'OPERATOR' Parens(QualifiedOperatorContents)\n"
 	"QualifiedOperatorContents <- ColIdDot* AnyOp\n"
 	"AnyOp <- '!~~*' / '>>=' / '<<=' / '->>' / '!~~' / '!~*' / '~~*' / '~~~' / '~*' / '!~' / '^@' / '||' / '&&' / '@>' / '<@' / '<=' / '>=' / '<>' / '!=' / '==' / '<<' / '>>' / '//' / '**' / '->' / '~~' / '+' / '-' / '*' / '/' / '%' / '^' / '<' / '>' / '=' / '&' / '|' / '~' / '!'\n"
+<<<<<<< HEAD
 	"# AnyOp without '->': the lambda arrow may never introduce a quantified comparison, otherwise\n"
 	"# 'x -> all ...' parses as 'x -> ALL (...)' instead of a lambda taking a parameter named all\n"
 	"AnyAllOp <- '!~~*' / '>>=' / '<<=' / '->>' / '!~~' / '!~*' / '~~*' / '~~~' / '~*' / '!~' / '^@' / '||' / '&&' / '@>' / '<@' / '<=' / '>=' / '<>' / '!=' / '==' / '<<' / '>>' / '//' / '**' / '~~' / '+' / '-' / '*' / '/' / '%' / '^' / '<' / '>' / '=' / '&' / '|' / '~' / '!'\n"
@@ -1452,12 +1600,43 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"AtTimeZoneExpressionTail <- AtTimeZoneOperator PrefixExpression\n"
 	"AtTimeZoneOperator <- 'AT' 'TIME' 'ZONE'\n"
 	"# LEVEL 17\n"
+=======
+	"# LEVEL 9\n"
+	"BitwiseExpression <- AdditiveExpression BitwiseExpressionTail*\n"
+	"BitwiseExpressionTail <- BitOperator AdditiveExpression\n"
+	"BitOperator <- '&' / '|' / '<<' / '>>'\n"
+	"# LEVEL 10\n"
+	"AdditiveExpression <- MultiplicativeExpression AdditiveExpressionTail*\n"
+	"AdditiveExpressionTail <- Term MultiplicativeExpression\n"
+	"Term <- '+' / '-'\n"
+	"# LEVEL 11\n"
+	"MultiplicativeExpression <- ExponentiationExpression MultiplicativeExpressionTail*\n"
+	"MultiplicativeExpressionTail <- Factor ExponentiationExpression\n"
+	"Factor <- '*' / '/' / '//' / '%'\n"
+	"# LEVEL 12\n"
+	"ExponentiationExpression <- CollateExpression ExponentiationExpressionTail*\n"
+	"ExponentiationExpressionTail <- ExponentOperator CollateExpression\n"
+	"ExponentOperator <- '^' / '**'\n"
+	"# LEVEL 13\n"
+	"CollateExpression <- AtTimeZoneExpression CollateExpressionTail*\n"
+	"CollateExpressionTail <- CollateOperator AtTimeZoneExpression\n"
+	"CollateOperator <- 'COLLATE'\n"
+	"# LEVEL 14\n"
+	"AtTimeZoneExpression <- PrefixExpression AtTimeZoneExpressionTail*\n"
+	"AtTimeZoneExpressionTail <- AtTimeZoneOperator PrefixExpression\n"
+	"AtTimeZoneOperator <- 'AT' 'TIME' 'ZONE'\n"
+	"# LEVEL 15\n"
+>>>>>>> duckdb_upstream/main
 	"PrefixExpression <- PrefixOperator* BaseExpression\n"
 	"PrefixOperator <- QualifiedOperator / MinusPrefixOperator / PlusPrefixOperator / TildePrefixOperator\n"
 	"MinusPrefixOperator <- '-'\n"
 	"PlusPrefixOperator <- '+'\n"
 	"TildePrefixOperator <- '~'\n"
+<<<<<<< HEAD
 	"# LEVEL 18 (Highest)\n"
+=======
+	"# LEVEL 16 (Highest)\n"
+>>>>>>> duckdb_upstream/main
 	"BaseExpression <- SingleExpression IndirectionList?\n"
 	"IndirectionList <- Indirection+\n"
 	"Indirection <- CastOperator / DotOperator / SliceExpression / PostfixOperator\n"
@@ -1476,8 +1655,12 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"EndSliceMinus <- '-'\n"
 	"StepSliceBound <- ':' Expression?\n"
 	"PostfixOperator <- '!'\n"
+<<<<<<< HEAD
 	"SpecialFunctionExpression <- CoalesceExpression / UnpackExpression / TryExpression / ColumnsExpression / ExtractExpression / TimestampDiffExpression / LambdaExpression / NullIfExpression / PositionExpression / RowExpression / SubstringExpression / TrimExpression / OverlayExpression\n"
 	"TimestampDiffExpression <- 'TIMESTAMPDIFF' Parens(ExtractArgument ',' Expression ',' Expression)\n"
+=======
+	"SpecialFunctionExpression <- CoalesceExpression / UnpackExpression / TryExpression / ColumnsExpression / ExtractExpression / LambdaExpression / NullIfExpression / PositionExpression / RowExpression / SubstringExpression / TrimExpression / OverlayExpression\n"
+>>>>>>> duckdb_upstream/main
 	"CoalesceExpression <- 'COALESCE' Parens(List(Expression))\n"
 	"UnpackExpression <- 'UNPACK' Parens(Expression)\n"
 	"TryExpression <- 'TRY' Parens(Expression)\n"
@@ -1488,12 +1671,18 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"NullIfExpression <- 'NULLIF' Parens(NullIfArguments)\n"
 	"NullIfArguments <- Expression ',' Expression\n"
 	"PositionExpression <- 'POSITION' Parens(PositionArguments)\n"
+<<<<<<< HEAD
 	"PositionArguments <- OtherOperatorExpression PositionSeparator Expression\n"
 	"PositionSeparator <- 'IN' / ','\n"
 	"RowExpression <- RowOrStruct Parens(List(RowExpressionArg)?)\n"
 	"RowExpressionArg <- Expression RowExpressionAlias?\n"
 	"RowExpressionAlias <- 'AS' ColId\n"
 	"SubstringExpression <- ('SUBSTRING' / 'SUBSTR') Parens(SubstringArguments)\n"
+=======
+	"PositionArguments <- OtherOperatorExpression 'IN' Expression\n"
+	"RowExpression <- 'ROW' Parens(List(Expression)?)\n"
+	"SubstringExpression <- 'SUBSTRING' Parens(SubstringArguments)\n"
+>>>>>>> duckdb_upstream/main
 	"SubstringArguments <- SubstringParameters / SubstringExpressionList\n"
 	"SubstringExpressionList <- List(Expression)\n"
 	"SubstringParameters <- Expression SubstringFromFor\n"
@@ -1521,6 +1710,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"    YearKeyword / MonthKeyword / DayKeyword / HourKeyword / MinuteKeyword / SecondKeyword /\n"
 	"    MillisecondKeyword / MicrosecondKeyword / WeekKeyword / QuarterKeyword / DecadeKeyword /\n"
 	"    CenturyKeyword / MillenniumKeyword\n"
+<<<<<<< HEAD
 	"InsertStatement <- WithClause? 'INSERT' OrAction? 'INTO' 'TABLE'? InsertTarget PartitionSpec? ByNameOrPosition? InsertColumnList? InsertValues OnConflictClause? ReturningClause?\n"
 	"# Spark multi-insert: a shared leading FROM source fanned out into several INSERT branches, each with its own projection.\n"
 	"# INSERT is an unreserved keyword the matcher accepts in alias position, so the source and each branch's projection use\n"
@@ -1528,6 +1718,15 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"# AS-less alias form) to keep the INSERT keyword that separates branches from being swallowed as an alias.\n"
 	"MultiInsertStatement <- WithClause? 'FROM' InsertTarget MultiInsertBranch+\n"
 	"MultiInsertBranch <- 'INSERT' 'INTO' 'TABLE'? InsertTarget InsertColumnList? 'SELECT' List(ExpressionAlias) WhereClause? GroupByClause? HavingClause?\n"
+=======
+	"ExternalResourceStatement <- CreateExternalResourceStmt / RegisterExternalResourceStmt / DestroyExternalResourceStmt / ShowExternalResourcesStmt\n"
+	"CreateExternalResourceStmt <- 'CREATE' 'EXTERNAL' 'RESOURCE' StringLiteral AttachAlias? AttachOptions?\n"
+	"RegisterExternalResourceStmt <- 'REGISTER' 'EXTERNAL' 'RESOURCE' StringLiteral AttachAlias? 'FROM' Expression\n"
+	"DestroyExternalResourceStmt <- 'DESTROY' 'EXTERNAL' 'RESOURCE' ColId\n"
+	"ShowExternalResourcesStmt <- 'SHOW' ShowAllModifier? 'EXTERNAL' 'RESOURCES'\n"
+	"ShowAllModifier <- 'ALL'\n"
+	"InsertStatement <- WithClause? 'INSERT' OrAction? 'INTO' InsertTarget ByNameOrPosition? InsertColumnList? InsertValues OnConflictClause? ReturningClause?\n"
+>>>>>>> duckdb_upstream/main
 	"OrAction <- InsertOrReplace / InsertOrIgnore\n"
 	"InsertOrReplace <- 'OR' 'REPLACE'\n"
 	"InsertOrIgnore <- 'OR' 'IGNORE'\n"
@@ -1620,9 +1819,15 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"SetopClause <- SetopType DistinctOrAll? ByName?\n"
 	"SetopType <- SetopUnion / SetopExcept\n"
 	"SetopUnion <- 'UNION'\n"
+<<<<<<< HEAD
 	"SetopExcept <- 'EXCEPT' / 'MINUS'\n"
 	"ByName <- 'BY' 'NAME'\n"
 	"SelectStatementType <- OptionalParensSimpleSelect / ValuesClauseWithAlias / ValuesBody / DescribeStatement / TableStatement / PivotStatement / UnpivotStatement\n"
+=======
+	"SetopExcept <- 'EXCEPT'\n"
+	"ByName <- 'BY' 'NAME'\n"
+	"SelectStatementType <- OptionalParensSimpleSelect / ValuesClause / DescribeStatement / TableStatement / PivotStatement / UnpivotStatement\n"
+>>>>>>> duckdb_upstream/main
 	"ResultModifiers <- OrderByClause? LimitOffset?\n"
 	"LimitOffset <- LimitOffsetClause / OffsetFetchClause / OffsetLimitClause / FetchOnlyClause\n"
 	"LimitOffsetClause <- LimitClause OffsetClause?\n"
@@ -1636,19 +1841,32 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"SelectFrom <- SelectFromClause / FromSelectClause\n"
 	"SelectFromClause <- SelectClause FromClause?\n"
 	"FromSelectClause <- FromClause SelectClause?\n"
+<<<<<<< HEAD
 	"WithStatement <- ColIdOrString InsertColumnList? MaxRecursionLevel? UsingKey? 'AS' Materialized? CTEBody\n"
+=======
+	"WithStatement <- ColIdOrString InsertColumnList? UsingKey? 'AS' Materialized? CTEBody\n"
+>>>>>>> duckdb_upstream/main
 	"CTEBody <- CTESelectBody / CTEDMLBody\n"
 	"CTESelectBody <- Parens(SelectStatementInternal)\n"
 	"CTEDMLBody <- Parens(Statement)\n"
 	"UsingKey <- 'USING' 'KEY' Parens(TargetList)\n"
+<<<<<<< HEAD
 	"MaxRecursionLevel <- 'MAX' 'RECURSION' 'LEVEL' NumberLiteral\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"Materialized <- 'NOT'? 'MATERIALIZED'\n"
 	"WithClause <- 'WITH' Recursive? List(WithStatement)\n"
 	"Recursive <- 'RECURSIVE'\n"
 	"SelectClause <- 'SELECT' DistinctClause? TargetList?\n"
 	"TargetList <- List(AliasedExpression)\n"
+<<<<<<< HEAD
 	"ColumnAliases <- Parens(List(ColLabelOrString))\n"
 	"DistinctClause <- DistinctOn\n"
+=======
+	"ColumnAliases <- Parens(List(ColIdOrString))\n"
+	"DistinctClause <- DistinctOn / DistinctAll\n"
+	"DistinctAll <- 'ALL'\n"
+>>>>>>> duckdb_upstream/main
 	"DistinctOn <- 'DISTINCT' DistinctOnTargets?\n"
 	"DistinctOnTargets <- 'ON' Parens(List(Expression))\n"
 	"InnerTableRef <- ValuesRef / TableFunction / TableSubquery / BaseTableRef / ParensTableRef\n"
@@ -1656,7 +1874,11 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"TableSubquery <- Lateral? SubqueryReference TableAlias?\n"
 	"BaseTableRef <- TableAliasColon? BaseTableName TableAlias? AtClause? SampleClause?\n"
 	"TableAliasColon <- ColIdOrString ':'\n"
+<<<<<<< HEAD
 	"ValuesRef <- ValuesBody TableAlias?\n"
+=======
+	"ValuesRef <- ValuesClause TableAlias?\n"
+>>>>>>> duckdb_upstream/main
 	"ParensTableRef <- TableAliasColon? Parens(TableRef) TableAlias? SampleClause?\n"
 	"JoinOrPivot <- JoinClause / TablePivotClause / TableUnpivotClause\n"
 	"TablePivotClause <- 'PIVOT' Parens(TablePivotClauseBody) TableAlias?\n"
@@ -1686,9 +1908,13 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"FunctionArgument <- NamedFunctionArgument / PositionalFunctionArgument\n"
 	"NamedFunctionArgument <- NamedParameter\n"
 	"PositionalFunctionArgument <- Expression\n"
+<<<<<<< HEAD
 	"# Spark permits (nearly) any word as a named-argument name, e.g. count_min_sketch(column => x):\n"
 	"# ReservedIdentifier accepts reserved keywords like COLUMN that TypeFuncName rejects.\n"
 	"NamedParameter <- ReservedIdentifier Type? NamedParameterAssignment Expression\n"
+=======
+	"NamedParameter <- TypeFuncName Type? NamedParameterAssignment Expression\n"
+>>>>>>> duckdb_upstream/main
 	"NamedParameterAssignment <- ':=' / '=>'\n"
 	"TableAlias <- TableAliasAs / TableAliasWithoutAs\n"
 	"TableAliasAs <- 'AS' IdentifierOrStringLiteral ColumnAliases?\n"
@@ -1698,6 +1924,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"AtUnit <- VersionAtUnit / TimestampAtUnit\n"
 	"VersionAtUnit <- 'VERSION'\n"
 	"TimestampAtUnit <- 'TIMESTAMP'\n"
+<<<<<<< HEAD
 	"JoinClause <- JoinByClause / RegularJoinClause / JoinWithoutOnClause / LateralJoinClause\n"
 	"RegularJoinClause <- Asof? JoinType? 'JOIN' TableRef JoinQualifier\n"
 	"JoinByClause <- 'JOIN' 'BY' Parens('TYPE' ColLabel) TableRef JoinQualifier\n"
@@ -1708,13 +1935,45 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"OnClause <- 'ON' Expression\n"
 	"UsingClause <- 'USING' Parens(List(ColumnName))\n"
 	"JoinType <- FullJoin / LeftSemiJoin / LeftAntiJoin / LeftJoin / RightJoin / SemiJoin / AntiJoin / InnerJoin\n"
+=======
+	"JoinClause <- JoinByClause / RegularJoinClause / JoinWithoutOnClause / NearestJoinClause\n"
+	"# NEAREST BY has two alternatives so PEG can backtrack: the bare form uses alias-less target mirrors (tried\n"
+	"# first, so an unaliased target does not greedily consume NEAREST/APPROX/EXACT as an alias), and the aliased\n"
+	"# form falls back to a full TableRef when a real alias identifier follows the target.\n"
+	"NearestJoinClause <- NearestJoinBare / NearestJoinAliased\n"
+	"NearestJoinAliased <- JoinType? 'JOIN' TableRef ApproxOrExact? 'NEAREST' NumberLiteral? 'BY' DistanceOrSimilarity Expression\n"
+	"NearestJoinBare <- JoinType? 'JOIN' NearestBareTableRef ApproxOrExact? 'NEAREST' NumberLiteral? 'BY' DistanceOrSimilarity Expression\n"
+	"NearestBareTableRef <- NearestValuesRef / NearestTableFunction / NearestTableSubquery / NearestBaseTableRef / NearestParensTableRef\n"
+	"NearestValuesRef <- ValuesClause\n"
+	"NearestTableFunction <- Lateral? QualifiedTableFunction TableFunctionArguments WithOrdinality?\n"
+	"NearestTableSubquery <- Lateral? SubqueryReference\n"
+	"NearestBaseTableRef <- BaseTableName AtClause? SampleClause?\n"
+	"NearestParensTableRef <- Parens(TableRef) SampleClause?\n"
+	"ApproxOrExact <- NearestApprox / NearestExact\n"
+	"NearestApprox <- 'APPROX'\n"
+	"NearestExact <- 'EXACT'\n"
+	"DistanceOrSimilarity <- NearestDistance / NearestSimilarity\n"
+	"NearestDistance <- 'DISTANCE'\n"
+	"NearestSimilarity <- 'SIMILARITY'\n"
+	"RegularJoinClause <- Asof? JoinType? 'JOIN' TableRef JoinQualifier\n"
+	"JoinByClause <- 'JOIN' 'BY' Parens('TYPE' ColLabel) TableRef JoinQualifier\n"
+	"Asof <- 'ASOF'\n"
+	"JoinWithoutOnClause <- JoinPrefix 'JOIN' InnerTableRef\n"
+	"JoinQualifier <- OnClause / UsingClause\n"
+	"OnClause <- 'ON' Expression\n"
+	"UsingClause <- 'USING' Parens(List(ColumnName))\n"
+	"JoinType <- FullJoin / LeftJoin / RightJoin / SemiJoin / AntiJoin / InnerJoin\n"
+>>>>>>> duckdb_upstream/main
 	"JoinPrefix <- CrossJoinPrefix / NaturalJoinPrefix / PositionalJoinPrefix\n"
 	"CrossJoinPrefix <- 'CROSS'\n"
 	"NaturalJoinPrefix <- 'NATURAL' JoinType?\n"
 	"PositionalJoinPrefix <- 'POSITIONAL'\n"
 	"FullJoin <- 'FULL' 'OUTER'?\n"
+<<<<<<< HEAD
 	"LeftSemiJoin <- 'LEFT' 'SEMI'\n"
 	"LeftAntiJoin <- 'LEFT' 'ANTI'\n"
+=======
+>>>>>>> duckdb_upstream/main
 	"LeftJoin <- 'LEFT' 'OUTER'?\n"
 	"RightJoin <- 'RIGHT' 'OUTER'?\n"
 	"SemiJoin <- 'SEMI'\n"
@@ -1744,10 +2003,14 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"SampleRows <- 'ROWS'\n"
 	"GroupByExpressions <- GroupByList / GroupByAll\n"
 	"GroupByAll <- 'ALL'\n"
+<<<<<<< HEAD
 	"GroupByList <- List(GroupByExpression) GroupByModifier?\n"
 	"GroupByModifier <- WithCubeOrRollup / TrailingGroupingSets\n"
 	"WithCubeOrRollup <- 'WITH' CubeOrRollup\n"
 	"TrailingGroupingSets <- 'GROUPING' 'SETS' Parens(GroupByList)\n"
+=======
+	"GroupByList <- List(GroupByExpression)\n"
+>>>>>>> duckdb_upstream/main
 	"GroupByExpression <- EmptyGroupingItem / CubeOrRollupClause / GroupingSetsClause / GroupByBaseExpression\n"
 	"GroupByBaseExpression <- Expression\n"
 	"EmptyGroupingItem <- '(' ')'\n"
@@ -1764,8 +2027,13 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"NullsFirstOrLast <- NullsFirst / NullsLast\n"
 	"NullsFirst <- 'NULLS' 'FIRST'\n"
 	"NullsLast <- 'NULLS' 'LAST'\n"
+<<<<<<< HEAD
 	"OrderByClause <- ('ORDER' / 'SORT') 'BY' OrderByExpressions\n"
 	"OrderByExpressions <- OrderByExpressionList / OrderByAll\n"
+=======
+	"OrderByClause <- 'ORDER' 'BY' OrderByExpressions\n"
+	"OrderByExpressions <- OrderByAll / OrderByExpressionList\n"
+>>>>>>> duckdb_upstream/main
 	"OrderByExpressionList <- List(OrderByExpression)\n"
 	"OrderByAll <- 'ALL' DescOrAsc? NullsFirstOrLast?\n"
 	"LimitClause <- 'LIMIT' LimitValue\n"
@@ -1779,6 +2047,7 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"FetchClause <- 'FETCH' FirstOrNext FetchValue RowOrRows 'ONLY'\n"
 	"FirstOrNext <- 'FIRST' / 'NEXT'\n"
 	"FetchValue <- Expression\n"
+<<<<<<< HEAD
 	"AliasedExpression <- ColIdExpression / ExpressionAsCollabel / ExpressionAsColumnAliases / ExpressionOptIdentifier\n"
 	"ColIdExpression <- ColId ':' Expression\n"
 	"ExpressionAsCollabel <- Expression 'AS' ColLabelOrString\n"
@@ -1798,15 +2067,37 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"SetVariableOrSetting <- SetVariable / SetSetting\n"
 	"SetTimeZone <- 'TIME' 'ZONE' ZoneValue\n"
 	"ZoneValue <- ZoneIntervalWithPrecision / ZoneIntervalRange / ZoneIntervalLiteral / ZoneLocal / ZoneDefault / ZoneStringLiteral / ZoneIdentifier / NumberLiteral\n"
+=======
+	"AliasedExpression <- ColIdExpression / ExpressionAsCollabel / ExpressionOptIdentifier\n"
+	"ColIdExpression <- ColId ':' Expression\n"
+	"ExpressionAsCollabel <- Expression 'AS' ColLabelOrString\n"
+	"ExpressionOptIdentifier <- Expression Identifier?\n"
+	"ValuesClause <- 'VALUES' List(ValuesExpressions)\n"
+	"ValuesExpressions <- Parens(List(Expression))\n"
+	"SetStatement <- 'SET' SetAssignmentOrTimeZone\n"
+	"SetAssignmentOrTimeZone <- SetSchema / StandardAssignment / SetTimeZone\n"
+	"ResetStatement <- 'RESET' SetVariableOrSetting\n"
+	"SetSchema <- 'SCHEMA' StringLiteral\n"
+	"StandardAssignment <- SetVariableOrSetting SetAssignment\n"
+	"SetVariableOrSetting <- SetVariable / SetSetting\n"
+	"SetTimeZone <- 'TIME' 'ZONE' ZoneValue\n"
+	"ZoneValue <- ZoneIntervalWithPrecision / ZoneIntervalWithInterval / ZoneLocal / ZoneDefault / ZoneStringLiteral / ZoneIdentifier / NumberLiteral\n"
+>>>>>>> duckdb_upstream/main
 	"ZoneLocal <- 'LOCAL'\n"
 	"ZoneDefault <- 'DEFAULT'\n"
 	"ZoneStringLiteral <- StringLiteral\n"
 	"ZoneIdentifier <- Identifier\n"
+<<<<<<< HEAD
 	"ZoneIntervalRange <- 'INTERVAL' StringLiteral IntervalToIntervalAsType\n"
 	"ZoneIntervalLiteral <- IntervalLiteral\n"
 	"ZoneIntervalWithPrecision <- 'INTERVAL' Parens(NumberLiteral) StringLiteral\n"
 	"SetSetting <- DottedSettingIdentifier / (SettingScope? SettingName)\n"
 	"DottedSettingIdentifier <- Identifier ('.' Identifier)+\n"
+=======
+	"ZoneIntervalWithInterval <- 'INTERVAL' StringLiteral Interval?\n"
+	"ZoneIntervalWithPrecision <- 'INTERVAL' Parens(NumberLiteral) StringLiteral\n"
+	"SetSetting <- SettingScope? SettingName\n"
+>>>>>>> duckdb_upstream/main
 	"SetVariable <- VariableScope Identifier\n"
 	"VariableScope <- 'VARIABLE'\n"
 	"SettingScope <- LocalScope / SessionScope / GlobalScope\n"
@@ -1849,7 +2140,11 @@ const char INLINED_PEG_GRAMMAR[] = {
 	"VacuumParensOptions <- Parens(List(VacuumOption))\n"
 	"VacuumLegacyOptions <- OptFull? OptFreeze? OptVerbose? OptAnalyze?\n"
 	"VacuumOption <- OptAnalyze / OptFreeze / OptFull / OptVerbose / Identifier\n"
+<<<<<<< HEAD
 	"OptAnalyze <- 'ANALYZE'\n"
+=======
+	"OptAnalyze <- AnalyzeKeyword\n"
+>>>>>>> duckdb_upstream/main
 	"OptFull <- 'FULL'\n"
 	"OptFreeze <- 'FREEZE'\n"
 	"OptVerbose <- 'VERBOSE'\n"

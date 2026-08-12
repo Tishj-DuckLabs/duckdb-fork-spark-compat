@@ -19,6 +19,7 @@ static const TransformFrameOps ALTER_TABLE_STMT_OPS = {"AlterTableStmt",
 static const TransformFrameOps ALTER_SCHEMA_STMT_OPS = {"AlterSchemaStmt",
                                                         &PEGTransformerFactory::InitializeAlterSchemaStmtTrampoline,
                                                         &PEGTransformerFactory::FinalizeAlterSchemaStmtTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps SPARK_ALTER_TBL_PROPERTIES_STMT_OPS = {
     "SparkAlterTblPropertiesStmt", &PEGTransformerFactory::InitializeSparkAlterTblPropertiesStmtTrampoline,
     &PEGTransformerFactory::FinalizeSparkAlterTblPropertiesStmtTrampoline};
@@ -37,6 +38,8 @@ static const TransformFrameOps SPARK_TBL_PROPERTY_OPS = {"SparkTblProperty",
 static const TransformFrameOps SPARK_TBL_PROPERTY_VALUE_OPS = {
     "SparkTblPropertyValue", &PEGTransformerFactory::InitializeSparkTblPropertyValueTrampoline,
     &PEGTransformerFactory::FinalizeSparkTblPropertyValueTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps ALTER_TABLE_OPTIONS_OPS = {"AlterTableOptions",
                                                           &PEGTransformerFactory::InitializeAlterTableOptionsTrampoline,
                                                           &PEGTransformerFactory::FinalizeAlterTableOptionsTrampoline};
@@ -205,6 +208,12 @@ static const TransformFrameOps COMMENT_VALUE_OPS = {"CommentValue",
 static const TransformFrameOps STRING_LITERAL_VALUE_OPS = {
     "StringLiteralValue", &PEGTransformerFactory::InitializeStringLiteralValueTrampoline,
     &PEGTransformerFactory::FinalizeStringLiteralValueTrampoline};
+<<<<<<< HEAD
+=======
+static const TransformFrameOps ANALYZE_KEYWORD_OPS = {"AnalyzeKeyword",
+                                                      &PEGTransformerFactory::InitializeAnalyzeKeywordTrampoline,
+                                                      &PEGTransformerFactory::FinalizeAnalyzeKeywordTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps EXPRESSION_STATEMENT_OPS = {
     "ExpressionStatement", &PEGTransformerFactory::InitializeExpressionStatementTrampoline,
     &PEGTransformerFactory::FinalizeExpressionStatementTrampoline};
@@ -393,6 +402,7 @@ static const TransformFrameOps UNION_TYPE_OPS = {"UnionType", &PEGTransformerFac
 static const TransformFrameOps COL_ID_TYPE_LIST_OPS = {"ColIdTypeList",
                                                        &PEGTransformerFactory::InitializeColIdTypeListTrampoline,
                                                        &PEGTransformerFactory::FinalizeColIdTypeListTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps COL_ID_PARENS_TYPE_LIST_OPS = {
     "ColIdParensTypeList", &PEGTransformerFactory::InitializeColIdParensTypeListTrampoline,
     &PEGTransformerFactory::FinalizeColIdParensTypeListTrampoline};
@@ -401,19 +411,32 @@ static const TransformFrameOps MAP_TYPE_OPS = {"MapType", &PEGTransformerFactory
 static const TransformFrameOps MAP_PARENS_LIST_TYPE_OPS = {
     "MapParensListType", &PEGTransformerFactory::InitializeMapParensListTypeTrampoline,
     &PEGTransformerFactory::FinalizeMapParensListTypeTrampoline};
+=======
+static const TransformFrameOps MAP_TYPE_OPS = {"MapType", &PEGTransformerFactory::InitializeMapTypeTrampoline,
+                                               &PEGTransformerFactory::FinalizeMapTypeTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps TUPLE_TYPE_OPS = {"TupleType", &PEGTransformerFactory::InitializeTupleTypeTrampoline,
                                                  &PEGTransformerFactory::FinalizeTupleTypeTrampoline};
 static const TransformFrameOps COL_ID_TYPE_OPS = {"ColIdType", &PEGTransformerFactory::InitializeColIdTypeTrampoline,
                                                   &PEGTransformerFactory::FinalizeColIdTypeTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps COL_ID_COLON_TYPE_OPS = {"ColIdColonType",
                                                         &PEGTransformerFactory::InitializeColIdColonTypeTrampoline,
                                                         &PEGTransformerFactory::FinalizeColIdColonTypeTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps ARRAY_BOUNDS_OPS = {"ArrayBounds",
                                                    &PEGTransformerFactory::InitializeArrayBoundsTrampoline,
                                                    &PEGTransformerFactory::FinalizeArrayBoundsTrampoline};
 static const TransformFrameOps ARRAY_KEYWORD_OPS = {"ArrayKeyword",
                                                     &PEGTransformerFactory::InitializeArrayKeywordTrampoline,
                                                     &PEGTransformerFactory::FinalizeArrayKeywordTrampoline};
+<<<<<<< HEAD
+=======
+static const TransformFrameOps ARRAY_KEYWORD_WITH_BOUNDS_OPS = {
+    "ArrayKeywordWithBounds", &PEGTransformerFactory::InitializeArrayKeywordWithBoundsTrampoline,
+    &PEGTransformerFactory::FinalizeArrayKeywordWithBoundsTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps SQUARE_BRACKETS_ARRAY_OPS = {
     "SquareBracketsArray", &PEGTransformerFactory::InitializeSquareBracketsArrayTrampoline,
     &PEGTransformerFactory::FinalizeSquareBracketsArrayTrampoline};
@@ -437,6 +460,7 @@ static const TransformFrameOps WITH_RULE_OPS = {"WithRule", &PEGTransformerFacto
 static const TransformFrameOps WITHOUT_RULE_OPS = {"WithoutRule",
                                                    &PEGTransformerFactory::InitializeWithoutRuleTrampoline,
                                                    &PEGTransformerFactory::FinalizeWithoutRuleTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps PARTITION_SPEC_OPS = {"PartitionSpec",
                                                      &PEGTransformerFactory::InitializePartitionSpecTrampoline,
                                                      &PEGTransformerFactory::FinalizePartitionSpecTrampoline};
@@ -446,6 +470,8 @@ static const TransformFrameOps PARTITION_SPEC_ENTRY_OPS = {
 static const TransformFrameOps PARTITION_SPEC_VALUE_OPS = {
     "PartitionSpecValue", &PEGTransformerFactory::InitializePartitionSpecValueTrampoline,
     &PEGTransformerFactory::FinalizePartitionSpecValueTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps CONNECT_STATEMENT_OPS = {"ConnectStatement",
                                                         &PEGTransformerFactory::InitializeConnectStatementTrampoline,
                                                         &PEGTransformerFactory::FinalizeConnectStatementTrampoline};
@@ -751,6 +777,7 @@ static const TransformFrameOps CREATE_TABLE_STMT_OPS = {"CreateTableStmt",
 static const TransformFrameOps CREATE_TABLE_DEFINITION_OPS = {
     "CreateTableDefinition", &PEGTransformerFactory::InitializeCreateTableDefinitionTrampoline,
     &PEGTransformerFactory::FinalizeCreateTableDefinitionTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps SPARK_USING_OPS = {"SparkUsing", &PEGTransformerFactory::InitializeSparkUsingTrampoline,
                                                   &PEGTransformerFactory::FinalizeSparkUsingTrampoline};
 static const TransformFrameOps SPARK_LOCATION_OPS = {"SparkLocation",
@@ -759,6 +786,8 @@ static const TransformFrameOps SPARK_LOCATION_OPS = {"SparkLocation",
 static const TransformFrameOps SPARK_TABLE_COMMENT_OPS = {"SparkTableComment",
                                                           &PEGTransformerFactory::InitializeSparkTableCommentTrampoline,
                                                           &PEGTransformerFactory::FinalizeSparkTableCommentTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps CREATE_TABLE_AS_OPS = {"CreateTableAs",
                                                       &PEGTransformerFactory::InitializeCreateTableAsTrampoline,
                                                       &PEGTransformerFactory::FinalizeCreateTableAsTrampoline};
@@ -774,9 +803,12 @@ static const TransformFrameOps SORTED_OPT_PARTITION_OPTIONS_OPS = {
 static const TransformFrameOps PARTITION_OPTIONS_OPS = {"PartitionOptions",
                                                         &PEGTransformerFactory::InitializePartitionOptionsTrampoline,
                                                         &PEGTransformerFactory::FinalizePartitionOptionsTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps PARTITION_FIELD_OPS = {"PartitionField",
                                                       &PEGTransformerFactory::InitializePartitionFieldTrampoline,
                                                       &PEGTransformerFactory::FinalizePartitionFieldTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps SORTED_OPTIONS_OPS = {"SortedOptions",
                                                      &PEGTransformerFactory::InitializeSortedOptionsTrampoline,
                                                      &PEGTransformerFactory::FinalizeSortedOptionsTrampoline};
@@ -845,9 +877,12 @@ static const TransformFrameOps COLUMN_DEFINITION_OPS = {"ColumnDefinition",
 static const TransformFrameOps COLUMN_CONSTRAINT_OPS = {"ColumnConstraint",
                                                         &PEGTransformerFactory::InitializeColumnConstraintTrampoline,
                                                         &PEGTransformerFactory::FinalizeColumnConstraintTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps COLUMN_COMMENT_OPS = {"ColumnComment",
                                                      &PEGTransformerFactory::InitializeColumnCommentTrampoline,
                                                      &PEGTransformerFactory::FinalizeColumnCommentTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps NOT_NULL_CONSTRAINT_OPS = {"NotNullConstraint",
                                                           &PEGTransformerFactory::InitializeNotNullConstraintTrampoline,
                                                           &PEGTransformerFactory::FinalizeNotNullConstraintTrampoline};
@@ -1053,17 +1088,21 @@ static const TransformFrameOps CREATE_VIEW_STMT_OPS = {"CreateViewStmt",
 static const TransformFrameOps CREATE_RECURSIVE_OPS = {"CreateRecursive",
                                                        &PEGTransformerFactory::InitializeCreateRecursiveTrampoline,
                                                        &PEGTransformerFactory::FinalizeCreateRecursiveTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps VIEW_COLUMN_LIST_OPS = {"ViewColumnList",
                                                        &PEGTransformerFactory::InitializeViewColumnListTrampoline,
                                                        &PEGTransformerFactory::FinalizeViewColumnListTrampoline};
 static const TransformFrameOps VIEW_COLUMN_OPS = {"ViewColumn", &PEGTransformerFactory::InitializeViewColumnTrampoline,
                                                   &PEGTransformerFactory::FinalizeViewColumnTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps DEALLOCATE_STATEMENT_OPS = {
     "DeallocateStatement", &PEGTransformerFactory::InitializeDeallocateStatementTrampoline,
     &PEGTransformerFactory::FinalizeDeallocateStatementTrampoline};
 static const TransformFrameOps DEALLOCATE_PREPARE_OPS = {"DeallocatePrepare",
                                                          &PEGTransformerFactory::InitializeDeallocatePrepareTrampoline,
                                                          &PEGTransformerFactory::FinalizeDeallocatePrepareTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps DECLARE_STATEMENT_OPS = {"DeclareStatement",
                                                         &PEGTransformerFactory::InitializeDeclareStatementTrampoline,
                                                         &PEGTransformerFactory::FinalizeDeclareStatementTrampoline};
@@ -1073,6 +1112,8 @@ static const TransformFrameOps DECLARE_VALUE_OPS = {"DeclareValue",
 static const TransformFrameOps DROP_VARIABLE_STATEMENT_OPS = {
     "DropVariableStatement", &PEGTransformerFactory::InitializeDropVariableStatementTrampoline,
     &PEGTransformerFactory::FinalizeDropVariableStatementTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps DELETE_STATEMENT_OPS = {"DeleteStatement",
                                                        &PEGTransformerFactory::InitializeDeleteStatementTrampoline,
                                                        &PEGTransformerFactory::FinalizeDeleteStatementTrampoline};
@@ -1093,6 +1134,7 @@ static const TransformFrameOps SHOW_SELECT_OPS = {"ShowSelect", &PEGTransformerF
 static const TransformFrameOps SHOW_ALL_TABLES_OPS = {"ShowAllTables",
                                                       &PEGTransformerFactory::InitializeShowAllTablesTrampoline,
                                                       &PEGTransformerFactory::FinalizeShowAllTablesTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps DESCRIBE_QUERY_OPS = {"DescribeQuery",
                                                      &PEGTransformerFactory::InitializeDescribeQueryTrampoline,
                                                      &PEGTransformerFactory::FinalizeDescribeQueryTrampoline};
@@ -1102,6 +1144,8 @@ static const TransformFrameOps DESCRIBE_FUNCTION_OPS = {"DescribeFunction",
 static const TransformFrameOps DESCRIBE_TABLE_OPS = {"DescribeTable",
                                                      &PEGTransformerFactory::InitializeDescribeTableTrampoline,
                                                      &PEGTransformerFactory::FinalizeDescribeTableTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps SHOW_QUALIFIED_NAME_OPS = {"ShowQualifiedName",
                                                           &PEGTransformerFactory::InitializeShowQualifiedNameTrampoline,
                                                           &PEGTransformerFactory::FinalizeShowQualifiedNameTrampoline};
@@ -1218,12 +1262,15 @@ static const TransformFrameOps EXECUTE_STATEMENT_OPS = {"ExecuteStatement",
 static const TransformFrameOps EXPLAIN_STATEMENT_OPS = {"ExplainStatement",
                                                         &PEGTransformerFactory::InitializeExplainStatementTrampoline,
                                                         &PEGTransformerFactory::FinalizeExplainStatementTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps EXPLAIN_ANALYZE_OPS = {"ExplainAnalyze",
                                                       &PEGTransformerFactory::InitializeExplainAnalyzeTrampoline,
                                                       &PEGTransformerFactory::FinalizeExplainAnalyzeTrampoline};
 static const TransformFrameOps EXPLAIN_MODE_OPS = {"ExplainMode",
                                                    &PEGTransformerFactory::InitializeExplainModeTrampoline,
                                                    &PEGTransformerFactory::FinalizeExplainModeTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps EXPLAIN_OPTION_LIST_OPS = {"ExplainOptionList",
                                                           &PEGTransformerFactory::InitializeExplainOptionListTrampoline,
                                                           &PEGTransformerFactory::FinalizeExplainOptionListTrampoline};
@@ -1434,12 +1481,15 @@ static const TransformFrameOps INTERVAL_PARAMETER_OPS = {"IntervalParameter",
 static const TransformFrameOps INTERVAL_STRING_PARAMETER_OPS = {
     "IntervalStringParameter", &PEGTransformerFactory::InitializeIntervalStringParameterTrampoline,
     &PEGTransformerFactory::FinalizeIntervalStringParameterTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps INTERVAL_MULTI_UNIT_LITERAL_OPS = {
     "IntervalMultiUnitLiteral", &PEGTransformerFactory::InitializeIntervalMultiUnitLiteralTrampoline,
     &PEGTransformerFactory::FinalizeIntervalMultiUnitLiteralTrampoline};
 static const TransformFrameOps INTERVAL_UNIT_PAIR_OPS = {"IntervalUnitPair",
                                                          &PEGTransformerFactory::InitializeIntervalUnitPairTrampoline,
                                                          &PEGTransformerFactory::FinalizeIntervalUnitPairTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps FRAME_CLAUSE_OPS = {"FrameClause",
                                                    &PEGTransformerFactory::InitializeFrameClauseTrampoline,
                                                    &PEGTransformerFactory::FinalizeFrameClauseTrampoline};
@@ -1645,9 +1695,14 @@ static const TransformFrameOps LOGICAL_NOT_EXPRESSION_OPS = {
 static const TransformFrameOps NOT_EXPRESSION_OPS = {"NotExpression",
                                                      &PEGTransformerFactory::InitializeNotExpressionTrampoline,
                                                      &PEGTransformerFactory::FinalizeNotExpressionTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps SPARK_NOT_EXPRESSION_OPS = {
     "SparkNotExpression", &PEGTransformerFactory::InitializeSparkNotExpressionTrampoline,
     &PEGTransformerFactory::FinalizeSparkNotExpressionTrampoline};
+=======
+static const TransformFrameOps NOT_KEYWORD_OPS = {"NotKeyword", &PEGTransformerFactory::InitializeNotKeywordTrampoline,
+                                                  &PEGTransformerFactory::FinalizeNotKeywordTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps IS_EXPRESSION_OPS = {"IsExpression",
                                                     &PEGTransformerFactory::InitializeIsExpressionTrampoline,
                                                     &PEGTransformerFactory::FinalizeIsExpressionTrampoline};
@@ -1818,14 +1873,18 @@ static const TransformFrameOps QUALIFIED_OPERATOR_CONTENTS_OPS = {
     &PEGTransformerFactory::FinalizeQualifiedOperatorContentsTrampoline};
 static const TransformFrameOps ANY_OP_OPS = {"AnyOp", &PEGTransformerFactory::InitializeAnyOpTrampoline,
                                              &PEGTransformerFactory::FinalizeAnyOpTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps ANY_ALL_OP_OPS = {"AnyAllOp", &PEGTransformerFactory::InitializeAnyAllOpTrampoline,
                                                  &PEGTransformerFactory::FinalizeAnyAllOpTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps BITWISE_EXPRESSION_OPS = {"BitwiseExpression",
                                                          &PEGTransformerFactory::InitializeBitwiseExpressionTrampoline,
                                                          &PEGTransformerFactory::FinalizeBitwiseExpressionTrampoline};
 static const TransformFrameOps BITWISE_EXPRESSION_TAIL_OPS = {
     "BitwiseExpressionTail", &PEGTransformerFactory::InitializeBitwiseExpressionTailTrampoline,
     &PEGTransformerFactory::FinalizeBitwiseExpressionTailTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps BITWISE_OR_OPERATOR_OPS = {"BitwiseOrOperator",
                                                           &PEGTransformerFactory::InitializeBitwiseOrOperatorTrampoline,
                                                           &PEGTransformerFactory::FinalizeBitwiseOrOperatorTrampoline};
@@ -1847,6 +1906,11 @@ static const TransformFrameOps SHIFT_EXPRESSION_TAIL_OPS = {
 static const TransformFrameOps SHIFT_OPERATOR_OPS = {"ShiftOperator",
                                                      &PEGTransformerFactory::InitializeShiftOperatorTrampoline,
                                                      &PEGTransformerFactory::FinalizeShiftOperatorTrampoline};
+=======
+static const TransformFrameOps BIT_OPERATOR_OPS = {"BitOperator",
+                                                   &PEGTransformerFactory::InitializeBitOperatorTrampoline,
+                                                   &PEGTransformerFactory::FinalizeBitOperatorTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps ADDITIVE_EXPRESSION_OPS = {
     "AdditiveExpression", &PEGTransformerFactory::InitializeAdditiveExpressionTrampoline,
     &PEGTransformerFactory::FinalizeAdditiveExpressionTrampoline};
@@ -1991,12 +2055,15 @@ static const TransformFrameOps POSITION_ARGUMENTS_OPS = {"PositionArguments",
 static const TransformFrameOps ROW_EXPRESSION_OPS = {"RowExpression",
                                                      &PEGTransformerFactory::InitializeRowExpressionTrampoline,
                                                      &PEGTransformerFactory::FinalizeRowExpressionTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps ROW_EXPRESSION_ARG_OPS = {"RowExpressionArg",
                                                          &PEGTransformerFactory::InitializeRowExpressionArgTrampoline,
                                                          &PEGTransformerFactory::FinalizeRowExpressionArgTrampoline};
 static const TransformFrameOps ROW_EXPRESSION_ALIAS_OPS = {
     "RowExpressionAlias", &PEGTransformerFactory::InitializeRowExpressionAliasTrampoline,
     &PEGTransformerFactory::FinalizeRowExpressionAliasTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps SUBSTRING_EXPRESSION_OPS = {
     "SubstringExpression", &PEGTransformerFactory::InitializeSubstringExpressionTrampoline,
     &PEGTransformerFactory::FinalizeSubstringExpressionTrampoline};
@@ -2070,6 +2137,7 @@ static const TransformFrameOps EXTRACT_STRING_ARGUMENT_OPS = {
 static const TransformFrameOps EXTRACT_DATE_PART_OPS = {"ExtractDatePart",
                                                         &PEGTransformerFactory::InitializeExtractDatePartTrampoline,
                                                         &PEGTransformerFactory::FinalizeExtractDatePartTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps INSERT_STATEMENT_OPS = {"InsertStatement",
                                                        &PEGTransformerFactory::InitializeInsertStatementTrampoline,
                                                        &PEGTransformerFactory::FinalizeInsertStatementTrampoline};
@@ -2079,6 +2147,29 @@ static const TransformFrameOps MULTI_INSERT_STATEMENT_OPS = {
 static const TransformFrameOps MULTI_INSERT_BRANCH_OPS = {"MultiInsertBranch",
                                                           &PEGTransformerFactory::InitializeMultiInsertBranchTrampoline,
                                                           &PEGTransformerFactory::FinalizeMultiInsertBranchTrampoline};
+=======
+static const TransformFrameOps EXTERNAL_RESOURCE_STATEMENT_OPS = {
+    "ExternalResourceStatement", &PEGTransformerFactory::InitializeExternalResourceStatementTrampoline,
+    &PEGTransformerFactory::FinalizeExternalResourceStatementTrampoline};
+static const TransformFrameOps CREATE_EXTERNAL_RESOURCE_STMT_OPS = {
+    "CreateExternalResourceStmt", &PEGTransformerFactory::InitializeCreateExternalResourceStmtTrampoline,
+    &PEGTransformerFactory::FinalizeCreateExternalResourceStmtTrampoline};
+static const TransformFrameOps REGISTER_EXTERNAL_RESOURCE_STMT_OPS = {
+    "RegisterExternalResourceStmt", &PEGTransformerFactory::InitializeRegisterExternalResourceStmtTrampoline,
+    &PEGTransformerFactory::FinalizeRegisterExternalResourceStmtTrampoline};
+static const TransformFrameOps DESTROY_EXTERNAL_RESOURCE_STMT_OPS = {
+    "DestroyExternalResourceStmt", &PEGTransformerFactory::InitializeDestroyExternalResourceStmtTrampoline,
+    &PEGTransformerFactory::FinalizeDestroyExternalResourceStmtTrampoline};
+static const TransformFrameOps SHOW_EXTERNAL_RESOURCES_STMT_OPS = {
+    "ShowExternalResourcesStmt", &PEGTransformerFactory::InitializeShowExternalResourcesStmtTrampoline,
+    &PEGTransformerFactory::FinalizeShowExternalResourcesStmtTrampoline};
+static const TransformFrameOps SHOW_ALL_MODIFIER_OPS = {"ShowAllModifier",
+                                                        &PEGTransformerFactory::InitializeShowAllModifierTrampoline,
+                                                        &PEGTransformerFactory::FinalizeShowAllModifierTrampoline};
+static const TransformFrameOps INSERT_STATEMENT_OPS = {"InsertStatement",
+                                                       &PEGTransformerFactory::InitializeInsertStatementTrampoline,
+                                                       &PEGTransformerFactory::FinalizeInsertStatementTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps OR_ACTION_OPS = {"OrAction", &PEGTransformerFactory::InitializeOrActionTrampoline,
                                                 &PEGTransformerFactory::FinalizeOrActionTrampoline};
 static const TransformFrameOps INSERT_OR_REPLACE_OPS = {"InsertOrReplace",
@@ -2406,6 +2497,12 @@ static const TransformFrameOps COLUMN_ALIASES_OPS = {"ColumnAliases",
 static const TransformFrameOps DISTINCT_CLAUSE_OPS = {"DistinctClause",
                                                       &PEGTransformerFactory::InitializeDistinctClauseTrampoline,
                                                       &PEGTransformerFactory::FinalizeDistinctClauseTrampoline};
+<<<<<<< HEAD
+=======
+static const TransformFrameOps DISTINCT_ALL_OPS = {"DistinctAll",
+                                                   &PEGTransformerFactory::InitializeDistinctAllTrampoline,
+                                                   &PEGTransformerFactory::FinalizeDistinctAllTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps DISTINCT_ON_OPS = {"DistinctOn", &PEGTransformerFactory::InitializeDistinctOnTrampoline,
                                                   &PEGTransformerFactory::FinalizeDistinctOnTrampoline};
 static const TransformFrameOps DISTINCT_ON_TARGETS_OPS = {"DistinctOnTargets",
@@ -2539,6 +2636,54 @@ static const TransformFrameOps TIMESTAMP_AT_UNIT_OPS = {"TimestampAtUnit",
                                                         &PEGTransformerFactory::FinalizeTimestampAtUnitTrampoline};
 static const TransformFrameOps JOIN_CLAUSE_OPS = {"JoinClause", &PEGTransformerFactory::InitializeJoinClauseTrampoline,
                                                   &PEGTransformerFactory::FinalizeJoinClauseTrampoline};
+<<<<<<< HEAD
+=======
+static const TransformFrameOps NEAREST_JOIN_CLAUSE_OPS = {"NearestJoinClause",
+                                                          &PEGTransformerFactory::InitializeNearestJoinClauseTrampoline,
+                                                          &PEGTransformerFactory::FinalizeNearestJoinClauseTrampoline};
+static const TransformFrameOps NEAREST_JOIN_ALIASED_OPS = {
+    "NearestJoinAliased", &PEGTransformerFactory::InitializeNearestJoinAliasedTrampoline,
+    &PEGTransformerFactory::FinalizeNearestJoinAliasedTrampoline};
+static const TransformFrameOps NEAREST_JOIN_BARE_OPS = {"NearestJoinBare",
+                                                        &PEGTransformerFactory::InitializeNearestJoinBareTrampoline,
+                                                        &PEGTransformerFactory::FinalizeNearestJoinBareTrampoline};
+static const TransformFrameOps NEAREST_BARE_TABLE_REF_OPS = {
+    "NearestBareTableRef", &PEGTransformerFactory::InitializeNearestBareTableRefTrampoline,
+    &PEGTransformerFactory::FinalizeNearestBareTableRefTrampoline};
+static const TransformFrameOps NEAREST_VALUES_REF_OPS = {"NearestValuesRef",
+                                                         &PEGTransformerFactory::InitializeNearestValuesRefTrampoline,
+                                                         &PEGTransformerFactory::FinalizeNearestValuesRefTrampoline};
+static const TransformFrameOps NEAREST_TABLE_FUNCTION_OPS = {
+    "NearestTableFunction", &PEGTransformerFactory::InitializeNearestTableFunctionTrampoline,
+    &PEGTransformerFactory::FinalizeNearestTableFunctionTrampoline};
+static const TransformFrameOps NEAREST_TABLE_SUBQUERY_OPS = {
+    "NearestTableSubquery", &PEGTransformerFactory::InitializeNearestTableSubqueryTrampoline,
+    &PEGTransformerFactory::FinalizeNearestTableSubqueryTrampoline};
+static const TransformFrameOps NEAREST_BASE_TABLE_REF_OPS = {
+    "NearestBaseTableRef", &PEGTransformerFactory::InitializeNearestBaseTableRefTrampoline,
+    &PEGTransformerFactory::FinalizeNearestBaseTableRefTrampoline};
+static const TransformFrameOps NEAREST_PARENS_TABLE_REF_OPS = {
+    "NearestParensTableRef", &PEGTransformerFactory::InitializeNearestParensTableRefTrampoline,
+    &PEGTransformerFactory::FinalizeNearestParensTableRefTrampoline};
+static const TransformFrameOps APPROX_OR_EXACT_OPS = {"ApproxOrExact",
+                                                      &PEGTransformerFactory::InitializeApproxOrExactTrampoline,
+                                                      &PEGTransformerFactory::FinalizeApproxOrExactTrampoline};
+static const TransformFrameOps NEAREST_APPROX_OPS = {"NearestApprox",
+                                                     &PEGTransformerFactory::InitializeNearestApproxTrampoline,
+                                                     &PEGTransformerFactory::FinalizeNearestApproxTrampoline};
+static const TransformFrameOps NEAREST_EXACT_OPS = {"NearestExact",
+                                                    &PEGTransformerFactory::InitializeNearestExactTrampoline,
+                                                    &PEGTransformerFactory::FinalizeNearestExactTrampoline};
+static const TransformFrameOps DISTANCE_OR_SIMILARITY_OPS = {
+    "DistanceOrSimilarity", &PEGTransformerFactory::InitializeDistanceOrSimilarityTrampoline,
+    &PEGTransformerFactory::FinalizeDistanceOrSimilarityTrampoline};
+static const TransformFrameOps NEAREST_DISTANCE_OPS = {"NearestDistance",
+                                                       &PEGTransformerFactory::InitializeNearestDistanceTrampoline,
+                                                       &PEGTransformerFactory::FinalizeNearestDistanceTrampoline};
+static const TransformFrameOps NEAREST_SIMILARITY_OPS = {"NearestSimilarity",
+                                                         &PEGTransformerFactory::InitializeNearestSimilarityTrampoline,
+                                                         &PEGTransformerFactory::FinalizeNearestSimilarityTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps REGULAR_JOIN_CLAUSE_OPS = {"RegularJoinClause",
                                                           &PEGTransformerFactory::InitializeRegularJoinClauseTrampoline,
                                                           &PEGTransformerFactory::FinalizeRegularJoinClauseTrampoline};
@@ -2550,9 +2695,12 @@ static const TransformFrameOps ASOF_OPS = {"Asof", &PEGTransformerFactory::Initi
 static const TransformFrameOps JOIN_WITHOUT_ON_CLAUSE_OPS = {
     "JoinWithoutOnClause", &PEGTransformerFactory::InitializeJoinWithoutOnClauseTrampoline,
     &PEGTransformerFactory::FinalizeJoinWithoutOnClauseTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps LATERAL_JOIN_CLAUSE_OPS = {"LateralJoinClause",
                                                           &PEGTransformerFactory::InitializeLateralJoinClauseTrampoline,
                                                           &PEGTransformerFactory::FinalizeLateralJoinClauseTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps JOIN_QUALIFIER_OPS = {"JoinQualifier",
                                                      &PEGTransformerFactory::InitializeJoinQualifierTrampoline,
                                                      &PEGTransformerFactory::FinalizeJoinQualifierTrampoline};
@@ -2576,12 +2724,15 @@ static const TransformFrameOps POSITIONAL_JOIN_PREFIX_OPS = {
     &PEGTransformerFactory::FinalizePositionalJoinPrefixTrampoline};
 static const TransformFrameOps FULL_JOIN_OPS = {"FullJoin", &PEGTransformerFactory::InitializeFullJoinTrampoline,
                                                 &PEGTransformerFactory::FinalizeFullJoinTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps LEFT_SEMI_JOIN_OPS = {"LeftSemiJoin",
                                                      &PEGTransformerFactory::InitializeLeftSemiJoinTrampoline,
                                                      &PEGTransformerFactory::FinalizeLeftSemiJoinTrampoline};
 static const TransformFrameOps LEFT_ANTI_JOIN_OPS = {"LeftAntiJoin",
                                                      &PEGTransformerFactory::InitializeLeftAntiJoinTrampoline,
                                                      &PEGTransformerFactory::FinalizeLeftAntiJoinTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps LEFT_JOIN_OPS = {"LeftJoin", &PEGTransformerFactory::InitializeLeftJoinTrampoline,
                                                 &PEGTransformerFactory::FinalizeLeftJoinTrampoline};
 static const TransformFrameOps RIGHT_JOIN_OPS = {"RightJoin", &PEGTransformerFactory::InitializeRightJoinTrampoline,
@@ -2653,6 +2804,12 @@ static const TransformFrameOps GROUP_BY_EXPRESSIONS_OPS = {
     &PEGTransformerFactory::FinalizeGroupByExpressionsTrampoline};
 static const TransformFrameOps GROUP_BY_ALL_OPS = {"GroupByAll", &PEGTransformerFactory::InitializeGroupByAllTrampoline,
                                                    &PEGTransformerFactory::FinalizeGroupByAllTrampoline};
+<<<<<<< HEAD
+=======
+static const TransformFrameOps GROUP_BY_LIST_OPS = {"GroupByList",
+                                                    &PEGTransformerFactory::InitializeGroupByListTrampoline,
+                                                    &PEGTransformerFactory::FinalizeGroupByListTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps GROUP_BY_EXPRESSION_OPS = {"GroupByExpression",
                                                           &PEGTransformerFactory::InitializeGroupByExpressionTrampoline,
                                                           &PEGTransformerFactory::FinalizeGroupByExpressionTrampoline};
@@ -2742,15 +2899,19 @@ static const TransformFrameOps COL_ID_EXPRESSION_OPS = {"ColIdExpression",
 static const TransformFrameOps EXPRESSION_AS_COLLABEL_OPS = {
     "ExpressionAsCollabel", &PEGTransformerFactory::InitializeExpressionAsCollabelTrampoline,
     &PEGTransformerFactory::FinalizeExpressionAsCollabelTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps EXPRESSION_AS_COLUMN_ALIASES_OPS = {
     "ExpressionAsColumnAliases", &PEGTransformerFactory::InitializeExpressionAsColumnAliasesTrampoline,
     &PEGTransformerFactory::FinalizeExpressionAsColumnAliasesTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps EXPRESSION_OPT_IDENTIFIER_OPS = {
     "ExpressionOptIdentifier", &PEGTransformerFactory::InitializeExpressionOptIdentifierTrampoline,
     &PEGTransformerFactory::FinalizeExpressionOptIdentifierTrampoline};
 static const TransformFrameOps VALUES_CLAUSE_OPS = {"ValuesClause",
                                                     &PEGTransformerFactory::InitializeValuesClauseTrampoline,
                                                     &PEGTransformerFactory::FinalizeValuesClauseTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps VALUES_CLAUSE_NO_PARENS_OPS = {
     "ValuesClauseNoParens", &PEGTransformerFactory::InitializeValuesClauseNoParensTrampoline,
     &PEGTransformerFactory::FinalizeValuesClauseNoParensTrampoline};
@@ -2759,6 +2920,8 @@ static const TransformFrameOps VALUES_BODY_OPS = {"ValuesBody", &PEGTransformerF
 static const TransformFrameOps VALUES_CLAUSE_WITH_ALIAS_OPS = {
     "ValuesClauseWithAlias", &PEGTransformerFactory::InitializeValuesClauseWithAliasTrampoline,
     &PEGTransformerFactory::FinalizeValuesClauseWithAliasTrampoline};
+=======
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps VALUES_EXPRESSIONS_OPS = {"ValuesExpressions",
                                                          &PEGTransformerFactory::InitializeValuesExpressionsTrampoline,
                                                          &PEGTransformerFactory::FinalizeValuesExpressionsTrampoline};
@@ -2768,12 +2931,20 @@ static const TransformFrameOps SET_STATEMENT_OPS = {"SetStatement",
 static const TransformFrameOps SET_ASSIGNMENT_OR_TIME_ZONE_OPS = {
     "SetAssignmentOrTimeZone", &PEGTransformerFactory::InitializeSetAssignmentOrTimeZoneTrampoline,
     &PEGTransformerFactory::FinalizeSetAssignmentOrTimeZoneTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps READ_SETTING_STATEMENT_OPS = {
     "ReadSettingStatement", &PEGTransformerFactory::InitializeReadSettingStatementTrampoline,
     &PEGTransformerFactory::FinalizeReadSettingStatementTrampoline};
 static const TransformFrameOps RESET_STATEMENT_OPS = {"ResetStatement",
                                                       &PEGTransformerFactory::InitializeResetStatementTrampoline,
                                                       &PEGTransformerFactory::FinalizeResetStatementTrampoline};
+=======
+static const TransformFrameOps RESET_STATEMENT_OPS = {"ResetStatement",
+                                                      &PEGTransformerFactory::InitializeResetStatementTrampoline,
+                                                      &PEGTransformerFactory::FinalizeResetStatementTrampoline};
+static const TransformFrameOps SET_SCHEMA_OPS = {"SetSchema", &PEGTransformerFactory::InitializeSetSchemaTrampoline,
+                                                 &PEGTransformerFactory::FinalizeSetSchemaTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps STANDARD_ASSIGNMENT_OPS = {
     "StandardAssignment", &PEGTransformerFactory::InitializeStandardAssignmentTrampoline,
     &PEGTransformerFactory::FinalizeStandardAssignmentTrampoline};
@@ -2796,6 +2967,7 @@ static const TransformFrameOps ZONE_STRING_LITERAL_OPS = {"ZoneStringLiteral",
 static const TransformFrameOps ZONE_IDENTIFIER_OPS = {"ZoneIdentifier",
                                                       &PEGTransformerFactory::InitializeZoneIdentifierTrampoline,
                                                       &PEGTransformerFactory::FinalizeZoneIdentifierTrampoline};
+<<<<<<< HEAD
 static const TransformFrameOps ZONE_INTERVAL_RANGE_OPS = {"ZoneIntervalRange",
                                                           &PEGTransformerFactory::InitializeZoneIntervalRangeTrampoline,
                                                           &PEGTransformerFactory::FinalizeZoneIntervalRangeTrampoline};
@@ -2805,6 +2977,16 @@ static const TransformFrameOps ZONE_INTERVAL_LITERAL_OPS = {
 static const TransformFrameOps ZONE_INTERVAL_WITH_PRECISION_OPS = {
     "ZoneIntervalWithPrecision", &PEGTransformerFactory::InitializeZoneIntervalWithPrecisionTrampoline,
     &PEGTransformerFactory::FinalizeZoneIntervalWithPrecisionTrampoline};
+=======
+static const TransformFrameOps ZONE_INTERVAL_WITH_INTERVAL_OPS = {
+    "ZoneIntervalWithInterval", &PEGTransformerFactory::InitializeZoneIntervalWithIntervalTrampoline,
+    &PEGTransformerFactory::FinalizeZoneIntervalWithIntervalTrampoline};
+static const TransformFrameOps ZONE_INTERVAL_WITH_PRECISION_OPS = {
+    "ZoneIntervalWithPrecision", &PEGTransformerFactory::InitializeZoneIntervalWithPrecisionTrampoline,
+    &PEGTransformerFactory::FinalizeZoneIntervalWithPrecisionTrampoline};
+static const TransformFrameOps SET_SETTING_OPS = {"SetSetting", &PEGTransformerFactory::InitializeSetSettingTrampoline,
+                                                  &PEGTransformerFactory::FinalizeSetSettingTrampoline};
+>>>>>>> duckdb_upstream/main
 static const TransformFrameOps SET_VARIABLE_OPS = {"SetVariable",
                                                    &PEGTransformerFactory::InitializeSetVariableTrampoline,
                                                    &PEGTransformerFactory::FinalizeSetVariableTrampoline};
@@ -2930,12 +3112,15 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"AlterOptions", &ALTER_OPTIONS_OPS},
 	    {"AlterTableStmt", &ALTER_TABLE_STMT_OPS},
 	    {"AlterSchemaStmt", &ALTER_SCHEMA_STMT_OPS},
+<<<<<<< HEAD
 	    {"SparkAlterTblPropertiesStmt", &SPARK_ALTER_TBL_PROPERTIES_STMT_OPS},
 	    {"SparkTblPropertiesAction", &SPARK_TBL_PROPERTIES_ACTION_OPS},
 	    {"SparkSetTblProperties", &SPARK_SET_TBL_PROPERTIES_OPS},
 	    {"SparkUnsetTblProperties", &SPARK_UNSET_TBL_PROPERTIES_OPS},
 	    {"SparkTblProperty", &SPARK_TBL_PROPERTY_OPS},
 	    {"SparkTblPropertyValue", &SPARK_TBL_PROPERTY_VALUE_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"AlterTableOptions", &ALTER_TABLE_OPTIONS_OPS},
 	    {"AddConstraint", &ADD_CONSTRAINT_OPS},
 	    {"AddColumn", &ADD_COLUMN_OPS},
@@ -2994,6 +3179,10 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"CommentColumn", &COMMENT_COLUMN_OPS},
 	    {"CommentValue", &COMMENT_VALUE_OPS},
 	    {"StringLiteralValue", &STRING_LITERAL_VALUE_OPS},
+<<<<<<< HEAD
+=======
+	    {"AnalyzeKeyword", &ANALYZE_KEYWORD_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"ExpressionStatement", &EXPRESSION_STATEMENT_OPS},
 	    {"ExpressionAlias", &EXPRESSION_ALIAS_OPS},
 	    {"IndexName", &INDEX_NAME_OPS},
@@ -3062,6 +3251,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"SetofType", &SETOF_TYPE_OPS},
 	    {"UnionType", &UNION_TYPE_OPS},
 	    {"ColIdTypeList", &COL_ID_TYPE_LIST_OPS},
+<<<<<<< HEAD
 	    {"ColIdParensTypeList", &COL_ID_PARENS_TYPE_LIST_OPS},
 	    {"MapType", &MAP_TYPE_OPS},
 	    {"MapParensListType", &MAP_PARENS_LIST_TYPE_OPS},
@@ -3070,6 +3260,14 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"ColIdColonType", &COL_ID_COLON_TYPE_OPS},
 	    {"ArrayBounds", &ARRAY_BOUNDS_OPS},
 	    {"ArrayKeyword", &ARRAY_KEYWORD_OPS},
+=======
+	    {"MapType", &MAP_TYPE_OPS},
+	    {"TupleType", &TUPLE_TYPE_OPS},
+	    {"ColIdType", &COL_ID_TYPE_OPS},
+	    {"ArrayBounds", &ARRAY_BOUNDS_OPS},
+	    {"ArrayKeyword", &ARRAY_KEYWORD_OPS},
+	    {"ArrayKeywordWithBounds", &ARRAY_KEYWORD_WITH_BOUNDS_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"SquareBracketsArray", &SQUARE_BRACKETS_ARRAY_OPS},
 	    {"TimeType", &TIME_TYPE_OPS},
 	    {"TimeOrTimestamp", &TIME_OR_TIMESTAMP_OPS},
@@ -3079,9 +3277,12 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"WithOrWithout", &WITH_OR_WITHOUT_OPS},
 	    {"WithRule", &WITH_RULE_OPS},
 	    {"WithoutRule", &WITHOUT_RULE_OPS},
+<<<<<<< HEAD
 	    {"PartitionSpec", &PARTITION_SPEC_OPS},
 	    {"PartitionSpecEntry", &PARTITION_SPEC_ENTRY_OPS},
 	    {"PartitionSpecValue", &PARTITION_SPEC_VALUE_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"ConnectStatement", &CONNECT_STATEMENT_OPS},
 	    {"DisconnectStatement", &DISCONNECT_STATEMENT_OPS},
 	    {"SessionTarget", &SESSION_TARGET_OPS},
@@ -3192,15 +3393,21 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"TemporaryPersistent", &TEMPORARY_PERSISTENT_OPS},
 	    {"CreateTableStmt", &CREATE_TABLE_STMT_OPS},
 	    {"CreateTableDefinition", &CREATE_TABLE_DEFINITION_OPS},
+<<<<<<< HEAD
 	    {"SparkUsing", &SPARK_USING_OPS},
 	    {"SparkLocation", &SPARK_LOCATION_OPS},
 	    {"SparkTableComment", &SPARK_TABLE_COMMENT_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"CreateTableAs", &CREATE_TABLE_AS_OPS},
 	    {"PartitionSortedOptions", &PARTITION_SORTED_OPTIONS_OPS},
 	    {"PartitionOptSortedOptions", &PARTITION_OPT_SORTED_OPTIONS_OPS},
 	    {"SortedOptPartitionOptions", &SORTED_OPT_PARTITION_OPTIONS_OPS},
 	    {"PartitionOptions", &PARTITION_OPTIONS_OPS},
+<<<<<<< HEAD
 	    {"PartitionField", &PARTITION_FIELD_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"SortedOptions", &SORTED_OPTIONS_OPS},
 	    {"WithData", &WITH_DATA_OPS},
 	    {"WithDataOnly", &WITH_DATA_ONLY_OPS},
@@ -3224,7 +3431,10 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"CreateTableConstraint", &CREATE_TABLE_CONSTRAINT_OPS},
 	    {"ColumnDefinition", &COLUMN_DEFINITION_OPS},
 	    {"ColumnConstraint", &COLUMN_CONSTRAINT_OPS},
+<<<<<<< HEAD
 	    {"ColumnComment", &COLUMN_COMMENT_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"NotNullConstraint", &NOT_NULL_CONSTRAINT_OPS},
 	    {"NullConstraint", &NULL_CONSTRAINT_OPS},
 	    {"NotNullColumnConstraint", &NOT_NULL_COLUMN_CONSTRAINT_OPS},
@@ -3296,6 +3506,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"EnumStringLiteralList", &ENUM_STRING_LITERAL_LIST_OPS},
 	    {"CreateViewStmt", &CREATE_VIEW_STMT_OPS},
 	    {"CreateRecursive", &CREATE_RECURSIVE_OPS},
+<<<<<<< HEAD
 	    {"ViewColumnList", &VIEW_COLUMN_LIST_OPS},
 	    {"ViewColumn", &VIEW_COLUMN_OPS},
 	    {"DeallocateStatement", &DEALLOCATE_STATEMENT_OPS},
@@ -3303,6 +3514,10 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"DeclareStatement", &DECLARE_STATEMENT_OPS},
 	    {"DeclareValue", &DECLARE_VALUE_OPS},
 	    {"DropVariableStatement", &DROP_VARIABLE_STATEMENT_OPS},
+=======
+	    {"DeallocateStatement", &DEALLOCATE_STATEMENT_OPS},
+	    {"DeallocatePrepare", &DEALLOCATE_PREPARE_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"DeleteStatement", &DELETE_STATEMENT_OPS},
 	    {"TruncateStatement", &TRUNCATE_STATEMENT_OPS},
 	    {"TargetOptAlias", &TARGET_OPT_ALIAS_OPS},
@@ -3310,9 +3525,12 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"DescribeStatement", &DESCRIBE_STATEMENT_OPS},
 	    {"ShowSelect", &SHOW_SELECT_OPS},
 	    {"ShowAllTables", &SHOW_ALL_TABLES_OPS},
+<<<<<<< HEAD
 	    {"DescribeQuery", &DESCRIBE_QUERY_OPS},
 	    {"DescribeFunction", &DESCRIBE_FUNCTION_OPS},
 	    {"DescribeTable", &DESCRIBE_TABLE_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"ShowQualifiedName", &SHOW_QUALIFIED_NAME_OPS},
 	    {"ShowTables", &SHOW_TABLES_OPS},
 	    {"DescribeTarget", &DESCRIBE_TARGET_OPS},
@@ -3355,8 +3573,11 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"DropSecretStorage", &DROP_SECRET_STORAGE_OPS},
 	    {"ExecuteStatement", &EXECUTE_STATEMENT_OPS},
 	    {"ExplainStatement", &EXPLAIN_STATEMENT_OPS},
+<<<<<<< HEAD
 	    {"ExplainAnalyze", &EXPLAIN_ANALYZE_OPS},
 	    {"ExplainMode", &EXPLAIN_MODE_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"ExplainOptionList", &EXPLAIN_OPTION_LIST_OPS},
 	    {"ExplainOption", &EXPLAIN_OPTION_OPS},
 	    {"ExplainOptionName", &EXPLAIN_OPTION_NAME_OPS},
@@ -3428,8 +3649,11 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"IntervalLiteral", &INTERVAL_LITERAL_OPS},
 	    {"IntervalParameter", &INTERVAL_PARAMETER_OPS},
 	    {"IntervalStringParameter", &INTERVAL_STRING_PARAMETER_OPS},
+<<<<<<< HEAD
 	    {"IntervalMultiUnitLiteral", &INTERVAL_MULTI_UNIT_LITERAL_OPS},
 	    {"IntervalUnitPair", &INTERVAL_UNIT_PAIR_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"FrameClause", &FRAME_CLAUSE_OPS},
 	    {"Framing", &FRAMING_OPS},
 	    {"RowsFraming", &ROWS_FRAMING_OPS},
@@ -3500,7 +3724,11 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"ColDefAndExpressionTail", &COL_DEF_AND_EXPRESSION_TAIL_OPS},
 	    {"LogicalNotExpression", &LOGICAL_NOT_EXPRESSION_OPS},
 	    {"NotExpression", &NOT_EXPRESSION_OPS},
+<<<<<<< HEAD
 	    {"SparkNotExpression", &SPARK_NOT_EXPRESSION_OPS},
+=======
+	    {"NotKeyword", &NOT_KEYWORD_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"IsExpression", &IS_EXPRESSION_OPS},
 	    {"IsTest", &IS_TEST_OPS},
 	    {"IsLiteral", &IS_LITERAL_OPS},
@@ -3562,6 +3790,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"QualifiedOperator", &QUALIFIED_OPERATOR_OPS},
 	    {"QualifiedOperatorContents", &QUALIFIED_OPERATOR_CONTENTS_OPS},
 	    {"AnyOp", &ANY_OP_OPS},
+<<<<<<< HEAD
 	    {"AnyAllOp", &ANY_ALL_OP_OPS},
 	    {"BitwiseExpression", &BITWISE_EXPRESSION_OPS},
 	    {"BitwiseExpressionTail", &BITWISE_EXPRESSION_TAIL_OPS},
@@ -3572,6 +3801,11 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"ShiftExpression", &SHIFT_EXPRESSION_OPS},
 	    {"ShiftExpressionTail", &SHIFT_EXPRESSION_TAIL_OPS},
 	    {"ShiftOperator", &SHIFT_OPERATOR_OPS},
+=======
+	    {"BitwiseExpression", &BITWISE_EXPRESSION_OPS},
+	    {"BitwiseExpressionTail", &BITWISE_EXPRESSION_TAIL_OPS},
+	    {"BitOperator", &BIT_OPERATOR_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"AdditiveExpression", &ADDITIVE_EXPRESSION_OPS},
 	    {"AdditiveExpressionTail", &ADDITIVE_EXPRESSION_TAIL_OPS},
 	    {"Term", &TERM_OPS},
@@ -3621,8 +3855,11 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"PositionExpression", &POSITION_EXPRESSION_OPS},
 	    {"PositionArguments", &POSITION_ARGUMENTS_OPS},
 	    {"RowExpression", &ROW_EXPRESSION_OPS},
+<<<<<<< HEAD
 	    {"RowExpressionArg", &ROW_EXPRESSION_ARG_OPS},
 	    {"RowExpressionAlias", &ROW_EXPRESSION_ALIAS_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"SubstringExpression", &SUBSTRING_EXPRESSION_OPS},
 	    {"SubstringArguments", &SUBSTRING_ARGUMENTS_OPS},
 	    {"SubstringExpressionList", &SUBSTRING_EXPRESSION_LIST_OPS},
@@ -3648,9 +3885,19 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"ExtractIdentifierArgument", &EXTRACT_IDENTIFIER_ARGUMENT_OPS},
 	    {"ExtractStringArgument", &EXTRACT_STRING_ARGUMENT_OPS},
 	    {"ExtractDatePart", &EXTRACT_DATE_PART_OPS},
+<<<<<<< HEAD
 	    {"InsertStatement", &INSERT_STATEMENT_OPS},
 	    {"MultiInsertStatement", &MULTI_INSERT_STATEMENT_OPS},
 	    {"MultiInsertBranch", &MULTI_INSERT_BRANCH_OPS},
+=======
+	    {"ExternalResourceStatement", &EXTERNAL_RESOURCE_STATEMENT_OPS},
+	    {"CreateExternalResourceStmt", &CREATE_EXTERNAL_RESOURCE_STMT_OPS},
+	    {"RegisterExternalResourceStmt", &REGISTER_EXTERNAL_RESOURCE_STMT_OPS},
+	    {"DestroyExternalResourceStmt", &DESTROY_EXTERNAL_RESOURCE_STMT_OPS},
+	    {"ShowExternalResourcesStmt", &SHOW_EXTERNAL_RESOURCES_STMT_OPS},
+	    {"ShowAllModifier", &SHOW_ALL_MODIFIER_OPS},
+	    {"InsertStatement", &INSERT_STATEMENT_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"OrAction", &OR_ACTION_OPS},
 	    {"InsertOrReplace", &INSERT_OR_REPLACE_OPS},
 	    {"InsertOrIgnore", &INSERT_OR_IGNORE_OPS},
@@ -3766,6 +4013,10 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"TargetList", &TARGET_LIST_OPS},
 	    {"ColumnAliases", &COLUMN_ALIASES_OPS},
 	    {"DistinctClause", &DISTINCT_CLAUSE_OPS},
+<<<<<<< HEAD
+=======
+	    {"DistinctAll", &DISTINCT_ALL_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"DistinctOn", &DISTINCT_ON_OPS},
 	    {"DistinctOnTargets", &DISTINCT_ON_TARGETS_OPS},
 	    {"InnerTableRef", &INNER_TABLE_REF_OPS},
@@ -3813,11 +4064,32 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"VersionAtUnit", &VERSION_AT_UNIT_OPS},
 	    {"TimestampAtUnit", &TIMESTAMP_AT_UNIT_OPS},
 	    {"JoinClause", &JOIN_CLAUSE_OPS},
+<<<<<<< HEAD
+=======
+	    {"NearestJoinClause", &NEAREST_JOIN_CLAUSE_OPS},
+	    {"NearestJoinAliased", &NEAREST_JOIN_ALIASED_OPS},
+	    {"NearestJoinBare", &NEAREST_JOIN_BARE_OPS},
+	    {"NearestBareTableRef", &NEAREST_BARE_TABLE_REF_OPS},
+	    {"NearestValuesRef", &NEAREST_VALUES_REF_OPS},
+	    {"NearestTableFunction", &NEAREST_TABLE_FUNCTION_OPS},
+	    {"NearestTableSubquery", &NEAREST_TABLE_SUBQUERY_OPS},
+	    {"NearestBaseTableRef", &NEAREST_BASE_TABLE_REF_OPS},
+	    {"NearestParensTableRef", &NEAREST_PARENS_TABLE_REF_OPS},
+	    {"ApproxOrExact", &APPROX_OR_EXACT_OPS},
+	    {"NearestApprox", &NEAREST_APPROX_OPS},
+	    {"NearestExact", &NEAREST_EXACT_OPS},
+	    {"DistanceOrSimilarity", &DISTANCE_OR_SIMILARITY_OPS},
+	    {"NearestDistance", &NEAREST_DISTANCE_OPS},
+	    {"NearestSimilarity", &NEAREST_SIMILARITY_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"RegularJoinClause", &REGULAR_JOIN_CLAUSE_OPS},
 	    {"JoinByClause", &JOIN_BY_CLAUSE_OPS},
 	    {"Asof", &ASOF_OPS},
 	    {"JoinWithoutOnClause", &JOIN_WITHOUT_ON_CLAUSE_OPS},
+<<<<<<< HEAD
 	    {"LateralJoinClause", &LATERAL_JOIN_CLAUSE_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"JoinQualifier", &JOIN_QUALIFIER_OPS},
 	    {"OnClause", &ON_CLAUSE_OPS},
 	    {"UsingClause", &USING_CLAUSE_OPS},
@@ -3827,8 +4099,11 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"NaturalJoinPrefix", &NATURAL_JOIN_PREFIX_OPS},
 	    {"PositionalJoinPrefix", &POSITIONAL_JOIN_PREFIX_OPS},
 	    {"FullJoin", &FULL_JOIN_OPS},
+<<<<<<< HEAD
 	    {"LeftSemiJoin", &LEFT_SEMI_JOIN_OPS},
 	    {"LeftAntiJoin", &LEFT_ANTI_JOIN_OPS},
+=======
+>>>>>>> duckdb_upstream/main
 	    {"LeftJoin", &LEFT_JOIN_OPS},
 	    {"RightJoin", &RIGHT_JOIN_OPS},
 	    {"SemiJoin", &SEMI_JOIN_OPS},
@@ -3856,6 +4131,10 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"SampleRows", &SAMPLE_ROWS_OPS},
 	    {"GroupByExpressions", &GROUP_BY_EXPRESSIONS_OPS},
 	    {"GroupByAll", &GROUP_BY_ALL_OPS},
+<<<<<<< HEAD
+=======
+	    {"GroupByList", &GROUP_BY_LIST_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"GroupByExpression", &GROUP_BY_EXPRESSION_OPS},
 	    {"GroupByBaseExpression", &GROUP_BY_BASE_EXPRESSION_OPS},
 	    {"EmptyGroupingItem", &EMPTY_GROUPING_ITEM_OPS},
@@ -3888,6 +4167,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"AliasedExpression", &ALIASED_EXPRESSION_OPS},
 	    {"ColIdExpression", &COL_ID_EXPRESSION_OPS},
 	    {"ExpressionAsCollabel", &EXPRESSION_AS_COLLABEL_OPS},
+<<<<<<< HEAD
 	    {"ExpressionAsColumnAliases", &EXPRESSION_AS_COLUMN_ALIASES_OPS},
 	    {"ExpressionOptIdentifier", &EXPRESSION_OPT_IDENTIFIER_OPS},
 	    {"ValuesClause", &VALUES_CLAUSE_OPS},
@@ -3899,6 +4179,15 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"SetAssignmentOrTimeZone", &SET_ASSIGNMENT_OR_TIME_ZONE_OPS},
 	    {"ReadSettingStatement", &READ_SETTING_STATEMENT_OPS},
 	    {"ResetStatement", &RESET_STATEMENT_OPS},
+=======
+	    {"ExpressionOptIdentifier", &EXPRESSION_OPT_IDENTIFIER_OPS},
+	    {"ValuesClause", &VALUES_CLAUSE_OPS},
+	    {"ValuesExpressions", &VALUES_EXPRESSIONS_OPS},
+	    {"SetStatement", &SET_STATEMENT_OPS},
+	    {"SetAssignmentOrTimeZone", &SET_ASSIGNMENT_OR_TIME_ZONE_OPS},
+	    {"ResetStatement", &RESET_STATEMENT_OPS},
+	    {"SetSchema", &SET_SCHEMA_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"StandardAssignment", &STANDARD_ASSIGNMENT_OPS},
 	    {"SetVariableOrSetting", &SET_VARIABLE_OR_SETTING_OPS},
 	    {"SetTimeZone", &SET_TIME_ZONE_OPS},
@@ -3907,9 +4196,15 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"ZoneDefault", &ZONE_DEFAULT_OPS},
 	    {"ZoneStringLiteral", &ZONE_STRING_LITERAL_OPS},
 	    {"ZoneIdentifier", &ZONE_IDENTIFIER_OPS},
+<<<<<<< HEAD
 	    {"ZoneIntervalRange", &ZONE_INTERVAL_RANGE_OPS},
 	    {"ZoneIntervalLiteral", &ZONE_INTERVAL_LITERAL_OPS},
 	    {"ZoneIntervalWithPrecision", &ZONE_INTERVAL_WITH_PRECISION_OPS},
+=======
+	    {"ZoneIntervalWithInterval", &ZONE_INTERVAL_WITH_INTERVAL_OPS},
+	    {"ZoneIntervalWithPrecision", &ZONE_INTERVAL_WITH_PRECISION_OPS},
+	    {"SetSetting", &SET_SETTING_OPS},
+>>>>>>> duckdb_upstream/main
 	    {"SetVariable", &SET_VARIABLE_OPS},
 	    {"VariableScope", &VARIABLE_SCOPE_OPS},
 	    {"SettingScope", &SETTING_SCOPE_OPS},
@@ -4067,6 +4362,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAlterSchemaStmtT
 	return make_uniq<TypedTransformResult<unique_ptr<AlterInfo>>>(std::move(result));
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeSparkAlterTblPropertiesStmtTrampoline(PEGTransformer &transformer,
                                                                             TransformStack &stack,
                                                                             TransformStackFrame &frame) {
@@ -4217,6 +4513,8 @@ PEGTransformerFactory::FinalizeSparkTblPropertyValueTrampoline(PEGTransformer &t
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeAlterTableOptionsTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                   TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -4970,6 +5268,7 @@ void PEGTransformerFactory::InitializeAnalyzeStatementTrampoline(PEGTransformer 
                                                                  TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	frame.ReserveChildSlots(3);
+<<<<<<< HEAD
 	auto &partition_spec_opt = list_pr.GetChild(4).Cast<OptionalParseResult>();
 	if (partition_spec_opt.HasResult()) {
 		stack.PushFrame(partition_spec_opt.GetResult(), PARTITION_SPEC_OPS,
@@ -4979,17 +5278,30 @@ void PEGTransformerFactory::InitializeAnalyzeStatementTrampoline(PEGTransformer 
 	if (analyze_target_opt.HasResult()) {
 		stack.PushFrame(analyze_target_opt.GetResult(), ANALYZE_TARGET_OPS,
 		                TransformFrameResultTarget(frame.frame_index, 1));
+=======
+	auto &analyze_target_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
+	if (analyze_target_opt.HasResult()) {
+		stack.PushFrame(analyze_target_opt.GetResult(), ANALYZE_TARGET_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 2));
+>>>>>>> duckdb_upstream/main
 	}
 	auto &analyze_verbose_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
 	if (analyze_verbose_opt.HasResult()) {
 		stack.PushFrame(analyze_verbose_opt.GetResult(), ANALYZE_VERBOSE_OPS,
+<<<<<<< HEAD
 		                TransformFrameResultTarget(frame.frame_index, 0));
 	}
+=======
+		                TransformFrameResultTarget(frame.frame_index, 1));
+	}
+	stack.PushFrame(list_pr.GetChild(0), ANALYZE_KEYWORD_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAnalyzeStatementTrampoline(PEGTransformer &transformer,
                                                                                            TransformStack &stack,
                                                                                            TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	optional<bool> analyze_verbose {};
 	if (frame.child_results[0]) {
@@ -5011,6 +5323,18 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAnalyzeStatement
 	has_result_5 = has_result_5_opt.HasResult();
 	auto result = TransformAnalyzeStatement(transformer, analyze_verbose, has_result, std::move(analyze_target),
 	                                        std::move(partition_spec), has_result_5);
+=======
+	auto analyze_keyword = frame.TakeResult<Identifier>(0);
+	optional<bool> analyze_verbose {};
+	if (frame.child_results[1]) {
+		analyze_verbose = frame.TakeResult<bool>(1);
+	}
+	optional<AnalyzeTarget> analyze_target {};
+	if (frame.child_results[2]) {
+		analyze_target = frame.TakeResult<AnalyzeTarget>(2);
+	}
+	auto result = TransformAnalyzeStatement(transformer, analyze_keyword, analyze_verbose, std::move(analyze_target));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
 }
 
@@ -5416,6 +5740,21 @@ PEGTransformerFactory::FinalizeStringLiteralValueTrampoline(PEGTransformer &tran
 	return make_uniq<TypedTransformResult<Value>>(result);
 }
 
+<<<<<<< HEAD
+=======
+void PEGTransformerFactory::InitializeAnalyzeKeywordTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                               TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAnalyzeKeywordTrampoline(PEGTransformer &transformer,
+                                                                                         TransformStack &stack,
+                                                                                         TransformStackFrame &frame) {
+	auto result = TransformAnalyzeKeyword(transformer);
+	return make_uniq<TypedTransformResult<Identifier>>(result);
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeExpressionStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                     TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -6636,6 +6975,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeUnionTypeTrampol
 void PEGTransformerFactory::InitializeColIdTypeListTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                               TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+<<<<<<< HEAD
 	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
 	auto &choice_result = choice_pr.GetResult();
 	frame.ReserveChildSlots(1);
@@ -6657,6 +6997,8 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeColIdTypeListTra
 void PEGTransformerFactory::InitializeColIdParensTypeListTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                     TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+=======
+>>>>>>> duckdb_upstream/main
 	auto list_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
 	auto dynamic_child_count = list_items.size();
 	frame.ReserveChildSlots(1 + dynamic_child_count - 1);
@@ -6667,9 +7009,15 @@ void PEGTransformerFactory::InitializeColIdParensTypeListTrampoline(PEGTransform
 	}
 }
 
+<<<<<<< HEAD
 unique_ptr<TransformResultValue>
 PEGTransformerFactory::FinalizeColIdParensTypeListTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                              TransformStackFrame &frame) {
+=======
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeColIdTypeListTrampoline(PEGTransformer &transformer,
+                                                                                        TransformStack &stack,
+                                                                                        TransformStackFrame &frame) {
+>>>>>>> duckdb_upstream/main
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto dynamic_list_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
 	auto dynamic_child_count = dynamic_list_items.size();
@@ -6677,13 +7025,18 @@ PEGTransformerFactory::FinalizeColIdParensTypeListTrampoline(PEGTransformer &tra
 	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
 		col_id_type.push_back(frame.TakeResult<pair<Identifier, LogicalType>>(i));
 	}
+<<<<<<< HEAD
 	auto result = TransformColIdParensTypeList(transformer, col_id_type);
+=======
+	auto result = TransformColIdTypeList(transformer, col_id_type);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<child_list_t<LogicalType>>>(result);
 }
 
 void PEGTransformerFactory::InitializeMapTypeTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                         TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+<<<<<<< HEAD
 	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
 	auto &choice_result = choice_pr.GetResult();
 	frame.ReserveChildSlots(1);
@@ -6693,11 +7046,28 @@ void PEGTransformerFactory::InitializeMapTypeTrampoline(PEGTransformer &transfor
 		throw InternalException("No trampoline ops registered for rule '%s'", choice_result.name);
 	}
 	stack.PushFrame(choice_result, *ops_entry->second, TransformFrameResultTarget(frame.frame_index, 0));
+=======
+	auto &list_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	idx_t dynamic_child_count = 0;
+	if (list_opt.HasResult()) {
+		auto list_items = ExtractParseResultsFromList(ExtractResultFromParens(list_opt.GetResult()));
+		dynamic_child_count = list_items.size();
+		frame.ReserveChildSlots(1 + dynamic_child_count - 1);
+		for (idx_t i = list_items.size(); i > 0; i--) {
+			auto child_idx = i - 1;
+			stack.PushFrame(list_items[child_idx].get(), TYPE_OPS,
+			                TransformFrameResultTarget(frame.frame_index, 0 + child_idx));
+		}
+	} else {
+		frame.ReserveChildSlots(1 - 1);
+	}
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeMapTypeTrampoline(PEGTransformer &transformer,
                                                                                   TransformStack &stack,
                                                                                   TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto result = frame.TakeResult<unique_ptr<ParsedExpression>>(0);
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
@@ -6726,6 +7096,25 @@ PEGTransformerFactory::FinalizeMapParensListTypeTrampoline(PEGTransformer &trans
 		type.push_back(frame.TakeResult<LogicalType>(i));
 	}
 	auto result = TransformMapParensListType(transformer, type);
+=======
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	idx_t dynamic_child_count = 0;
+	auto &dynamic_list_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (dynamic_list_opt.HasResult()) {
+		auto dynamic_list_items = ExtractParseResultsFromList(ExtractResultFromParens(dynamic_list_opt.GetResult()));
+		dynamic_child_count = dynamic_list_items.size();
+	}
+	optional<vector<LogicalType>> type {};
+	auto &type_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (type_opt.HasResult()) {
+		vector<LogicalType> type_value;
+		for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
+			type_value.push_back(frame.TakeResult<LogicalType>(i));
+		}
+		type = std::move(type_value);
+	}
+	auto result = TransformMapType(transformer, type);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
@@ -6773,6 +7162,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeColIdTypeTrampol
 	return make_uniq<TypedTransformResult<pair<Identifier, LogicalType>>>(result);
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeColIdColonTypeTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -6790,6 +7180,8 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeColIdColonTypeTr
 	return make_uniq<TypedTransformResult<pair<string, LogicalType>>>(result);
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeArrayBoundsTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                             TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -6823,6 +7215,25 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeArrayKeywordTram
 	return make_uniq<TypedTransformResult<int64_t>>(result);
 }
 
+<<<<<<< HEAD
+=======
+void PEGTransformerFactory::InitializeArrayKeywordWithBoundsTrampoline(PEGTransformer &transformer,
+                                                                       TransformStack &stack,
+                                                                       TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(1);
+	stack.PushFrame(list_pr.GetChild(1), SQUARE_BRACKETS_ARRAY_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeArrayKeywordWithBoundsTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                TransformStackFrame &frame) {
+	auto square_brackets_array = frame.TakeResult<int64_t>(0);
+	auto result = TransformArrayKeywordWithBounds(transformer, square_brackets_array);
+	return make_uniq<TypedTransformResult<int64_t>>(result);
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeSquareBracketsArrayTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                     TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -6981,6 +7392,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeWithoutRuleTramp
 	return make_uniq<TypedTransformResult<bool>>(result);
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializePartitionSpecTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                               TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -7046,6 +7458,8 @@ PEGTransformerFactory::FinalizePartitionSpecValueTrampoline(PEGTransformer &tran
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeConnectStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                  TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -9291,6 +9705,7 @@ PEGTransformerFactory::FinalizeCreateTableDefinitionTrampoline(PEGTransformer &t
 	return make_uniq<TypedTransformResult<CreateTableDefinition>>(std::move(result));
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeSparkUsingTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                            TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -9375,12 +9790,37 @@ void PEGTransformerFactory::InitializeCreateTableAsTrampoline(PEGTransformer &tr
 	auto &spark_using_opt = list_pr.GetChild(0).Cast<OptionalParseResult>();
 	if (spark_using_opt.HasResult()) {
 		stack.PushFrame(spark_using_opt.GetResult(), SPARK_USING_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+=======
+void PEGTransformerFactory::InitializeCreateTableAsTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                              TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(5);
+	auto &with_data_opt = list_pr.GetChild(5).Cast<OptionalParseResult>();
+	if (with_data_opt.HasResult()) {
+		stack.PushFrame(with_data_opt.GetResult(), WITH_DATA_OPS, TransformFrameResultTarget(frame.frame_index, 4));
+	}
+	stack.PushFrame(list_pr.GetChild(4), STATEMENT_OPS, TransformFrameResultTarget(frame.frame_index, 3));
+	auto &with_list_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
+	if (with_list_opt.HasResult()) {
+		stack.PushFrame(with_list_opt.GetResult(), WITH_LIST_OPS, TransformFrameResultTarget(frame.frame_index, 2));
+	}
+	auto &partition_sorted_options_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (partition_sorted_options_opt.HasResult()) {
+		stack.PushFrame(partition_sorted_options_opt.GetResult(), PARTITION_SORTED_OPTIONS_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 1));
+	}
+	auto &identifier_list_opt = list_pr.GetChild(0).Cast<OptionalParseResult>();
+	if (identifier_list_opt.HasResult()) {
+		stack.PushFrame(identifier_list_opt.GetResult(), IDENTIFIER_LIST_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 	}
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeCreateTableAsTrampoline(PEGTransformer &transformer,
                                                                                         TransformStack &stack,
                                                                                         TransformStackFrame &frame) {
+<<<<<<< HEAD
 	optional<pair<string, string>> spark_using {};
 	if (frame.child_results[0]) {
 		spark_using = frame.TakeResult<pair<string, string>>(0);
@@ -9409,6 +9849,27 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeCreateTableAsTra
 	auto result = TransformCreateTableAs(transformer, spark_using, std::move(identifier_list),
 	                                     std::move(partition_sorted_options), spark_table_comment, std::move(with_list),
 	                                     std::move(statement), with_data);
+=======
+	optional<ColumnList> identifier_list {};
+	if (frame.child_results[0]) {
+		identifier_list = frame.TakeResult<ColumnList>(0);
+	}
+	optional<PartitionSortedOptions> partition_sorted_options {};
+	if (frame.child_results[1]) {
+		partition_sorted_options = frame.TakeResult<PartitionSortedOptions>(1);
+	}
+	optional<case_insensitive_map_t<unique_ptr<ParsedExpression>>> with_list {};
+	if (frame.child_results[2]) {
+		with_list = frame.TakeResult<case_insensitive_map_t<unique_ptr<ParsedExpression>>>(2);
+	}
+	auto statement = frame.TakeResult<unique_ptr<SQLStatement>>(3);
+	optional<bool> with_data {};
+	if (frame.child_results[4]) {
+		with_data = frame.TakeResult<bool>(4);
+	}
+	auto result = TransformCreateTableAs(transformer, std::move(identifier_list), std::move(partition_sorted_options),
+	                                     std::move(with_list), std::move(statement), with_data);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<CreateTableDefinition>>(std::move(result));
 }
 
@@ -9450,7 +9911,11 @@ void PEGTransformerFactory::InitializePartitionOptSortedOptionsTrampoline(PEGTra
 unique_ptr<TransformResultValue>
 PEGTransformerFactory::FinalizePartitionOptSortedOptionsTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                    TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto partition_options = frame.TakeResult<vector<PartitionFieldEntry>>(0);
+=======
+	auto partition_options = frame.TakeResult<vector<unique_ptr<ParsedExpression>>>(0);
+>>>>>>> duckdb_upstream/main
 	optional<vector<unique_ptr<ParsedExpression>>> sorted_options {};
 	if (frame.child_results[1]) {
 		sorted_options = frame.TakeResult<vector<unique_ptr<ParsedExpression>>>(1);
@@ -9477,9 +9942,15 @@ unique_ptr<TransformResultValue>
 PEGTransformerFactory::FinalizeSortedOptPartitionOptionsTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                    TransformStackFrame &frame) {
 	auto sorted_options = frame.TakeResult<vector<unique_ptr<ParsedExpression>>>(0);
+<<<<<<< HEAD
 	optional<vector<PartitionFieldEntry>> partition_options {};
 	if (frame.child_results[1]) {
 		partition_options = frame.TakeResult<vector<PartitionFieldEntry>>(1);
+=======
+	optional<vector<unique_ptr<ParsedExpression>>> partition_options {};
+	if (frame.child_results[1]) {
+		partition_options = frame.TakeResult<vector<unique_ptr<ParsedExpression>>>(1);
+>>>>>>> duckdb_upstream/main
 	}
 	auto result =
 	    TransformSortedOptPartitionOptions(transformer, std::move(sorted_options), std::move(partition_options));
@@ -9494,7 +9965,11 @@ void PEGTransformerFactory::InitializePartitionOptionsTrampoline(PEGTransformer 
 	frame.ReserveChildSlots(1 + dynamic_child_count - 1);
 	for (idx_t i = list_items.size(); i > 0; i--) {
 		auto child_idx = i - 1;
+<<<<<<< HEAD
 		stack.PushFrame(list_items[child_idx].get(), PARTITION_FIELD_OPS,
+=======
+		stack.PushFrame(list_items[child_idx].get(), EXPRESSION_OPS,
+>>>>>>> duckdb_upstream/main
 		                TransformFrameResultTarget(frame.frame_index, 0 + child_idx));
 	}
 }
@@ -9505,6 +9980,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizePartitionOptions
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto dynamic_list_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(2)));
 	auto dynamic_child_count = dynamic_list_items.size();
+<<<<<<< HEAD
 	vector<PartitionFieldEntry> partition_field;
 	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
 		partition_field.push_back(frame.TakeResult<PartitionFieldEntry>(i));
@@ -9534,6 +10010,14 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizePartitionFieldTr
 	}
 	auto result = TransformPartitionField(transformer, std::move(expression), type);
 	return make_uniq<TypedTransformResult<PartitionFieldEntry>>(std::move(result));
+=======
+	vector<unique_ptr<ParsedExpression>> expression;
+	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
+		expression.push_back(frame.TakeResult<unique_ptr<ParsedExpression>>(i));
+	}
+	auto result = TransformPartitionOptions(transformer, std::move(expression));
+	return make_uniq<TypedTransformResult<vector<unique_ptr<ParsedExpression>>>>(std::move(result));
+>>>>>>> duckdb_upstream/main
 }
 
 void PEGTransformerFactory::InitializeSortedOptionsTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -9629,6 +10113,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeIdentifierListTr
 void PEGTransformerFactory::InitializeCreateColumnListTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                  TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+<<<<<<< HEAD
 	frame.ReserveChildSlots(5);
 	auto &with_list_opt = list_pr.GetChild(4).Cast<OptionalParseResult>();
 	if (with_list_opt.HasResult()) {
@@ -9647,6 +10132,17 @@ void PEGTransformerFactory::InitializeCreateColumnListTrampoline(PEGTransformer 
 	auto &spark_using_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
 	if (spark_using_opt.HasResult()) {
 		stack.PushFrame(spark_using_opt.GetResult(), SPARK_USING_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+=======
+	frame.ReserveChildSlots(3);
+	auto &with_list_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
+	if (with_list_opt.HasResult()) {
+		stack.PushFrame(with_list_opt.GetResult(), WITH_LIST_OPS, TransformFrameResultTarget(frame.frame_index, 2));
+	}
+	auto &partition_sorted_options_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (partition_sorted_options_opt.HasResult()) {
+		stack.PushFrame(partition_sorted_options_opt.GetResult(), PARTITION_SORTED_OPTIONS_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 1));
+>>>>>>> duckdb_upstream/main
 	}
 	auto &create_table_column_list_opt = ExtractResultFromParens(list_pr.GetChild(0)).Cast<OptionalParseResult>();
 	if (create_table_column_list_opt.HasResult()) {
@@ -9662,6 +10158,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeCreateColumnList
 	if (frame.child_results[0]) {
 		create_table_column_list = frame.TakeResult<ColumnElements>(0);
 	}
+<<<<<<< HEAD
 	optional<pair<string, string>> spark_using {};
 	if (frame.child_results[1]) {
 		spark_using = frame.TakeResult<pair<string, string>>(1);
@@ -9681,6 +10178,18 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeCreateColumnList
 	auto result =
 	    TransformCreateColumnList(transformer, std::move(create_table_column_list), spark_using,
 	                              std::move(partition_sorted_options), spark_table_comment, std::move(with_list));
+=======
+	optional<PartitionSortedOptions> partition_sorted_options {};
+	if (frame.child_results[1]) {
+		partition_sorted_options = frame.TakeResult<PartitionSortedOptions>(1);
+	}
+	optional<case_insensitive_map_t<unique_ptr<ParsedExpression>>> with_list {};
+	if (frame.child_results[2]) {
+		with_list = frame.TakeResult<case_insensitive_map_t<unique_ptr<ParsedExpression>>>(2);
+	}
+	auto result = TransformCreateColumnList(transformer, std::move(create_table_column_list),
+	                                        std::move(partition_sorted_options), std::move(with_list));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<CreateTableDefinition>>(std::move(result));
 }
 
@@ -10076,7 +10585,11 @@ void PEGTransformerFactory::InitializeColumnConstraintTrampoline(PEGTransformer 
 	auto &ops_map = PEGTransformerFactory::GeneratedTrampolineOps();
 	auto ops_entry = ops_map.find(choice_result.name);
 	if (ops_entry == ops_map.end()) {
+<<<<<<< HEAD
 		return;
+=======
+		throw InternalException("No trampoline ops registered for rule '%s'", choice_result.name);
+>>>>>>> duckdb_upstream/main
 	}
 	stack.PushFrame(choice_result, *ops_entry->second, TransformFrameResultTarget(frame.frame_index, 0));
 }
@@ -10084,6 +10597,7 @@ void PEGTransformerFactory::InitializeColumnConstraintTrampoline(PEGTransformer 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeColumnConstraintTrampoline(PEGTransformer &transformer,
                                                                                            TransformStack &stack,
                                                                                            TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto &choice_result = list_pr.Child<ChoiceParseResult>(0).GetResult();
 	ColumnConstraintEntry result {};
@@ -10109,6 +10623,12 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeColumnCommentTra
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
+=======
+	auto result = frame.TakeResult<ColumnConstraintEntry>(0);
+	return make_uniq<TypedTransformResult<ColumnConstraintEntry>>(std::move(result));
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeNotNullConstraintTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                   TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -11483,6 +12003,7 @@ PEGTransformerFactory::FinalizeEnumStringLiteralListTrampoline(PEGTransformer &t
 void PEGTransformerFactory::InitializeCreateViewStmtTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+<<<<<<< HEAD
 	frame.ReserveChildSlots(7);
 	stack.PushFrame(list_pr.GetChild(9), SELECT_STATEMENT_INTERNAL_OPS,
 	                TransformFrameResultTarget(frame.frame_index, 6));
@@ -11498,6 +12019,18 @@ void PEGTransformerFactory::InitializeCreateViewStmtTrampoline(PEGTransformer &t
 	auto &view_column_list_opt = list_pr.GetChild(4).Cast<OptionalParseResult>();
 	if (view_column_list_opt.HasResult()) {
 		stack.PushFrame(view_column_list_opt.GetResult(), VIEW_COLUMN_LIST_OPS,
+=======
+	frame.ReserveChildSlots(6);
+	stack.PushFrame(list_pr.GetChild(7), SELECT_STATEMENT_INTERNAL_OPS,
+	                TransformFrameResultTarget(frame.frame_index, 5));
+	auto &with_list_opt = list_pr.GetChild(5).Cast<OptionalParseResult>();
+	if (with_list_opt.HasResult()) {
+		stack.PushFrame(with_list_opt.GetResult(), WITH_LIST_OPS, TransformFrameResultTarget(frame.frame_index, 4));
+	}
+	auto &insert_column_list_opt = list_pr.GetChild(4).Cast<OptionalParseResult>();
+	if (insert_column_list_opt.HasResult()) {
+		stack.PushFrame(insert_column_list_opt.GetResult(), INSERT_COLUMN_LIST_OPS,
+>>>>>>> duckdb_upstream/main
 		                TransformFrameResultTarget(frame.frame_index, 3));
 	}
 	stack.PushFrame(list_pr.GetChild(3), QUALIFIED_NAME_OPS, TransformFrameResultTarget(frame.frame_index, 2));
@@ -11516,7 +12049,10 @@ void PEGTransformerFactory::InitializeCreateViewStmtTrampoline(PEGTransformer &t
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeCreateViewStmtTrampoline(PEGTransformer &transformer,
                                                                                          TransformStack &stack,
                                                                                          TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+=======
+>>>>>>> duckdb_upstream/main
 	optional<bool> create_recursive {};
 	if (frame.child_results[0]) {
 		create_recursive = frame.TakeResult<bool>(0);
@@ -11526,6 +12062,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeCreateViewStmtTr
 		if_not_exists = frame.TakeResult<bool>(1);
 	}
 	auto qualified_name = frame.TakeResult<QualifiedName>(2);
+<<<<<<< HEAD
 	optional<vector<string>> view_column_list {};
 	if (frame.child_results[3]) {
 		view_column_list = frame.TakeResult<vector<string>>(3);
@@ -11545,6 +12082,20 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeCreateViewStmtTr
 	auto result = TransformCreateViewStmt(transformer, create_recursive, if_not_exists, qualified_name,
 	                                      view_column_list, has_result, insert_column_list, std::move(with_list),
 	                                      std::move(select_statement_internal));
+=======
+	optional<vector<string>> insert_column_list {};
+	if (frame.child_results[3]) {
+		insert_column_list = frame.TakeResult<vector<string>>(3);
+	}
+	optional<case_insensitive_map_t<unique_ptr<ParsedExpression>>> with_list {};
+	if (frame.child_results[4]) {
+		with_list = frame.TakeResult<case_insensitive_map_t<unique_ptr<ParsedExpression>>>(4);
+	}
+	auto select_statement_internal = frame.TakeResult<unique_ptr<SelectStatement>>(5);
+	auto result =
+	    TransformCreateViewStmt(transformer, create_recursive, if_not_exists, qualified_name, insert_column_list,
+	                            std::move(with_list), std::move(select_statement_internal));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<CreateStatement>>>(std::move(result));
 }
 
@@ -11560,6 +12111,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeCreateRecursiveT
 	return make_uniq<TypedTransformResult<bool>>(result);
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeViewColumnListTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -11609,6 +12161,8 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeViewColumnTrampo
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeDeallocateStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                     TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -11645,6 +12199,7 @@ PEGTransformerFactory::FinalizeDeallocatePrepareTrampoline(PEGTransformer &trans
 	return make_uniq<TypedTransformResult<bool>>(result);
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeDeclareStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                  TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -11730,6 +12285,8 @@ PEGTransformerFactory::FinalizeDropVariableStatementTrampoline(PEGTransformer &t
 	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeDeleteStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                 TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -11906,6 +12463,7 @@ void PEGTransformerFactory::InitializeShowAllTablesTrampoline(PEGTransformer &tr
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeShowAllTablesTrampoline(PEGTransformer &transformer,
                                                                                         TransformStack &stack,
                                                                                         TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto show_or_describe = frame.TakeResult<ShowType>(0);
 	auto result = TransformShowAllTables(transformer, show_or_describe);
 	return make_uniq<TypedTransformResult<unique_ptr<QueryNode>>>(std::move(result));
@@ -11990,6 +12548,14 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeDescribeTableTra
 	}
 	auto result = TransformDescribeTable(transformer, describe_rule, has_result, has_result_2,
 	                                     std::move(describe_target), std::move(partition_spec), dotted_identifier);
+=======
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto show_or_describe = frame.TakeResult<ShowType>(0);
+	bool has_result {};
+	auto &has_result_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
+	has_result = has_result_opt.HasResult();
+	auto result = TransformShowAllTables(transformer, show_or_describe, has_result);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<QueryNode>>>(std::move(result));
 }
 
@@ -12881,6 +13447,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeExecuteStatement
 void PEGTransformerFactory::InitializeExplainStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                  TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+<<<<<<< HEAD
 	frame.ReserveChildSlots(4);
 	stack.PushFrame(list_pr.GetChild(4), EXPLAINABLE_STATEMENTS_OPS, TransformFrameResultTarget(frame.frame_index, 3));
 	auto &explain_mode_opt = list_pr.GetChild(3).Cast<OptionalParseResult>();
@@ -12888,14 +13455,24 @@ void PEGTransformerFactory::InitializeExplainStatementTrampoline(PEGTransformer 
 		stack.PushFrame(explain_mode_opt.GetResult(), EXPLAIN_MODE_OPS,
 		                TransformFrameResultTarget(frame.frame_index, 2));
 	}
+=======
+	frame.ReserveChildSlots(3);
+	stack.PushFrame(list_pr.GetChild(3), EXPLAINABLE_STATEMENTS_OPS, TransformFrameResultTarget(frame.frame_index, 2));
+>>>>>>> duckdb_upstream/main
 	auto &explain_option_list_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
 	if (explain_option_list_opt.HasResult()) {
 		stack.PushFrame(explain_option_list_opt.GetResult(), EXPLAIN_OPTION_LIST_OPS,
 		                TransformFrameResultTarget(frame.frame_index, 1));
 	}
+<<<<<<< HEAD
 	auto &explain_analyze_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
 	if (explain_analyze_opt.HasResult()) {
 		stack.PushFrame(explain_analyze_opt.GetResult(), EXPLAIN_ANALYZE_OPS,
+=======
+	auto &analyze_keyword_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (analyze_keyword_opt.HasResult()) {
+		stack.PushFrame(analyze_keyword_opt.GetResult(), ANALYZE_KEYWORD_OPS,
+>>>>>>> duckdb_upstream/main
 		                TransformFrameResultTarget(frame.frame_index, 0));
 	}
 }
@@ -12903,14 +13480,21 @@ void PEGTransformerFactory::InitializeExplainStatementTrampoline(PEGTransformer 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeExplainStatementTrampoline(PEGTransformer &transformer,
                                                                                            TransformStack &stack,
                                                                                            TransformStackFrame &frame) {
+<<<<<<< HEAD
 	optional<bool> explain_analyze {};
 	if (frame.child_results[0]) {
 		explain_analyze = frame.TakeResult<bool>(0);
+=======
+	optional<Identifier> analyze_keyword {};
+	if (frame.child_results[0]) {
+		analyze_keyword = frame.TakeResult<Identifier>(0);
+>>>>>>> duckdb_upstream/main
 	}
 	optional<vector<GenericCopyOption>> explain_option_list {};
 	if (frame.child_results[1]) {
 		explain_option_list = frame.TakeResult<vector<GenericCopyOption>>(1);
 	}
+<<<<<<< HEAD
 	optional<bool> explain_mode {};
 	if (frame.child_results[2]) {
 		explain_mode = frame.TakeResult<bool>(2);
@@ -12945,6 +13529,14 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeExplainModeTramp
 	return make_uniq<TypedTransformResult<bool>>(result);
 }
 
+=======
+	auto explainable_statements = frame.TakeResult<unique_ptr<SQLStatement>>(2);
+	auto result =
+	    TransformExplainStatement(transformer, analyze_keyword, explain_option_list, std::move(explainable_statements));
+	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeExplainOptionListTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                   TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -13012,7 +13604,11 @@ void PEGTransformerFactory::InitializeExplainOptionNameTrampoline(PEGTransformer
 		return;
 	}
 	if (ops_entry == ops_map.end()) {
+<<<<<<< HEAD
 		throw InternalException("No trampoline ops registered for rule '%s'", choice_result.name);
+=======
+		return;
+>>>>>>> duckdb_upstream/main
 	}
 	stack.PushFrame(choice_result, *ops_entry->second, TransformFrameResultTarget(frame.frame_index, 0));
 }
@@ -13020,6 +13616,7 @@ void PEGTransformerFactory::InitializeExplainOptionNameTrampoline(PEGTransformer
 unique_ptr<TransformResultValue>
 PEGTransformerFactory::FinalizeExplainOptionNameTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                            TransformStackFrame &frame) {
+<<<<<<< HEAD
 	Identifier result;
 	if (frame.child_results[0]) {
 		result = frame.TakeResult<Identifier>(0);
@@ -13035,6 +13632,15 @@ PEGTransformerFactory::FinalizeExplainOptionNameTrampoline(PEGTransformer &trans
 		} else {
 			result = Identifier(TransformIdentifierOrKeyword(transformer, choice_result));
 		}
+=======
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto &choice_result = list_pr.Child<ChoiceParseResult>(0).GetResult();
+	Identifier result {};
+	if (frame.child_results[0]) {
+		result = frame.TakeResult<Identifier>(0);
+	} else {
+		result = TransformExplainOptionName(transformer, choice_result);
+>>>>>>> duckdb_upstream/main
 	}
 	return make_uniq<TypedTransformResult<Identifier>>(result);
 }
@@ -13621,7 +14227,11 @@ void PEGTransformerFactory::InitializeParenthesisExpressionTrampoline(PEGTransfo
 		frame.ReserveChildSlots(1 + dynamic_child_count - 1);
 		for (idx_t i = list_items.size(); i > 0; i--) {
 			auto child_idx = i - 1;
+<<<<<<< HEAD
 			stack.PushFrame(list_items[child_idx].get(), ROW_EXPRESSION_ARG_OPS,
+=======
+			stack.PushFrame(list_items[child_idx].get(), EXPRESSION_OPS,
+>>>>>>> duckdb_upstream/main
 			                TransformFrameResultTarget(frame.frame_index, 0 + child_idx));
 		}
 	} else {
@@ -13639,6 +14249,7 @@ PEGTransformerFactory::FinalizeParenthesisExpressionTrampoline(PEGTransformer &t
 		auto dynamic_list_items = ExtractParseResultsFromList(dynamic_list_opt.GetResult());
 		dynamic_child_count = dynamic_list_items.size();
 	}
+<<<<<<< HEAD
 	optional<vector<unique_ptr<ParsedExpression>>> row_expression_arg {};
 	auto &row_expression_arg_opt = ExtractResultFromParens(list_pr.GetChild(0)).Cast<OptionalParseResult>();
 	if (row_expression_arg_opt.HasResult()) {
@@ -13649,6 +14260,18 @@ PEGTransformerFactory::FinalizeParenthesisExpressionTrampoline(PEGTransformer &t
 		row_expression_arg = std::move(row_expression_arg_value);
 	}
 	auto result = TransformParenthesisExpression(transformer, std::move(row_expression_arg));
+=======
+	optional<vector<unique_ptr<ParsedExpression>>> expression {};
+	auto &expression_opt = ExtractResultFromParens(list_pr.GetChild(0)).Cast<OptionalParseResult>();
+	if (expression_opt.HasResult()) {
+		vector<unique_ptr<ParsedExpression>> expression_value;
+		for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
+			expression_value.push_back(frame.TakeResult<unique_ptr<ParsedExpression>>(i));
+		}
+		expression = std::move(expression_value);
+	}
+	auto result = TransformParenthesisExpression(transformer, std::move(expression));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
@@ -14343,16 +14966,26 @@ void PEGTransformerFactory::InitializeTypeLiteralTrampoline(PEGTransformer &tran
                                                             TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	frame.ReserveChildSlots(1);
+<<<<<<< HEAD
 	stack.PushFrame(list_pr.GetChild(0), COL_ID_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+=======
+	stack.PushFrame(list_pr.GetChild(0), TYPE_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeTypeLiteralTrampoline(PEGTransformer &transformer,
                                                                                       TransformStack &stack,
                                                                                       TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+<<<<<<< HEAD
 	auto col_id = frame.TakeResult<Identifier>(0);
 	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(1));
 	auto result = TransformTypeLiteral(transformer, col_id, string_literal);
+=======
+	auto type = frame.TakeResult<LogicalType>(0);
+	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(1));
+	auto result = TransformTypeLiteral(transformer, type, string_literal);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
@@ -14415,6 +15048,7 @@ PEGTransformerFactory::FinalizeIntervalStringParameterTrampoline(PEGTransformer 
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeIntervalMultiUnitLiteralTrampoline(PEGTransformer &transformer,
                                                                          TransformStack &stack,
                                                                          TransformStackFrame &frame) {
@@ -14465,6 +15099,8 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeIntervalUnitPair
 	return make_uniq<TypedTransformResult<pair<unique_ptr<ParsedExpression>, DatePartSpecifier>>>(std::move(result));
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeFrameClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                             TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -15922,7 +16558,11 @@ void PEGTransformerFactory::InitializeNotExpressionTrampoline(PEGTransformer &tr
 	frame.ReserveChildSlots(1 + dynamic_child_count - 1);
 	for (idx_t i = repeat_children.size(); i > 0; i--) {
 		auto child_idx = i - 1;
+<<<<<<< HEAD
 		stack.PushFrame(repeat_children[child_idx].get(), SPARK_NOT_EXPRESSION_OPS,
+=======
+		stack.PushFrame(repeat_children[child_idx].get(), NOT_KEYWORD_OPS,
+>>>>>>> duckdb_upstream/main
 		                TransformFrameResultTarget(frame.frame_index, 0 + child_idx));
 	}
 }
@@ -15934,6 +16574,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNotExpressionTra
 	auto &dynamic_repeat_pr = list_pr.GetChild(0).Cast<RepeatParseResult>();
 	auto dynamic_repeat_children = dynamic_repeat_pr.GetChildren();
 	auto dynamic_child_count = dynamic_repeat_children.size();
+<<<<<<< HEAD
 	vector<unique_ptr<ParsedExpression>> spark_not_expression;
 	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
 		spark_not_expression.push_back(frame.TakeResult<unique_ptr<ParsedExpression>>(i));
@@ -15952,6 +16593,26 @@ PEGTransformerFactory::FinalizeSparkNotExpressionTrampoline(PEGTransformer &tran
                                                             TransformStackFrame &frame) {
 	auto result = TransformSparkNotExpression(transformer);
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
+=======
+	vector<bool> not_keyword;
+	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
+		not_keyword.push_back(frame.TakeResult<bool>(i));
+	}
+	auto result = TransformNotExpression(transformer, not_keyword);
+	return make_uniq<TypedTransformResult<vector<bool>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeNotKeywordTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                           TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNotKeywordTrampoline(PEGTransformer &transformer,
+                                                                                     TransformStack &stack,
+                                                                                     TransformStackFrame &frame) {
+	auto result = TransformNotKeyword(transformer);
+	return make_uniq<TypedTransformResult<bool>>(result);
+>>>>>>> duckdb_upstream/main
 }
 
 void PEGTransformerFactory::InitializeIsExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -16949,15 +17610,25 @@ void PEGTransformerFactory::InitializeAnyAllOperatorTrampoline(PEGTransformer &t
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	frame.ReserveChildSlots(2);
 	stack.PushFrame(list_pr.GetChild(1), ANY_OR_ALL_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+<<<<<<< HEAD
 	stack.PushFrame(list_pr.GetChild(0), ANY_ALL_OP_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+=======
+	stack.PushFrame(list_pr.GetChild(0), ANY_OP_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAnyAllOperatorTrampoline(PEGTransformer &transformer,
                                                                                          TransformStack &stack,
                                                                                          TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto any_all_op = frame.TakeResult<string>(0);
 	auto any_or_all = frame.TakeResult<bool>(1);
 	auto result = TransformAnyAllOperator(transformer, any_all_op, any_or_all);
+=======
+	auto any_op = frame.TakeResult<string>(0);
+	auto any_or_all = frame.TakeResult<bool>(1);
+	auto result = TransformAnyAllOperator(transformer, any_op, any_or_all);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<pair<string, bool>>>(result);
 }
 
@@ -17139,6 +17810,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAnyOpTrampoline(
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeAnyAllOpTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                          TransformStackFrame &frame) {
 	frame.ReserveChildSlots(0);
@@ -17153,6 +17825,8 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAnyAllOpTrampoli
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeBitwiseExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                   TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -17171,7 +17845,11 @@ void PEGTransformerFactory::InitializeBitwiseExpressionTrampoline(PEGTransformer
 	} else {
 		frame.ReserveChildSlots(2 - 1);
 	}
+<<<<<<< HEAD
 	stack.PushFrame(list_pr.GetChild(0), BITWISE_AND_EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+=======
+	stack.PushFrame(list_pr.GetChild(0), ADDITIVE_EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue>
@@ -17185,7 +17863,11 @@ PEGTransformerFactory::FinalizeBitwiseExpressionTrampoline(PEGTransformer &trans
 		auto dynamic_repeat_children = dynamic_repeat_pr.GetChildren();
 		dynamic_child_count = dynamic_repeat_children.size();
 	}
+<<<<<<< HEAD
 	auto bitwise_and_expression = frame.TakeResult<unique_ptr<ParsedExpression>>(0);
+=======
+	auto additive_expression = frame.TakeResult<unique_ptr<ParsedExpression>>(0);
+>>>>>>> duckdb_upstream/main
 	optional<vector<BinaryExpressionTail>> bitwise_expression_tail {};
 	if (dynamic_child_count > 0) {
 		vector<BinaryExpressionTail> bitwise_expression_tail_value;
@@ -17195,7 +17877,11 @@ PEGTransformerFactory::FinalizeBitwiseExpressionTrampoline(PEGTransformer &trans
 		bitwise_expression_tail = std::move(bitwise_expression_tail_value);
 	}
 	auto result =
+<<<<<<< HEAD
 	    TransformBitwiseExpression(transformer, std::move(bitwise_and_expression), std::move(bitwise_expression_tail));
+=======
+	    TransformBitwiseExpression(transformer, std::move(additive_expression), std::move(bitwise_expression_tail));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
@@ -17204,13 +17890,19 @@ void PEGTransformerFactory::InitializeBitwiseExpressionTailTrampoline(PEGTransfo
                                                                       TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	frame.ReserveChildSlots(2);
+<<<<<<< HEAD
 	stack.PushFrame(list_pr.GetChild(1), BITWISE_AND_EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 1));
 	stack.PushFrame(list_pr.GetChild(0), BITWISE_OR_OPERATOR_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+=======
+	stack.PushFrame(list_pr.GetChild(1), ADDITIVE_EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	stack.PushFrame(list_pr.GetChild(0), BIT_OPERATOR_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue>
 PEGTransformerFactory::FinalizeBitwiseExpressionTailTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto bitwise_or_operator = frame.TakeResult<string>(0);
 	auto bitwise_and_expression = frame.TakeResult<unique_ptr<ParsedExpression>>(1);
 	auto result = TransformBitwiseExpressionTail(transformer, bitwise_or_operator, std::move(bitwise_and_expression));
@@ -17376,6 +18068,22 @@ void PEGTransformerFactory::InitializeShiftOperatorTrampoline(PEGTransformer &tr
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeShiftOperatorTrampoline(PEGTransformer &transformer,
                                                                                         TransformStack &stack,
                                                                                         TransformStackFrame &frame) {
+=======
+	auto bit_operator = frame.TakeResult<string>(0);
+	auto additive_expression = frame.TakeResult<unique_ptr<ParsedExpression>>(1);
+	auto result = TransformBitwiseExpressionTail(transformer, bit_operator, std::move(additive_expression));
+	return make_uniq<TypedTransformResult<BinaryExpressionTail>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeBitOperatorTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                            TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeBitOperatorTrampoline(PEGTransformer &transformer,
+                                                                                      TransformStack &stack,
+                                                                                      TransformStackFrame &frame) {
+>>>>>>> duckdb_upstream/main
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
 	auto result = choice_pr.GetResult().Cast<KeywordParseResult>().keyword;
@@ -18462,7 +19170,11 @@ void PEGTransformerFactory::InitializeRowExpressionTrampoline(PEGTransformer &tr
 		frame.ReserveChildSlots(1 + dynamic_child_count - 1);
 		for (idx_t i = list_items.size(); i > 0; i--) {
 			auto child_idx = i - 1;
+<<<<<<< HEAD
 			stack.PushFrame(list_items[child_idx].get(), ROW_EXPRESSION_ARG_OPS,
+=======
+			stack.PushFrame(list_items[child_idx].get(), EXPRESSION_OPS,
+>>>>>>> duckdb_upstream/main
 			                TransformFrameResultTarget(frame.frame_index, 0 + child_idx));
 		}
 	} else {
@@ -18480,6 +19192,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeRowExpressionTra
 		auto dynamic_list_items = ExtractParseResultsFromList(dynamic_list_opt.GetResult());
 		dynamic_child_count = dynamic_list_items.size();
 	}
+<<<<<<< HEAD
 	optional<vector<unique_ptr<ParsedExpression>>> row_expression_arg {};
 	auto &row_expression_arg_opt = ExtractResultFromParens(list_pr.GetChild(1)).Cast<OptionalParseResult>();
 	if (row_expression_arg_opt.HasResult()) {
@@ -18532,6 +19245,21 @@ PEGTransformerFactory::FinalizeRowExpressionAliasTrampoline(PEGTransformer &tran
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
+=======
+	optional<vector<unique_ptr<ParsedExpression>>> expression {};
+	auto &expression_opt = ExtractResultFromParens(list_pr.GetChild(1)).Cast<OptionalParseResult>();
+	if (expression_opt.HasResult()) {
+		vector<unique_ptr<ParsedExpression>> expression_value;
+		for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
+			expression_value.push_back(frame.TakeResult<unique_ptr<ParsedExpression>>(i));
+		}
+		expression = std::move(expression_value);
+	}
+	auto result = TransformRowExpression(transformer, std::move(expression));
+	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeSubstringExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                     TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -19046,6 +19774,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeExtractDatePartT
 	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeInsertStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                 TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -19077,6 +19806,168 @@ void PEGTransformerFactory::InitializeInsertStatementTrampoline(PEGTransformer &
 		                TransformFrameResultTarget(frame.frame_index, 3));
 	}
 	stack.PushFrame(list_pr.GetChild(5), INSERT_TARGET_OPS, TransformFrameResultTarget(frame.frame_index, 2));
+=======
+void PEGTransformerFactory::InitializeExternalResourceStatementTrampoline(PEGTransformer &transformer,
+                                                                          TransformStack &stack,
+                                                                          TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto &choice_result = choice_pr.GetResult();
+	frame.ReserveChildSlots(1);
+	auto &ops_map = PEGTransformerFactory::GeneratedTrampolineOps();
+	auto ops_entry = ops_map.find(choice_result.name);
+	if (ops_entry == ops_map.end()) {
+		throw InternalException("No trampoline ops registered for rule '%s'", choice_result.name);
+	}
+	stack.PushFrame(choice_result, *ops_entry->second, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeExternalResourceStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                   TransformStackFrame &frame) {
+	auto result = frame.TakeResult<unique_ptr<SQLStatement>>(0);
+	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeCreateExternalResourceStmtTrampoline(PEGTransformer &transformer,
+                                                                           TransformStack &stack,
+                                                                           TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(2);
+	auto &attach_options_opt = list_pr.GetChild(5).Cast<OptionalParseResult>();
+	if (attach_options_opt.HasResult()) {
+		stack.PushFrame(attach_options_opt.GetResult(), ATTACH_OPTIONS_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 1));
+	}
+	auto &attach_alias_opt = list_pr.GetChild(4).Cast<OptionalParseResult>();
+	if (attach_alias_opt.HasResult()) {
+		stack.PushFrame(attach_alias_opt.GetResult(), ATTACH_ALIAS_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeCreateExternalResourceStmtTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                    TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(3));
+	optional<Identifier> attach_alias {};
+	if (frame.child_results[0]) {
+		attach_alias = frame.TakeResult<Identifier>(0);
+	}
+	optional<vector<GenericCopyOption>> attach_options {};
+	if (frame.child_results[1]) {
+		attach_options = frame.TakeResult<vector<GenericCopyOption>>(1);
+	}
+	auto result = TransformCreateExternalResourceStmt(transformer, string_literal, attach_alias, attach_options);
+	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeRegisterExternalResourceStmtTrampoline(PEGTransformer &transformer,
+                                                                             TransformStack &stack,
+                                                                             TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(2);
+	stack.PushFrame(list_pr.GetChild(6), EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	auto &attach_alias_opt = list_pr.GetChild(4).Cast<OptionalParseResult>();
+	if (attach_alias_opt.HasResult()) {
+		stack.PushFrame(attach_alias_opt.GetResult(), ATTACH_ALIAS_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeRegisterExternalResourceStmtTrampoline(
+    PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(3));
+	optional<Identifier> attach_alias {};
+	if (frame.child_results[0]) {
+		attach_alias = frame.TakeResult<Identifier>(0);
+	}
+	auto expression = frame.TakeResult<unique_ptr<ParsedExpression>>(1);
+	auto result =
+	    TransformRegisterExternalResourceStmt(transformer, string_literal, attach_alias, std::move(expression));
+	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeDestroyExternalResourceStmtTrampoline(PEGTransformer &transformer,
+                                                                            TransformStack &stack,
+                                                                            TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(1);
+	stack.PushFrame(list_pr.GetChild(3), COL_ID_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeDestroyExternalResourceStmtTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                     TransformStackFrame &frame) {
+	auto col_id = frame.TakeResult<Identifier>(0);
+	auto result = TransformDestroyExternalResourceStmt(transformer, col_id);
+	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeShowExternalResourcesStmtTrampoline(PEGTransformer &transformer,
+                                                                          TransformStack &stack,
+                                                                          TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(1);
+	auto &show_all_modifier_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (show_all_modifier_opt.HasResult()) {
+		stack.PushFrame(show_all_modifier_opt.GetResult(), SHOW_ALL_MODIFIER_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeShowExternalResourcesStmtTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                   TransformStackFrame &frame) {
+	optional<bool> show_all_modifier {};
+	if (frame.child_results[0]) {
+		show_all_modifier = frame.TakeResult<bool>(0);
+	}
+	auto result = TransformShowExternalResourcesStmt(transformer, show_all_modifier);
+	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeShowAllModifierTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeShowAllModifierTrampoline(PEGTransformer &transformer,
+                                                                                          TransformStack &stack,
+                                                                                          TransformStackFrame &frame) {
+	auto result = TransformShowAllModifier(transformer);
+	return make_uniq<TypedTransformResult<bool>>(result);
+}
+
+void PEGTransformerFactory::InitializeInsertStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(8);
+	auto &returning_clause_opt = list_pr.GetChild(9).Cast<OptionalParseResult>();
+	if (returning_clause_opt.HasResult()) {
+		stack.PushFrame(returning_clause_opt.GetResult(), RETURNING_CLAUSE_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 7));
+	}
+	auto &on_conflict_clause_opt = list_pr.GetChild(8).Cast<OptionalParseResult>();
+	if (on_conflict_clause_opt.HasResult()) {
+		stack.PushFrame(on_conflict_clause_opt.GetResult(), ON_CONFLICT_CLAUSE_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 6));
+	}
+	stack.PushFrame(list_pr.GetChild(7), INSERT_VALUES_OPS, TransformFrameResultTarget(frame.frame_index, 5));
+	auto &insert_column_list_opt = list_pr.GetChild(6).Cast<OptionalParseResult>();
+	if (insert_column_list_opt.HasResult()) {
+		stack.PushFrame(insert_column_list_opt.GetResult(), INSERT_COLUMN_LIST_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 4));
+	}
+	auto &by_name_or_position_opt = list_pr.GetChild(5).Cast<OptionalParseResult>();
+	if (by_name_or_position_opt.HasResult()) {
+		stack.PushFrame(by_name_or_position_opt.GetResult(), BY_NAME_OR_POSITION_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 3));
+	}
+	stack.PushFrame(list_pr.GetChild(4), INSERT_TARGET_OPS, TransformFrameResultTarget(frame.frame_index, 2));
+>>>>>>> duckdb_upstream/main
 	auto &or_action_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
 	if (or_action_opt.HasResult()) {
 		stack.PushFrame(or_action_opt.GetResult(), OR_ACTION_OPS, TransformFrameResultTarget(frame.frame_index, 1));
@@ -19090,7 +19981,10 @@ void PEGTransformerFactory::InitializeInsertStatementTrampoline(PEGTransformer &
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeInsertStatementTrampoline(PEGTransformer &transformer,
                                                                                           TransformStack &stack,
                                                                                           TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+=======
+>>>>>>> duckdb_upstream/main
 	optional<CommonTableExpressionMap> with_clause {};
 	if (frame.child_results[0]) {
 		with_clause = frame.TakeResult<CommonTableExpressionMap>(0);
@@ -19099,6 +19993,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeInsertStatementT
 	if (frame.child_results[1]) {
 		or_action = frame.TakeResult<OnConflictAction>(1);
 	}
+<<<<<<< HEAD
 	bool has_result {};
 	auto &has_result_opt = list_pr.GetChild(4).Cast<OptionalParseResult>();
 	has_result = has_result_opt.HasResult();
@@ -19238,6 +20133,29 @@ PEGTransformerFactory::FinalizeMultiInsertBranchTrampoline(PEGTransformer &trans
 	auto result = TransformMultiInsertBranch(transformer, has_result, std::move(insert_target), insert_column_list,
 	                                         std::move(expression_alias), std::move(where_clause),
 	                                         std::move(group_by_clause), std::move(having_clause));
+=======
+	auto insert_target = frame.TakeResult<unique_ptr<BaseTableRef>>(2);
+	optional<InsertColumnOrder> by_name_or_position {};
+	if (frame.child_results[3]) {
+		by_name_or_position = frame.TakeResult<InsertColumnOrder>(3);
+	}
+	optional<vector<string>> insert_column_list {};
+	if (frame.child_results[4]) {
+		insert_column_list = frame.TakeResult<vector<string>>(4);
+	}
+	auto insert_values = frame.TakeResult<InsertValues>(5);
+	optional<unique_ptr<OnConflictInfo>> on_conflict_clause {};
+	if (frame.child_results[6]) {
+		on_conflict_clause = frame.TakeResult<unique_ptr<OnConflictInfo>>(6);
+	}
+	optional<vector<unique_ptr<ParsedExpression>>> returning_clause {};
+	if (frame.child_results[7]) {
+		returning_clause = frame.TakeResult<vector<unique_ptr<ParsedExpression>>>(7);
+	}
+	auto result = TransformInsertStatement(transformer, std::move(with_clause), or_action, std::move(insert_target),
+	                                       by_name_or_position, insert_column_list, std::move(insert_values),
+	                                       std::move(on_conflict_clause), std::move(returning_clause));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
 }
 
@@ -21277,13 +22195,22 @@ void PEGTransformerFactory::InitializeWithStatementTrampoline(PEGTransformer &tr
                                                               TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	frame.ReserveChildSlots(5);
+<<<<<<< HEAD
 	stack.PushFrame(list_pr.GetChild(6), CTEBODY_OPS, TransformFrameResultTarget(frame.frame_index, 4));
 	auto &materialized_opt = list_pr.GetChild(5).Cast<OptionalParseResult>();
+=======
+	stack.PushFrame(list_pr.GetChild(5), CTEBODY_OPS, TransformFrameResultTarget(frame.frame_index, 4));
+	auto &materialized_opt = list_pr.GetChild(4).Cast<OptionalParseResult>();
+>>>>>>> duckdb_upstream/main
 	if (materialized_opt.HasResult()) {
 		stack.PushFrame(materialized_opt.GetResult(), MATERIALIZED_OPS,
 		                TransformFrameResultTarget(frame.frame_index, 3));
 	}
+<<<<<<< HEAD
 	auto &using_key_opt = list_pr.GetChild(3).Cast<OptionalParseResult>();
+=======
+	auto &using_key_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
+>>>>>>> duckdb_upstream/main
 	if (using_key_opt.HasResult()) {
 		stack.PushFrame(using_key_opt.GetResult(), USING_KEY_OPS, TransformFrameResultTarget(frame.frame_index, 2));
 	}
@@ -21298,15 +22225,21 @@ void PEGTransformerFactory::InitializeWithStatementTrampoline(PEGTransformer &tr
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeWithStatementTrampoline(PEGTransformer &transformer,
                                                                                         TransformStack &stack,
                                                                                         TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+=======
+>>>>>>> duckdb_upstream/main
 	auto col_id_or_string = frame.TakeResult<Identifier>(0);
 	optional<vector<string>> insert_column_list {};
 	if (frame.child_results[1]) {
 		insert_column_list = frame.TakeResult<vector<string>>(1);
 	}
+<<<<<<< HEAD
 	bool has_result {};
 	auto &has_result_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
 	has_result = has_result_opt.HasResult();
+=======
+>>>>>>> duckdb_upstream/main
 	optional<vector<unique_ptr<ParsedExpression>>> using_key {};
 	if (frame.child_results[2]) {
 		using_key = frame.TakeResult<vector<unique_ptr<ParsedExpression>>>(2);
@@ -21316,8 +22249,13 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeWithStatementTra
 		materialized = frame.TakeResult<bool>(3);
 	}
 	auto cte_body = frame.TakeResult<unique_ptr<TableRef>>(4);
+<<<<<<< HEAD
 	auto result = TransformWithStatement(transformer, col_id_or_string, insert_column_list, has_result,
 	                                     std::move(using_key), materialized, std::move(cte_body));
+=======
+	auto result = TransformWithStatement(transformer, col_id_or_string, insert_column_list, std::move(using_key),
+	                                     materialized, std::move(cte_body));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<pair<Identifier, unique_ptr<CommonTableExpressionInfo>>>>(std::move(result));
 }
 
@@ -21471,7 +22409,11 @@ void PEGTransformerFactory::InitializeColumnAliasesTrampoline(PEGTransformer &tr
 	frame.ReserveChildSlots(1 + dynamic_child_count - 1);
 	for (idx_t i = list_items.size(); i > 0; i--) {
 		auto child_idx = i - 1;
+<<<<<<< HEAD
 		stack.PushFrame(list_items[child_idx].get(), COL_LABEL_OR_STRING_OPS,
+=======
+		stack.PushFrame(list_items[child_idx].get(), COL_ID_OR_STRING_OPS,
+>>>>>>> duckdb_upstream/main
 		                TransformFrameResultTarget(frame.frame_index, 0 + child_idx));
 	}
 }
@@ -21482,19 +22424,39 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeColumnAliasesTra
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto dynamic_list_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
 	auto dynamic_child_count = dynamic_list_items.size();
+<<<<<<< HEAD
 	vector<Identifier> col_label_or_string;
 	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
 		col_label_or_string.push_back(frame.TakeResult<Identifier>(i));
 	}
 	auto result = TransformColumnAliases(transformer, col_label_or_string);
+=======
+	vector<Identifier> col_id_or_string;
+	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
+		col_id_or_string.push_back(frame.TakeResult<Identifier>(i));
+	}
+	auto result = TransformColumnAliases(transformer, col_id_or_string);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<vector<string>>>(result);
 }
 
 void PEGTransformerFactory::InitializeDistinctClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+<<<<<<< HEAD
 	frame.ReserveChildSlots(1);
 	stack.PushFrame(list_pr.GetChild(0), DISTINCT_ON_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+=======
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto &choice_result = choice_pr.GetResult();
+	frame.ReserveChildSlots(1);
+	auto &ops_map = PEGTransformerFactory::GeneratedTrampolineOps();
+	auto ops_entry = ops_map.find(choice_result.name);
+	if (ops_entry == ops_map.end()) {
+		throw InternalException("No trampoline ops registered for rule '%s'", choice_result.name);
+	}
+	stack.PushFrame(choice_result, *ops_entry->second, TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeDistinctClauseTrampoline(PEGTransformer &transformer,
@@ -21504,6 +22466,21 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeDistinctClauseTr
 	return make_uniq<TypedTransformResult<DistinctClause>>(std::move(result));
 }
 
+<<<<<<< HEAD
+=======
+void PEGTransformerFactory::InitializeDistinctAllTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                            TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeDistinctAllTrampoline(PEGTransformer &transformer,
+                                                                                      TransformStack &stack,
+                                                                                      TransformStackFrame &frame) {
+	auto result = TransformDistinctAll(transformer);
+	return make_uniq<TypedTransformResult<DistinctClause>>(std::move(result));
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeDistinctOnTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                            TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -21678,18 +22655,30 @@ void PEGTransformerFactory::InitializeValuesRefTrampoline(PEGTransformer &transf
 	if (table_alias_opt.HasResult()) {
 		stack.PushFrame(table_alias_opt.GetResult(), TABLE_ALIAS_OPS, TransformFrameResultTarget(frame.frame_index, 1));
 	}
+<<<<<<< HEAD
 	stack.PushFrame(list_pr.GetChild(0), VALUES_BODY_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+=======
+	stack.PushFrame(list_pr.GetChild(0), VALUES_CLAUSE_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeValuesRefTrampoline(PEGTransformer &transformer,
                                                                                     TransformStack &stack,
                                                                                     TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto values_body = frame.TakeResult<unique_ptr<SelectStatement>>(0);
+=======
+	auto values_clause = frame.TakeResult<unique_ptr<SelectStatement>>(0);
+>>>>>>> duckdb_upstream/main
 	optional<TableAlias> table_alias {};
 	if (frame.child_results[1]) {
 		table_alias = frame.TakeResult<TableAlias>(1);
 	}
+<<<<<<< HEAD
 	auto result = TransformValuesRef(transformer, std::move(values_body), table_alias);
+=======
+	auto result = TransformValuesRef(transformer, std::move(values_clause), table_alias);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
 }
 
@@ -22388,17 +23377,28 @@ PEGTransformerFactory::FinalizePositionalFunctionArgumentTrampoline(PEGTransform
 void PEGTransformerFactory::InitializeNamedParameterTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+<<<<<<< HEAD
 	frame.ReserveChildSlots(2);
 	stack.PushFrame(list_pr.GetChild(3), EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 1));
 	auto &type_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
 	if (type_opt.HasResult()) {
 		stack.PushFrame(type_opt.GetResult(), TYPE_OPS, TransformFrameResultTarget(frame.frame_index, 0));
 	}
+=======
+	frame.ReserveChildSlots(3);
+	stack.PushFrame(list_pr.GetChild(3), EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 2));
+	auto &type_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (type_opt.HasResult()) {
+		stack.PushFrame(type_opt.GetResult(), TYPE_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	}
+	stack.PushFrame(list_pr.GetChild(0), TYPE_FUNC_NAME_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNamedParameterTrampoline(PEGTransformer &transformer,
                                                                                          TransformStack &stack,
                                                                                          TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto reserved_identifier = list_pr.GetChild(0).Cast<IdentifierParseResult>().identifier;
 	optional<LogicalType> type {};
@@ -22407,6 +23407,15 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNamedParameterTr
 	}
 	auto expression = frame.TakeResult<unique_ptr<ParsedExpression>>(1);
 	auto result = TransformNamedParameter(transformer, reserved_identifier, type, std::move(expression));
+=======
+	auto type_func_name = frame.TakeResult<Identifier>(0);
+	optional<LogicalType> type {};
+	if (frame.child_results[1]) {
+		type = frame.TakeResult<LogicalType>(1);
+	}
+	auto expression = frame.TakeResult<unique_ptr<ParsedExpression>>(2);
+	auto result = TransformNamedParameter(transformer, type_func_name, type, std::move(expression));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<MacroParameter>>(std::move(result));
 }
 
@@ -22600,6 +23609,361 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeJoinClauseTrampo
 	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
 }
 
+<<<<<<< HEAD
+=======
+void PEGTransformerFactory::InitializeNearestJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                  TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto &choice_result = choice_pr.GetResult();
+	frame.ReserveChildSlots(1);
+	auto &ops_map = PEGTransformerFactory::GeneratedTrampolineOps();
+	auto ops_entry = ops_map.find(choice_result.name);
+	if (ops_entry == ops_map.end()) {
+		throw InternalException("No trampoline ops registered for rule '%s'", choice_result.name);
+	}
+	stack.PushFrame(choice_result, *ops_entry->second, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeNearestJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                           TransformStackFrame &frame) {
+	auto result = frame.TakeResult<unique_ptr<TableRef>>(0);
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeNearestJoinAliasedTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                   TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(5);
+	stack.PushFrame(list_pr.GetChild(8), EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 4));
+	stack.PushFrame(list_pr.GetChild(7), DISTANCE_OR_SIMILARITY_OPS, TransformFrameResultTarget(frame.frame_index, 3));
+	auto &approx_or_exact_opt = list_pr.GetChild(3).Cast<OptionalParseResult>();
+	if (approx_or_exact_opt.HasResult()) {
+		stack.PushFrame(approx_or_exact_opt.GetResult(), APPROX_OR_EXACT_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 2));
+	}
+	stack.PushFrame(list_pr.GetChild(2), TABLE_REF_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	auto &join_type_opt = list_pr.GetChild(0).Cast<OptionalParseResult>();
+	if (join_type_opt.HasResult()) {
+		stack.PushFrame(join_type_opt.GetResult(), JOIN_TYPE_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeNearestJoinAliasedTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                            TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	optional<JoinType> join_type {};
+	if (frame.child_results[0]) {
+		join_type = frame.TakeResult<JoinType>(0);
+	}
+	auto table_ref = frame.TakeResult<unique_ptr<TableRef>>(1);
+	optional<bool> approx_or_exact {};
+	if (frame.child_results[2]) {
+		approx_or_exact = frame.TakeResult<bool>(2);
+	}
+	optional<unique_ptr<ParsedExpression>> number_literal {};
+	auto &number_literal_opt = list_pr.GetChild(5).Cast<OptionalParseResult>();
+	if (number_literal_opt.HasResult()) {
+		number_literal = TransformNumberLiteral(transformer, number_literal_opt.GetResult());
+	}
+	auto distance_or_similarity = frame.TakeResult<OrderType>(3);
+	auto expression = frame.TakeResult<unique_ptr<ParsedExpression>>(4);
+	auto result = TransformNearestJoinAliased(transformer, join_type, std::move(table_ref), approx_or_exact,
+	                                          std::move(number_literal), distance_or_similarity, std::move(expression));
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeNearestJoinBareTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(5);
+	stack.PushFrame(list_pr.GetChild(8), EXPRESSION_OPS, TransformFrameResultTarget(frame.frame_index, 4));
+	stack.PushFrame(list_pr.GetChild(7), DISTANCE_OR_SIMILARITY_OPS, TransformFrameResultTarget(frame.frame_index, 3));
+	auto &approx_or_exact_opt = list_pr.GetChild(3).Cast<OptionalParseResult>();
+	if (approx_or_exact_opt.HasResult()) {
+		stack.PushFrame(approx_or_exact_opt.GetResult(), APPROX_OR_EXACT_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 2));
+	}
+	stack.PushFrame(list_pr.GetChild(2), NEAREST_BARE_TABLE_REF_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	auto &join_type_opt = list_pr.GetChild(0).Cast<OptionalParseResult>();
+	if (join_type_opt.HasResult()) {
+		stack.PushFrame(join_type_opt.GetResult(), JOIN_TYPE_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNearestJoinBareTrampoline(PEGTransformer &transformer,
+                                                                                          TransformStack &stack,
+                                                                                          TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	optional<JoinType> join_type {};
+	if (frame.child_results[0]) {
+		join_type = frame.TakeResult<JoinType>(0);
+	}
+	auto nearest_bare_table_ref = frame.TakeResult<unique_ptr<TableRef>>(1);
+	optional<bool> approx_or_exact {};
+	if (frame.child_results[2]) {
+		approx_or_exact = frame.TakeResult<bool>(2);
+	}
+	optional<unique_ptr<ParsedExpression>> number_literal {};
+	auto &number_literal_opt = list_pr.GetChild(5).Cast<OptionalParseResult>();
+	if (number_literal_opt.HasResult()) {
+		number_literal = TransformNumberLiteral(transformer, number_literal_opt.GetResult());
+	}
+	auto distance_or_similarity = frame.TakeResult<OrderType>(3);
+	auto expression = frame.TakeResult<unique_ptr<ParsedExpression>>(4);
+	auto result = TransformNearestJoinBare(transformer, join_type, std::move(nearest_bare_table_ref), approx_or_exact,
+	                                       std::move(number_literal), distance_or_similarity, std::move(expression));
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeNearestBareTableRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                    TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto &choice_result = choice_pr.GetResult();
+	frame.ReserveChildSlots(1);
+	auto &ops_map = PEGTransformerFactory::GeneratedTrampolineOps();
+	auto ops_entry = ops_map.find(choice_result.name);
+	if (ops_entry == ops_map.end()) {
+		throw InternalException("No trampoline ops registered for rule '%s'", choice_result.name);
+	}
+	stack.PushFrame(choice_result, *ops_entry->second, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeNearestBareTableRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                             TransformStackFrame &frame) {
+	auto result = frame.TakeResult<unique_ptr<TableRef>>(0);
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeNearestValuesRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                 TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(1);
+	stack.PushFrame(list_pr.GetChild(0), VALUES_CLAUSE_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNearestValuesRefTrampoline(PEGTransformer &transformer,
+                                                                                           TransformStack &stack,
+                                                                                           TransformStackFrame &frame) {
+	auto values_clause = frame.TakeResult<unique_ptr<SelectStatement>>(0);
+	auto result = TransformNearestValuesRef(transformer, std::move(values_clause));
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeNearestTableFunctionTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                     TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(4);
+	auto &with_ordinality_opt = list_pr.GetChild(3).Cast<OptionalParseResult>();
+	if (with_ordinality_opt.HasResult()) {
+		stack.PushFrame(with_ordinality_opt.GetResult(), WITH_ORDINALITY_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 3));
+	}
+	stack.PushFrame(list_pr.GetChild(2), TABLE_FUNCTION_ARGUMENTS_OPS,
+	                TransformFrameResultTarget(frame.frame_index, 2));
+	stack.PushFrame(list_pr.GetChild(1), QUALIFIED_TABLE_FUNCTION_OPS,
+	                TransformFrameResultTarget(frame.frame_index, 1));
+	auto &lateral_opt = list_pr.GetChild(0).Cast<OptionalParseResult>();
+	if (lateral_opt.HasResult()) {
+		stack.PushFrame(lateral_opt.GetResult(), LATERAL_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeNearestTableFunctionTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                              TransformStackFrame &frame) {
+	optional<bool> lateral {};
+	if (frame.child_results[0]) {
+		lateral = frame.TakeResult<bool>(0);
+	}
+	auto qualified_table_function = frame.TakeResult<QualifiedName>(1);
+	auto table_function_arguments = frame.TakeResult<vector<FunctionArgument>>(2);
+	optional<bool> with_ordinality {};
+	if (frame.child_results[3]) {
+		with_ordinality = frame.TakeResult<bool>(3);
+	}
+	auto result = TransformNearestTableFunction(transformer, lateral, qualified_table_function,
+	                                            std::move(table_function_arguments), with_ordinality);
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeNearestTableSubqueryTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                     TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(2);
+	stack.PushFrame(list_pr.GetChild(1), SUBQUERY_REFERENCE_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	auto &lateral_opt = list_pr.GetChild(0).Cast<OptionalParseResult>();
+	if (lateral_opt.HasResult()) {
+		stack.PushFrame(lateral_opt.GetResult(), LATERAL_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeNearestTableSubqueryTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                              TransformStackFrame &frame) {
+	optional<bool> lateral {};
+	if (frame.child_results[0]) {
+		lateral = frame.TakeResult<bool>(0);
+	}
+	auto subquery_reference = frame.TakeResult<unique_ptr<TableRef>>(1);
+	auto result = TransformNearestTableSubquery(transformer, lateral, std::move(subquery_reference));
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeNearestBaseTableRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                    TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(3);
+	auto &sample_clause_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
+	if (sample_clause_opt.HasResult()) {
+		stack.PushFrame(sample_clause_opt.GetResult(), SAMPLE_CLAUSE_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 2));
+	}
+	auto &at_clause_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (at_clause_opt.HasResult()) {
+		stack.PushFrame(at_clause_opt.GetResult(), AT_CLAUSE_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	}
+	stack.PushFrame(list_pr.GetChild(0), BASE_TABLE_NAME_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeNearestBaseTableRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                             TransformStackFrame &frame) {
+	auto base_table_name = frame.TakeResult<unique_ptr<BaseTableRef>>(0);
+	optional<unique_ptr<AtClause>> at_clause {};
+	if (frame.child_results[1]) {
+		at_clause = frame.TakeResult<unique_ptr<AtClause>>(1);
+	}
+	optional<unique_ptr<SampleOptions>> sample_clause {};
+	if (frame.child_results[2]) {
+		sample_clause = frame.TakeResult<unique_ptr<SampleOptions>>(2);
+	}
+	auto result = TransformNearestBaseTableRef(transformer, std::move(base_table_name), std::move(at_clause),
+	                                           std::move(sample_clause));
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeNearestParensTableRefTrampoline(PEGTransformer &transformer,
+                                                                      TransformStack &stack,
+                                                                      TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(2);
+	auto &sample_clause_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (sample_clause_opt.HasResult()) {
+		stack.PushFrame(sample_clause_opt.GetResult(), SAMPLE_CLAUSE_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 1));
+	}
+	stack.PushFrame(ExtractResultFromParens(list_pr.GetChild(0)), TABLE_REF_OPS,
+	                TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeNearestParensTableRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                               TransformStackFrame &frame) {
+	auto table_ref = frame.TakeResult<unique_ptr<TableRef>>(0);
+	optional<unique_ptr<SampleOptions>> sample_clause {};
+	if (frame.child_results[1]) {
+		sample_clause = frame.TakeResult<unique_ptr<SampleOptions>>(1);
+	}
+	auto result = TransformNearestParensTableRef(transformer, std::move(table_ref), std::move(sample_clause));
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeApproxOrExactTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                              TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto &choice_result = choice_pr.GetResult();
+	frame.ReserveChildSlots(1);
+	auto &ops_map = PEGTransformerFactory::GeneratedTrampolineOps();
+	auto ops_entry = ops_map.find(choice_result.name);
+	if (ops_entry == ops_map.end()) {
+		throw InternalException("No trampoline ops registered for rule '%s'", choice_result.name);
+	}
+	stack.PushFrame(choice_result, *ops_entry->second, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeApproxOrExactTrampoline(PEGTransformer &transformer,
+                                                                                        TransformStack &stack,
+                                                                                        TransformStackFrame &frame) {
+	auto result = frame.TakeResult<bool>(0);
+	return make_uniq<TypedTransformResult<bool>>(result);
+}
+
+void PEGTransformerFactory::InitializeNearestApproxTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                              TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNearestApproxTrampoline(PEGTransformer &transformer,
+                                                                                        TransformStack &stack,
+                                                                                        TransformStackFrame &frame) {
+	auto result = TransformNearestApprox(transformer);
+	return make_uniq<TypedTransformResult<bool>>(result);
+}
+
+void PEGTransformerFactory::InitializeNearestExactTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                             TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNearestExactTrampoline(PEGTransformer &transformer,
+                                                                                       TransformStack &stack,
+                                                                                       TransformStackFrame &frame) {
+	auto result = TransformNearestExact(transformer);
+	return make_uniq<TypedTransformResult<bool>>(result);
+}
+
+void PEGTransformerFactory::InitializeDistanceOrSimilarityTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                     TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto &choice_result = choice_pr.GetResult();
+	frame.ReserveChildSlots(1);
+	auto &ops_map = PEGTransformerFactory::GeneratedTrampolineOps();
+	auto ops_entry = ops_map.find(choice_result.name);
+	if (ops_entry == ops_map.end()) {
+		throw InternalException("No trampoline ops registered for rule '%s'", choice_result.name);
+	}
+	stack.PushFrame(choice_result, *ops_entry->second, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeDistanceOrSimilarityTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                              TransformStackFrame &frame) {
+	auto result = frame.TakeResult<OrderType>(0);
+	return make_uniq<TypedTransformResult<OrderType>>(result);
+}
+
+void PEGTransformerFactory::InitializeNearestDistanceTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNearestDistanceTrampoline(PEGTransformer &transformer,
+                                                                                          TransformStack &stack,
+                                                                                          TransformStackFrame &frame) {
+	auto result = TransformNearestDistance(transformer);
+	return make_uniq<TypedTransformResult<OrderType>>(result);
+}
+
+void PEGTransformerFactory::InitializeNearestSimilarityTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                  TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeNearestSimilarityTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                           TransformStackFrame &frame) {
+	auto result = TransformNearestSimilarity(transformer);
+	return make_uniq<TypedTransformResult<OrderType>>(result);
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeRegularJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                   TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -22669,6 +24033,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeAsofTrampoline(P
 void PEGTransformerFactory::InitializeJoinWithoutOnClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                     TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+<<<<<<< HEAD
 	frame.ReserveChildSlots(3);
 	auto &join_qualifier_opt = list_pr.GetChild(3).Cast<OptionalParseResult>();
 	if (join_qualifier_opt.HasResult()) {
@@ -22676,6 +24041,10 @@ void PEGTransformerFactory::InitializeJoinWithoutOnClauseTrampoline(PEGTransform
 		                TransformFrameResultTarget(frame.frame_index, 2));
 	}
 	stack.PushFrame(list_pr.GetChild(2), TABLE_REF_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+=======
+	frame.ReserveChildSlots(2);
+	stack.PushFrame(list_pr.GetChild(2), INNER_TABLE_REF_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+>>>>>>> duckdb_upstream/main
 	stack.PushFrame(list_pr.GetChild(0), JOIN_PREFIX_OPS, TransformFrameResultTarget(frame.frame_index, 0));
 }
 
@@ -22683,6 +24052,7 @@ unique_ptr<TransformResultValue>
 PEGTransformerFactory::FinalizeJoinWithoutOnClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                              TransformStackFrame &frame) {
 	auto join_prefix = frame.TakeResult<JoinPrefix>(0);
+<<<<<<< HEAD
 	auto table_ref = frame.TakeResult<unique_ptr<TableRef>>(1);
 	optional<JoinQualifier> join_qualifier {};
 	if (frame.child_results[2]) {
@@ -22713,6 +24083,10 @@ PEGTransformerFactory::FinalizeLateralJoinClauseTrampoline(PEGTransformer &trans
 		table_alias = frame.TakeResult<TableAlias>(1);
 	}
 	auto result = TransformLateralJoinClause(transformer, std::move(subquery_reference), table_alias);
+=======
+	auto inner_table_ref = frame.TakeResult<unique_ptr<TableRef>>(1);
+	auto result = TransformJoinWithoutOnClause(transformer, join_prefix, std::move(inner_table_ref));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
 }
 
@@ -22873,6 +24247,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeFullJoinTrampoli
 	return make_uniq<TypedTransformResult<JoinType>>(result);
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeLeftSemiJoinTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                              TransformStackFrame &frame) {
 	frame.ReserveChildSlots(0);
@@ -22897,6 +24272,8 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeLeftAntiJoinTram
 	return make_uniq<TypedTransformResult<JoinType>>(result);
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeLeftJoinTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                          TransformStackFrame &frame) {
 	frame.ReserveChildSlots(0);
@@ -23365,6 +24742,36 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeGroupByAllTrampo
 	return make_uniq<TypedTransformResult<GroupByNode>>(std::move(result));
 }
 
+<<<<<<< HEAD
+=======
+void PEGTransformerFactory::InitializeGroupByListTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                            TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto list_items = ExtractParseResultsFromList(list_pr.GetChild(0));
+	auto dynamic_child_count = list_items.size();
+	frame.ReserveChildSlots(1 + dynamic_child_count - 1);
+	for (idx_t i = list_items.size(); i > 0; i--) {
+		auto child_idx = i - 1;
+		stack.PushFrame(list_items[child_idx].get(), GROUP_BY_EXPRESSION_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 0 + child_idx));
+	}
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeGroupByListTrampoline(PEGTransformer &transformer,
+                                                                                      TransformStack &stack,
+                                                                                      TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto dynamic_list_items = ExtractParseResultsFromList(list_pr.GetChild(0));
+	auto dynamic_child_count = dynamic_list_items.size();
+	vector<GroupByExpressionInfo> group_by_expression;
+	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
+		group_by_expression.push_back(frame.TakeResult<GroupByExpressionInfo>(i));
+	}
+	auto result = TransformGroupByList(transformer, std::move(group_by_expression));
+	return make_uniq<TypedTransformResult<GroupByNode>>(std::move(result));
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeGroupByExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                   TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -23982,6 +25389,7 @@ PEGTransformerFactory::FinalizeExpressionAsCollabelTrampoline(PEGTransformer &tr
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeExpressionAsColumnAliasesTrampoline(PEGTransformer &transformer,
                                                                           TransformStack &stack,
                                                                           TransformStackFrame &frame) {
@@ -24000,6 +25408,8 @@ PEGTransformerFactory::FinalizeExpressionAsColumnAliasesTrampoline(PEGTransforme
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeExpressionOptIdentifierTrampoline(PEGTransformer &transformer,
                                                                         TransformStack &stack,
                                                                         TransformStackFrame &frame) {
@@ -24049,10 +25459,17 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeValuesClauseTram
 	return make_uniq<TypedTransformResult<unique_ptr<SelectStatement>>>(std::move(result));
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeValuesClauseNoParensTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                      TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto list_items = ExtractParseResultsFromList(list_pr.GetChild(1));
+=======
+void PEGTransformerFactory::InitializeValuesExpressionsTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                  TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto list_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
+>>>>>>> duckdb_upstream/main
 	auto dynamic_child_count = list_items.size();
 	frame.ReserveChildSlots(1 + dynamic_child_count - 1);
 	for (idx_t i = list_items.size(); i > 0; i--) {
@@ -24063,6 +25480,7 @@ void PEGTransformerFactory::InitializeValuesClauseNoParensTrampoline(PEGTransfor
 }
 
 unique_ptr<TransformResultValue>
+<<<<<<< HEAD
 PEGTransformerFactory::FinalizeValuesClauseNoParensTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                               TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -24129,16 +25547,26 @@ void PEGTransformerFactory::InitializeValuesExpressionsTrampoline(PEGTransformer
 }
 
 unique_ptr<TransformResultValue>
+=======
+>>>>>>> duckdb_upstream/main
 PEGTransformerFactory::FinalizeValuesExpressionsTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                            TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
 	auto dynamic_list_items = ExtractParseResultsFromList(ExtractResultFromParens(list_pr.GetChild(0)));
 	auto dynamic_child_count = dynamic_list_items.size();
+<<<<<<< HEAD
 	vector<unique_ptr<ParsedExpression>> row_expression_arg;
 	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
 		row_expression_arg.push_back(frame.TakeResult<unique_ptr<ParsedExpression>>(i));
 	}
 	auto result = TransformValuesExpressions(transformer, std::move(row_expression_arg));
+=======
+	vector<unique_ptr<ParsedExpression>> expression;
+	for (idx_t i = 0; i < 0 + dynamic_child_count; i++) {
+		expression.push_back(frame.TakeResult<unique_ptr<ParsedExpression>>(i));
+	}
+	auto result = TransformValuesExpressions(transformer, std::move(expression));
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<vector<unique_ptr<ParsedExpression>>>>(std::move(result));
 }
 
@@ -24180,6 +25608,7 @@ PEGTransformerFactory::FinalizeSetAssignmentOrTimeZoneTrampoline(PEGTransformer 
 	return make_uniq<TypedTransformResult<unique_ptr<SetStatement>>>(std::move(result));
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeReadSettingStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                      TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -24195,6 +25624,8 @@ PEGTransformerFactory::FinalizeReadSettingStatementTrampoline(PEGTransformer &tr
 	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeResetStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -24210,6 +25641,23 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeResetStatementTr
 	return make_uniq<TypedTransformResult<unique_ptr<SQLStatement>>>(std::move(result));
 }
 
+<<<<<<< HEAD
+=======
+void PEGTransformerFactory::InitializeSetSchemaTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                          TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeSetSchemaTrampoline(PEGTransformer &transformer,
+                                                                                    TransformStack &stack,
+                                                                                    TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(1));
+	auto result = TransformSetSchema(transformer, string_literal);
+	return make_uniq<TypedTransformResult<unique_ptr<SetStatement>>>(std::move(result));
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeStandardAssignmentTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                    TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -24336,6 +25784,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeZoneIdentifierTr
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
+<<<<<<< HEAD
 void PEGTransformerFactory::InitializeZoneIntervalRangeTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                   TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -24366,6 +25815,29 @@ PEGTransformerFactory::FinalizeZoneIntervalLiteralTrampoline(PEGTransformer &tra
                                                              TransformStackFrame &frame) {
 	auto interval_literal = frame.TakeResult<unique_ptr<ParsedExpression>>(0);
 	auto result = TransformZoneIntervalLiteral(transformer, std::move(interval_literal));
+=======
+void PEGTransformerFactory::InitializeZoneIntervalWithIntervalTrampoline(PEGTransformer &transformer,
+                                                                         TransformStack &stack,
+                                                                         TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(1);
+	auto &interval_opt = list_pr.GetChild(2).Cast<OptionalParseResult>();
+	if (interval_opt.HasResult()) {
+		stack.PushFrame(interval_opt.GetResult(), INTERVAL_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeZoneIntervalWithIntervalTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                  TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(1));
+	optional<DatePartSpecifier> interval {};
+	if (frame.child_results[0]) {
+		interval = frame.TakeResult<DatePartSpecifier>(0);
+	}
+	auto result = TransformZoneIntervalWithInterval(transformer, string_literal, interval);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
@@ -24385,6 +25857,33 @@ PEGTransformerFactory::FinalizeZoneIntervalWithPrecisionTrampoline(PEGTransforme
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
+<<<<<<< HEAD
+=======
+void PEGTransformerFactory::InitializeSetSettingTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                           TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(1);
+	auto &setting_scope_opt = list_pr.GetChild(0).Cast<OptionalParseResult>();
+	if (setting_scope_opt.HasResult()) {
+		stack.PushFrame(setting_scope_opt.GetResult(), SETTING_SCOPE_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeSetSettingTrampoline(PEGTransformer &transformer,
+                                                                                     TransformStack &stack,
+                                                                                     TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	optional<SetScope> setting_scope {};
+	if (frame.child_results[0]) {
+		setting_scope = frame.TakeResult<SetScope>(0);
+	}
+	auto setting_name = list_pr.GetChild(1).Cast<IdentifierParseResult>().identifier;
+	auto result = TransformSetSetting(transformer, setting_scope, setting_name);
+	return make_uniq<TypedTransformResult<SettingInfo>>(result);
+}
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::InitializeSetVariableTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                             TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
@@ -25210,13 +26709,24 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeVacuumOptionTram
 
 void PEGTransformerFactory::InitializeOptAnalyzeTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                            TransformStackFrame &frame) {
+<<<<<<< HEAD
 	frame.ReserveChildSlots(0);
+=======
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(1);
+	stack.PushFrame(list_pr.GetChild(0), ANALYZE_KEYWORD_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+>>>>>>> duckdb_upstream/main
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeOptAnalyzeTrampoline(PEGTransformer &transformer,
                                                                                      TransformStack &stack,
                                                                                      TransformStackFrame &frame) {
+<<<<<<< HEAD
 	auto result = TransformOptAnalyze(transformer);
+=======
+	auto analyze_keyword = frame.TakeResult<Identifier>(0);
+	auto result = TransformOptAnalyze(transformer, analyze_keyword);
+>>>>>>> duckdb_upstream/main
 	return make_uniq<TypedTransformResult<string>>(result);
 }
 
@@ -25283,4 +26793,8 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeNameListTrampoli
 	return make_uniq<TypedTransformResult<vector<string>>>(result);
 }
 
+<<<<<<< HEAD
 } // namespace duckdb_fork
+=======
+} // namespace duckdb
+>>>>>>> duckdb_upstream/main

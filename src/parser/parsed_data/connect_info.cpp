@@ -1,5 +1,10 @@
 #include "duckdb/parser/parsed_data/connect_info.hpp"
 
+<<<<<<< HEAD
+=======
+#include "duckdb/common/sql_identifier.hpp"
+
+>>>>>>> duckdb_upstream/main
 #include "duckdb/common/string_util.hpp"
 
 namespace duckdb {
@@ -32,10 +37,19 @@ string ConnectInfo::ToString() const {
 	if (!parsed_options.empty() || !options.empty()) {
 		vector<string> stringified;
 		for (auto &opt : parsed_options) {
+<<<<<<< HEAD
 			stringified.push_back(StringUtil::Format("%s %s", opt.first, opt.second->ToString()));
 		}
 		for (auto &opt : options) {
 			stringified.push_back(StringUtil::Format("%s %s", opt.first, opt.second.ToSQLString()));
+=======
+			stringified.push_back(
+			    StringUtil::Format("%s %s", SQLIdentifier::ToString(opt.first), opt.second->ToString()));
+		}
+		for (auto &opt : options) {
+			stringified.push_back(
+			    StringUtil::Format("%s %s", SQLIdentifier::ToString(opt.first), opt.second.ToSQLString()));
+>>>>>>> duckdb_upstream/main
 		}
 		result += " (" + StringUtil::Join(stringified, ", ") + ")";
 	}

@@ -54,7 +54,6 @@ SQLStatement:
   rules:
     - Statement
     - AlterStatement
-    - SparkAlterTblPropertiesStmt
     - AnalyzeStatement
     - AttachStatement
     - CallStatement
@@ -70,13 +69,11 @@ SQLStatement:
     - CopyTable
     - CreateStatement
     - DeallocateStatement
-    - DeclareStatement
     - DeleteStatement
     - TruncateStatement
     - DetachStatement
     - DisconnectStatement
     - DropStatement
-    - DropVariableStatement
     - ExecuteStatement
     - ExplainStatement
     - ExplainableStatements
@@ -85,8 +82,6 @@ SQLStatement:
     - ExpressionStatement
     - ImportStatement
     - InsertStatement
-    - MultiInsertStatement
-    - MultiInsertBranch
     - LoadStatement
     - InstallStatement
     - UpdateExtensionsStatement
@@ -95,7 +90,6 @@ SQLStatement:
     - PragmaAssign
     - PragmaFunction
     - PrepareStatement
-    - ReadSettingStatement
     - ResetStatement
     - SelectStatement
     - SetStatement
@@ -108,6 +102,11 @@ SQLStatement:
     - UseStatement
     - VacuumStatement
     - PragmaAssignOrFunction
+    - ExternalResourceStatement
+    - CreateExternalResourceStmt
+    - RegisterExternalResourceStmt
+    - DestroyExternalResourceStmt
+    - ShowExternalResourcesStmt
 
 SelectStatement:
   type: "unique_ptr<SelectStatement>"
@@ -126,9 +125,6 @@ SelectStatement:
     - SimpleSelectParens
     - SimpleSelect
     - ValuesClause
-    - ValuesClauseWithAlias
-    - ValuesClauseNoParens
-    - ValuesBody
     - TableStatement
 
 SetStatement:
@@ -136,6 +132,7 @@ SetStatement:
   by_value: true
   rules:
     - SetAssignmentOrTimeZone
+    - SetSchema
     - SetTimeZone
     - StandardAssignment
 
@@ -147,9 +144,6 @@ QueryNode:
     - ShowTables
     - ShowAllTables
     - ShowQualifiedName
-    - DescribeQuery
-    - DescribeFunction
-    - DescribeTable
 
 SelectNode:
   type: "unique_ptr<SelectNode>"
@@ -380,7 +374,6 @@ Expression:
     - ColDefAndExpr
     - ColDefAndExpressionTail
     - LogicalNotExpression
-    - SparkNotExpression
     - IsExpression
     - IsTest
     - IsLiteral
@@ -403,8 +396,6 @@ Expression:
     - EscapeClause
     - OtherOperatorExpression
     - BitwiseExpression
-    - BitwiseAndExpression
-    - ShiftExpression
     - AdditiveExpression
     - MultiplicativeExpression
     - ExponentiationExpression
@@ -452,8 +443,6 @@ Expression:
     - TryExpression
     - ColumnsExpression
     - ExtractExpression
-    - TimestampDiffExpression
-    - LikeAnyAllClause
     - ExtractArgument
     - ExtractDatePartArgument
     - ExtractIdentifierArgument
@@ -461,7 +450,6 @@ Expression:
     - LambdaExpression
     - NullIfExpression
     - RowExpression
-    - RowExpressionArg
     - SubstringExpression
     - TrimExpression
     - TrimSource
@@ -475,7 +463,6 @@ Expression:
     - TypeLiteral
     - DefaultExpression
     - IntervalLiteral
-    - IntervalMultiUnitLiteral
     - IntervalParameter
     - IntervalStringParameter
     - SubqueryExpression
@@ -487,7 +474,6 @@ Expression:
     - WhereClause
     - AliasedExpression
     - ExpressionAsCollabel
-    - ExpressionAsColumnAliases
     - ColIdExpression
     - ExpressionOptIdentifier
     - HavingClause
@@ -496,8 +482,7 @@ Expression:
     - SampleValue
     - PivotHeader
     - ZoneValue
-    - ZoneIntervalRange
-    - ZoneIntervalLiteral
+    - ZoneIntervalWithInterval
     - ZoneIntervalWithPrecision
     - ZoneLocal
     - ZoneDefault
@@ -520,9 +505,6 @@ Expression:
     - CharacterSimpleType
     - QualifiedSimpleType
     - MapType
-    - MapParensListType
-    - MapAngleBracketsListType
-    - ArrayAngleBracketsType
     - TupleType
     - RowType
     - GeometryType
@@ -549,8 +531,6 @@ Expression:
     - IndexElement
     - RelOptionArgumentOpt
     - ExpressionAlias
-    - PartitionSpecValue
-    - DeclareValue
 
 ColumnRefExpression:
   type: "unique_ptr<ColumnRefExpression>"
@@ -570,9 +550,17 @@ TableRef:
     - JoinOrPivot
     - JoinClause
     - RegularJoinClause
+    - NearestJoinClause
+    - NearestJoinAliased
+    - NearestJoinBare
+    - NearestBareTableRef
+    - NearestValuesRef
+    - NearestTableFunction
+    - NearestTableSubquery
+    - NearestBaseTableRef
+    - NearestParensTableRef
     - JoinByClause
     - JoinWithoutOnClause
-    - LateralJoinClause
     - TableUnpivotClause
     - TableUnpivotClauseBody
     - TablePivotClause
@@ -637,6 +625,7 @@ ExpressionList:
     - OverlayArguments
     - OverlayParameters
     - OverlayExpressionList
+    - PartitionOptions
     - SortedOptions
     - PivotUsing
     - WindowClause
@@ -796,7 +785,6 @@ GroupByNode:
     - GroupByExpressions
     - GroupByAll
     - GroupByList
-    - TrailingGroupingSets
 
 LimitPercentResult:
   type: "LimitPercentResult"
@@ -971,30 +959,6 @@ PartitionSortedOptions:
     - PartitionOptSortedOptions
     - SortedOptPartitionOptions
 
-PartitionFieldList:
-  type: "vector<PartitionFieldEntry>"
-  by_value: true
-  rules:
-    - PartitionOptions
-
-PartitionFieldEntry:
-  type: "PartitionFieldEntry"
-  by_value: true
-  rules:
-    - PartitionField
-
-PartitionSpecList:
-  type: "vector<PartitionSpecEntry>"
-  by_value: true
-  rules:
-    - PartitionSpec
-
-PartitionSpecEntry:
-  type: "PartitionSpecEntry"
-  by_value: true
-  rules:
-    - PartitionSpecEntry
-
 ColumnElements:
   type: "ColumnElements"
   by_value: true
@@ -1025,9 +989,6 @@ String:
   type: "string"
   by_value: false
   rules:
-    - RowExpressionAlias
-    - GroupByModifier
-    - WithCubeOrRollup
     - StringLiteral
     - DropOrSet
     - SequenceName
@@ -1058,14 +1019,11 @@ String:
     - QualifiedOperatorContents
     - ColIdDot
     - AnyOp
-    - AnyAllOp
     - StringOperator
     - JsonOperator
     - InetOperator
     - ListOperator
-    - BitwiseOrOperator
-    - BitwiseAndOperator
-    - ShiftOperator
+    - BitOperator
     - Term
     - Factor
     - ExponentOperator
@@ -1115,8 +1073,6 @@ String:
     - BooleanType
     - DoubleType
     - UpdateSetColumnTarget
-    - SparkLocation
-    - DottedSettingIdentifier
 
 Bool:
   type: "bool"
@@ -1133,9 +1089,6 @@ Bool:
     - GroupingIdKeyword
     - SubqueryNot
     - SubqueryExists
-    - LikeAnyOrAll
-    - LikeAny
-    - LikeAll
     - WithData
     - WithDataOnly
     - WithNoData
@@ -1155,6 +1108,9 @@ Bool:
     - Lateral
     - WithOrdinality
     - Asof
+    - ApproxOrExact
+    - NearestApprox
+    - NearestExact
     - Materialized
     - SampleUnit
     - DropBehavior
@@ -1177,6 +1133,7 @@ Bool:
     - CheckpointForce
     - IfNotExists
     - OrReplace
+    - ShowAllModifier
     - FunctionTypeMacro
     - FunctionTypeMacroKeyword
     - FunctionTypeFunction
@@ -1185,8 +1142,6 @@ Bool:
     - FunctionKeyword
     - DeallocatePrepare
     - CreateRecursive
-    - ExplainAnalyze
-    - ExplainMode
     - WithOrWithoutOids
     - WithOids
     - WithoutOids
@@ -1206,6 +1161,7 @@ Int64:
   by_value: false
   rules:
     - ArrayBounds
+    - ArrayKeywordWithBounds
     - SquareBracketsArray
     - ArrayKeyword
 
@@ -1391,8 +1347,6 @@ JoinTypeValue:
   by_value: false
   rules:
     - FullJoin
-    - LeftSemiJoin
-    - LeftAntiJoin
     - LeftJoin
     - RightJoin
     - SemiJoin
@@ -1405,6 +1359,9 @@ OrderTypeValue:
   rules:
     - DescendingOrder
     - AscendingOrder
+    - DistanceOrSimilarity
+    - NearestDistance
+    - NearestSimilarity
 
 OrderByNullTypeValue:
   type: "OrderByNullType"
@@ -1586,8 +1543,6 @@ BinaryExpressionTail:
   by_value: true
   rules:
     - BitwiseExpressionTail
-    - BitwiseAndExpressionTail
-    - ShiftExpressionTail
     - MultiplicativeExpressionTail
     - ExponentiationExpressionTail
 
@@ -1600,8 +1555,6 @@ overrides:
   # common.gram
   ColIdType: "pair<Identifier, LogicalType>"
   ColIdTypeList: "child_list_t<LogicalType>"
-  ColIdParensTypeList: "child_list_t<LogicalType>"
-  ColIdAngleBracketsTypeList: "child_list_t<LogicalType>"
   # create_index.gram
   RelOption:
     type: "pair<Identifier, unique_ptr<ParsedExpression>>"
@@ -1650,9 +1603,6 @@ overrides:
   CaseWhenThen:
     type: "CaseCheck"
     by_value: true
-  IntervalUnitPair:
-    type: "pair<unique_ptr<ParsedExpression>, DatePartSpecifier>"
-    by_value: true
   ReplaceEntry:
     type: "pair<string, unique_ptr<ParsedExpression>>"
     by_value: true
@@ -1683,26 +1633,7 @@ overrides:
   UpdateSetElement:
     type: "pair<string, unique_ptr<ParsedExpression>>"
     by_value: true
-  # spark
-  SparkUsing: "pair<string, string>"
-  SparkTableComment: "string"
-  SparkTblPropertyValue: "string"
-  SparkTblProperty:
-    type: "pair<string, string>"
-    by_value: true
-  SparkTblPropertiesAction:
-    type: "SparkTblPropertiesAction"
-    by_value: true
-  SparkSetTblProperties:
-    type: "SparkTblPropertiesAction"
-    by_value: true
-  SparkUnsetTblProperties:
-    type: "SparkTblPropertiesAction"
-    by_value: true
-  ColumnComment: "string"
-  ViewColumn: "string"
-  ViewColumnList: "vector<string>"
-  ColIdColonType: "pair<string, LogicalType>"
+
 # ---------------------------------------------------------------------------
 # matcher.cpp rule overrides
 # ---------------------------------------------------------------------------
@@ -1711,6 +1642,7 @@ IdentifierType:
   type: "Identifier"
   by_value: false
   rules:
+    - AnalyzeKeyword
     - ColId
     - ColIdOrString
     - ColLabelOrString
@@ -1818,32 +1750,6 @@ matcher_rule_overrides:
   OperatorLiteral:
     allow_type_overlap: true
     matcher: operator
-  CloseAngleBracket:
-    matcher: close_angle_bracket
-
-packrat_memoized_rules:
-  - Expression
-  - LambdaArrowExpression
-  - LogicalOrExpression
-  - LogicalAndExpression
-  - LogicalNotExpression
-  - IsExpression
-  - ComparisonExpression
-  - BitwiseExpression
-  - AdditiveExpression
-  - MultiplicativeExpression
-  - ExponentiationExpression
-  - PrefixExpression
-  - CollateExpression
-  - AtTimeZoneExpression
-  - SingleExpression
-  - BaseExpression
-  - ParensExpression
-  - ParenthesisExpression
-  - Identifier
-  - ColId
-  - ColumnReference
-  - FunctionExpression
 
 packrat_memoized_rules:
   - Expression
@@ -1875,17 +1781,6 @@ packrat_memoized_rules:
 # ---------------------------------------------------------------------------
 
 excluded_rules:
-  - GroupByList
-  - GroupByModifier
-  - WithCubeOrRollup
-  - TrailingGroupingSets
-  - DistinctAll
-  - SetSetting
-  - LikeAnyAllClause
-  - LikeAnyOrAll
-  - LikeAny
-  - LikeAll
-  - TimestampDiffExpression
   - PivotStatement
   - UnpivotStatement
   - Program
@@ -1894,7 +1789,6 @@ excluded_rules:
   - "%whitespace"
   - List
   - Parens
-  - AngleBrackets
   - Database
   - AbortOrRollback
   - CommitOrEnd
@@ -1929,16 +1823,8 @@ excluded_rules:
   - SimpleSelect
   - TableRef
   - WithClause
-  - MaxRecursionLevel
   - WindowDefinition
   - ExcludeOrExcept
   # expression.gram rules kept manual during incremental transformer generation migration
   - OverClause
   - PrefixExpression
-  # spark
-  - WithSchemaMode
-  - SchemaModeName
-  - PositionSeparator
-  # spark ANALYZE ... COMPUTE STATISTICS tail — parsed but ignored (duckdb has no partition/column stats)
-  - AnalyzeComputeStatistics
-  - AnalyzeStatsScope

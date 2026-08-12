@@ -237,14 +237,14 @@ public:
 			auto bridged = TryBridgeTransformResult<T>(*base_result);
 			if (bridged) {
 				auto bridged_result = std::move(bridged->value);
-				SetResultLocation(bridged_result, parse_result.offset);
+				SetResultLocation(bridged_result, parse_result.GetLocation());
 				return bridged_result;
 			}
 			throw InternalException("Transformer for rule '" + parse_result.name + "' returned an unexpected type.");
 		}
 
 		auto result = std::move(typed_result_ptr->value);
-		SetResultLocation(result, parse_result.offset);
+		SetResultLocation(result, parse_result.GetLocation());
 		return result;
 	}
 
@@ -288,27 +288,27 @@ public:
 	void ExtractCTEsRecursive(CommonTableExpressionMap &cte_map);
 	bool IsWindowFrameDefault(WindowBoundary start, WindowBoundary end);
 	unique_ptr<WindowExpression> GetWindowClause(const Identifier &window_name);
-	void SetQueryLocation(ParsedExpression &expr, optional_idx query_location);
-	void SetQueryLocation(TableRef &ref, optional_idx query_location);
+	void SetQueryLocation(ParsedExpression &expr, QueryLocation query_location);
+	void SetQueryLocation(TableRef &ref, QueryLocation query_location);
 
 private:
 	template <typename T>
-	void SetResultLocation(T &, optional_idx) {
+	void SetResultLocation(T &, QueryLocation) {
 	}
-	void SetResultLocation(unique_ptr<ParsedExpression> &expr, optional_idx offset) {
+	void SetResultLocation(unique_ptr<ParsedExpression> &expr, QueryLocation location) {
 		if (!expr) {
 			return;
 		}
-		if (offset.IsValid() && !expr->GetQueryLocation().IsValid()) {
-			SetQueryLocation(*expr, offset);
+		if (location.IsValid() && !expr->HasQueryLocation()) {
+			SetQueryLocation(*expr, location);
 		}
 	}
-	void SetResultLocation(unique_ptr<TableRef> &ref, optional_idx offset) {
+	void SetResultLocation(unique_ptr<TableRef> &ref, QueryLocation location) {
 		if (!ref) {
 			return;
 		}
-		if (offset.IsValid() && !ref->query_location.IsValid()) {
-			SetQueryLocation(*ref, offset.GetIndex());
+		if (location.IsValid() && !ref->query_location.IsValid()) {
+			SetQueryLocation(*ref, location);
 		}
 	}
 
@@ -508,6 +508,7 @@ public:
 	                                                TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeAlterSchemaStmtTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeSparkAlterTblPropertiesStmtTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                            TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeSparkAlterTblPropertiesStmtTrampoline(PEGTransformer &transformer,
@@ -537,6 +538,8 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeSparkTblPropertyValueTrampoline(PEGTransformer &transformer,
 	                                                                                TransformStack &stack,
 	                                                                                TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeAlterTableOptionsTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -775,6 +778,13 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeStringLiteralValueTrampoline(PEGTransformer &transformer,
 	                                                                             TransformStack &stack,
 	                                                                             TransformStackFrame &frame);
+<<<<<<< HEAD
+=======
+	static void InitializeAnalyzeKeywordTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                               TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeAnalyzeKeywordTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeExpressionStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                    TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeExpressionStatementTrampoline(PEGTransformer &transformer,
@@ -1062,19 +1072,25 @@ public:
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeColIdTypeListTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeColIdParensTypeListTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                    TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeColIdParensTypeListTrampoline(PEGTransformer &transformer,
 	                                                                              TransformStack &stack,
 	                                                                              TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeMapTypeTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                        TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeMapTypeTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeMapParensListTypeTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeMapParensListTypeTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeTupleTypeTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                          TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -1083,10 +1099,13 @@ public:
 	                                          TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeColIdTypeTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeColIdColonTypeTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                               TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeColIdColonTypeTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeArrayBoundsTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                            TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -1095,6 +1114,14 @@ public:
 	                                             TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeArrayKeywordTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
+=======
+	static void InitializeArrayKeywordWithBoundsTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                       TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeArrayKeywordWithBoundsTrampoline(PEGTransformer &transformer,
+	                                                                                 TransformStack &stack,
+	                                                                                 TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeSquareBracketsArrayTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                    TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeSquareBracketsArrayTrampoline(PEGTransformer &transformer,
@@ -1132,6 +1159,7 @@ public:
 	                                            TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeWithoutRuleTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializePartitionSpecTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -1146,6 +1174,8 @@ public:
 	static unique_ptr<TransformResultValue> FinalizePartitionSpecValueTrampoline(PEGTransformer &transformer,
 	                                                                             TransformStack &stack,
 	                                                                             TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeConnectStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                 TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -1615,6 +1645,7 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeCreateTableDefinitionTrampoline(PEGTransformer &transformer,
 	                                                                                TransformStack &stack,
 	                                                                                TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeSparkUsingTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                           TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -1627,6 +1658,8 @@ public:
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeSparkTableCommentTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeCreateTableAsTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -1650,10 +1683,13 @@ public:
 	                                                 TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizePartitionOptionsTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializePartitionFieldTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                               TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizePartitionFieldTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeSortedOptionsTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -1761,10 +1797,13 @@ public:
 	                                                 TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeColumnConstraintTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeColumnCommentTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeColumnCommentTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeNotNullConstraintTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -2072,6 +2111,7 @@ public:
 	                                                TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeCreateRecursiveTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeViewColumnListTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                               TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -2080,6 +2120,8 @@ public:
 	                                           TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeViewColumnTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeDeallocateStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                    TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeDeallocateStatementTrampoline(PEGTransformer &transformer,
@@ -2089,6 +2131,7 @@ public:
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeDeallocatePrepareTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeDeclareStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                 TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -2102,6 +2145,8 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeDropVariableStatementTrampoline(PEGTransformer &transformer,
 	                                                                                TransformStack &stack,
 	                                                                                TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeDeleteStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -2130,6 +2175,7 @@ public:
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeShowAllTablesTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeDescribeQueryTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -2142,6 +2188,8 @@ public:
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeDescribeTableTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeShowQualifiedNameTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -2322,6 +2370,7 @@ public:
 	                                                 TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeExplainStatementTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeExplainAnalyzeTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                               TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -2330,6 +2379,8 @@ public:
 	                                            TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeExplainModeTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeExplainOptionListTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -2632,6 +2683,7 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeIntervalStringParameterTrampoline(PEGTransformer &transformer,
 	                                                                                  TransformStack &stack,
 	                                                                                  TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeIntervalMultiUnitLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                         TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeIntervalMultiUnitLiteralTrampoline(PEGTransformer &transformer,
@@ -2641,6 +2693,8 @@ public:
 	                                                 TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeIntervalUnitPairTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeFrameClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                            TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -2945,11 +2999,18 @@ public:
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeNotExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeSparkNotExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                   TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeSparkNotExpressionTrampoline(PEGTransformer &transformer,
 	                                                                             TransformStack &stack,
 	                                                                             TransformStackFrame &frame);
+=======
+	static void InitializeNotKeywordTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                           TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeNotKeywordTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeIsExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                             TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -3211,10 +3272,13 @@ public:
 	                                      TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeAnyOpTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                                TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeAnyAllOpTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                         TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeAnyAllOpTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeBitwiseExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -3224,6 +3288,7 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeBitwiseExpressionTailTrampoline(PEGTransformer &transformer,
 	                                                                                TransformStack &stack,
 	                                                                                TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeBitwiseOrOperatorTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -3256,6 +3321,12 @@ public:
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeShiftOperatorTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+	static void InitializeBitOperatorTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                            TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeBitOperatorTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeAdditiveExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                   TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeAdditiveExpressionTrampoline(PEGTransformer &transformer,
@@ -3466,6 +3537,7 @@ public:
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeRowExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeRowExpressionArgTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                 TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -3475,6 +3547,8 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeRowExpressionAliasTrampoline(PEGTransformer &transformer,
 	                                                                             TransformStack &stack,
 	                                                                             TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeSubstringExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                    TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeSubstringExpressionTrampoline(PEGTransformer &transformer,
@@ -3584,10 +3658,43 @@ public:
 	                                                TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeExtractDatePartTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
+=======
+	static void InitializeExternalResourceStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                          TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeExternalResourceStatementTrampoline(PEGTransformer &transformer,
+	                                                                                    TransformStack &stack,
+	                                                                                    TransformStackFrame &frame);
+	static void InitializeCreateExternalResourceStmtTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                           TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeCreateExternalResourceStmtTrampoline(PEGTransformer &transformer,
+	                                                                                     TransformStack &stack,
+	                                                                                     TransformStackFrame &frame);
+	static void InitializeRegisterExternalResourceStmtTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                             TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeRegisterExternalResourceStmtTrampoline(PEGTransformer &transformer,
+	                                                                                       TransformStack &stack,
+	                                                                                       TransformStackFrame &frame);
+	static void InitializeDestroyExternalResourceStmtTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                            TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeDestroyExternalResourceStmtTrampoline(PEGTransformer &transformer,
+	                                                                                      TransformStack &stack,
+	                                                                                      TransformStackFrame &frame);
+	static void InitializeShowExternalResourcesStmtTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                          TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeShowExternalResourcesStmtTrampoline(PEGTransformer &transformer,
+	                                                                                    TransformStack &stack,
+	                                                                                    TransformStackFrame &frame);
+	static void InitializeShowAllModifierTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeShowAllModifierTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeInsertStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeInsertStatementTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeMultiInsertStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                     TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeMultiInsertStatementTrampoline(PEGTransformer &transformer,
@@ -3597,6 +3704,8 @@ public:
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeMultiInsertBranchTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeOrActionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                         TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4064,6 +4173,13 @@ public:
 	                                               TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeDistinctClauseTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
+=======
+	static void InitializeDistinctAllTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                            TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeDistinctAllTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeDistinctOnTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                           TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4261,6 +4377,76 @@ public:
 	                                           TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
+=======
+	static void InitializeNearestJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                  TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeNearestJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeNearestJoinAliasedTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                   TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeNearestJoinAliasedTrampoline(PEGTransformer &transformer,
+	                                                                             TransformStack &stack,
+	                                                                             TransformStackFrame &frame);
+	static void InitializeNearestJoinBareTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeNearestJoinBareTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeNearestBareTableRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                    TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeNearestBareTableRefTrampoline(PEGTransformer &transformer,
+	                                                                              TransformStack &stack,
+	                                                                              TransformStackFrame &frame);
+	static void InitializeNearestValuesRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                 TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeNearestValuesRefTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeNearestTableFunctionTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                     TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeNearestTableFunctionTrampoline(PEGTransformer &transformer,
+	                                                                               TransformStack &stack,
+	                                                                               TransformStackFrame &frame);
+	static void InitializeNearestTableSubqueryTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                     TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeNearestTableSubqueryTrampoline(PEGTransformer &transformer,
+	                                                                               TransformStack &stack,
+	                                                                               TransformStackFrame &frame);
+	static void InitializeNearestBaseTableRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                    TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeNearestBaseTableRefTrampoline(PEGTransformer &transformer,
+	                                                                              TransformStack &stack,
+	                                                                              TransformStackFrame &frame);
+	static void InitializeNearestParensTableRefTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                      TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeNearestParensTableRefTrampoline(PEGTransformer &transformer,
+	                                                                                TransformStack &stack,
+	                                                                                TransformStackFrame &frame);
+	static void InitializeApproxOrExactTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                              TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeApproxOrExactTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeNearestApproxTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                              TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeNearestApproxTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeNearestExactTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                             TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeNearestExactTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeDistanceOrSimilarityTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                     TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeDistanceOrSimilarityTrampoline(PEGTransformer &transformer,
+	                                                                               TransformStack &stack,
+	                                                                               TransformStackFrame &frame);
+	static void InitializeNearestDistanceTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeNearestDistanceTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeNearestSimilarityTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                  TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeNearestSimilarityTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeRegularJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4278,10 +4464,13 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeJoinWithoutOnClauseTrampoline(PEGTransformer &transformer,
 	                                                                              TransformStack &stack,
 	                                                                              TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeLateralJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeLateralJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeJoinQualifierTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4319,6 +4508,7 @@ public:
 	                                         TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeFullJoinTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeLeftSemiJoinTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                             TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4327,6 +4517,8 @@ public:
 	                                             TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeLeftAntiJoinTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeLeftJoinTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                         TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4433,6 +4625,13 @@ public:
 	                                           TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeGroupByAllTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
+=======
+	static void InitializeGroupByListTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                            TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeGroupByListTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeGroupByExpressionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4568,11 +4767,14 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeExpressionAsCollabelTrampoline(PEGTransformer &transformer,
 	                                                                               TransformStack &stack,
 	                                                                               TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeExpressionAsColumnAliasesTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                          TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeExpressionAsColumnAliasesTrampoline(PEGTransformer &transformer,
 	                                                                                    TransformStack &stack,
 	                                                                                    TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeExpressionOptIdentifierTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                        TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeExpressionOptIdentifierTrampoline(PEGTransformer &transformer,
@@ -4582,6 +4784,7 @@ public:
 	                                             TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeValuesClauseTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeValuesClauseNoParensTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                     TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeValuesClauseNoParensTrampoline(PEGTransformer &transformer,
@@ -4596,6 +4799,8 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeValuesClauseWithAliasTrampoline(PEGTransformer &transformer,
 	                                                                                TransformStack &stack,
 	                                                                                TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeValuesExpressionsTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4609,15 +4814,25 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeSetAssignmentOrTimeZoneTrampoline(PEGTransformer &transformer,
 	                                                                                  TransformStack &stack,
 	                                                                                  TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeReadSettingStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                     TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeReadSettingStatementTrampoline(PEGTransformer &transformer,
 	                                                                               TransformStack &stack,
 	                                                                               TransformStackFrame &frame);
+=======
+>>>>>>> duckdb_upstream/main
 	static void InitializeResetStatementTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                               TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeResetStatementTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
+=======
+	static void InitializeSetSchemaTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                          TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeSetSchemaTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeStandardAssignmentTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                   TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeStandardAssignmentTrampoline(PEGTransformer &transformer,
@@ -4652,6 +4867,7 @@ public:
 	                                               TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeZoneIdentifierTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+<<<<<<< HEAD
 	static void InitializeZoneIntervalRangeTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -4661,11 +4877,25 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeZoneIntervalLiteralTrampoline(PEGTransformer &transformer,
 	                                                                              TransformStack &stack,
 	                                                                              TransformStackFrame &frame);
+=======
+	static void InitializeZoneIntervalWithIntervalTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                         TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeZoneIntervalWithIntervalTrampoline(PEGTransformer &transformer,
+	                                                                                   TransformStack &stack,
+	                                                                                   TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeZoneIntervalWithPrecisionTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                          TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue> FinalizeZoneIntervalWithPrecisionTrampoline(PEGTransformer &transformer,
 	                                                                                    TransformStack &stack,
 	                                                                                    TransformStackFrame &frame);
+<<<<<<< HEAD
+=======
+	static void InitializeSetSettingTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                           TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeSetSettingTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+>>>>>>> duckdb_upstream/main
 	static void InitializeSetVariableTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                            TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -5109,10 +5339,17 @@ public:
 	                                                        const Identifier &identifier_1);
 	static unique_ptr<TransformResultValue> TransformAnalyzeStatementInternal(PEGTransformer &transformer,
 	                                                                          ParseResult &parse_result);
+<<<<<<< HEAD
 	static unique_ptr<SQLStatement>
 	TransformAnalyzeStatement(PEGTransformer &transformer, const optional<bool> &analyze_verbose,
 	                          const bool &has_result, optional<AnalyzeTarget> analyze_target,
 	                          optional<vector<PartitionSpecEntry>> partition_spec, const bool &has_result_1);
+=======
+	static unique_ptr<SQLStatement> TransformAnalyzeStatement(PEGTransformer &transformer,
+	                                                          const Identifier &analyze_keyword,
+	                                                          const optional<bool> &analyze_verbose,
+	                                                          optional<AnalyzeTarget> analyze_target);
+>>>>>>> duckdb_upstream/main
 	static unique_ptr<TransformResultValue> TransformAnalyzeTargetInternal(PEGTransformer &transformer,
 	                                                                       ParseResult &parse_result);
 	static AnalyzeTarget TransformAnalyzeTarget(PEGTransformer &transformer, unique_ptr<BaseTableRef> base_table_name,
@@ -5197,6 +5434,12 @@ public:
 	static unique_ptr<TransformResultValue> TransformStringLiteralValueInternal(PEGTransformer &transformer,
 	                                                                            ParseResult &parse_result);
 	static Value TransformStringLiteralValue(PEGTransformer &transformer, const string &string_literal);
+<<<<<<< HEAD
+=======
+	static unique_ptr<TransformResultValue> TransformAnalyzeKeywordInternal(PEGTransformer &transformer,
+	                                                                        ParseResult &parse_result);
+	static Identifier TransformAnalyzeKeyword(PEGTransformer &transformer);
+>>>>>>> duckdb_upstream/main
 	static unique_ptr<TransformResultValue> TransformExpressionStatementInternal(PEGTransformer &transformer,
 	                                                                             ParseResult &parse_result);
 	static unique_ptr<SQLStatement> TransformExpressionStatement(PEGTransformer &transformer,
@@ -5416,6 +5659,7 @@ public:
 	                                    const vector<pair<string, LogicalType>> &col_id_colon_type);
 	static unique_ptr<TransformResultValue> TransformMapTypeInternal(PEGTransformer &transformer,
 	                                                                 ParseResult &parse_result);
+<<<<<<< HEAD
 	static unique_ptr<TransformResultValue> TransformMapParensListTypeInternal(PEGTransformer &transformer,
 	                                                                           ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformMapParensListType(PEGTransformer &transformer,
@@ -5428,6 +5672,10 @@ public:
 	                                                                                ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformArrayAngleBracketsType(PEGTransformer &transformer,
 	                                                                    const LogicalType &type);
+=======
+	static unique_ptr<ParsedExpression> TransformMapType(PEGTransformer &transformer,
+	                                                     const optional<vector<LogicalType>> &type);
+>>>>>>> duckdb_upstream/main
 	static unique_ptr<TransformResultValue> TransformTupleTypeInternal(PEGTransformer &transformer,
 	                                                                   ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformTupleType(PEGTransformer &transformer,
@@ -5445,6 +5693,9 @@ public:
 	static unique_ptr<TransformResultValue> TransformArrayKeywordInternal(PEGTransformer &transformer,
 	                                                                      ParseResult &parse_result);
 	static int64_t TransformArrayKeyword(PEGTransformer &transformer);
+	static unique_ptr<TransformResultValue> TransformArrayKeywordWithBoundsInternal(PEGTransformer &transformer,
+	                                                                                ParseResult &parse_result);
+	static int64_t TransformArrayKeywordWithBounds(PEGTransformer &transformer, const int64_t &square_brackets_array);
 	static unique_ptr<TransformResultValue> TransformSquareBracketsArrayInternal(PEGTransformer &transformer,
 	                                                                             ParseResult &parse_result);
 	static int64_t TransformSquareBracketsArray(PEGTransformer &transformer,
@@ -6306,6 +6557,7 @@ public:
 	                                                 unique_ptr<SelectStatement> select_statement_internal);
 	static unique_ptr<TransformResultValue> TransformShowAllTablesInternal(PEGTransformer &transformer,
 	                                                                       ParseResult &parse_result);
+<<<<<<< HEAD
 	static unique_ptr<QueryNode> TransformShowAllTables(PEGTransformer &transformer, const ShowType &show_or_describe);
 	static unique_ptr<TransformResultValue> TransformDescribeQueryInternal(PEGTransformer &transformer,
 	                                                                       ParseResult &parse_result);
@@ -6323,6 +6575,10 @@ public:
 	                                                    DescribeTarget describe_target,
 	                                                    optional<vector<PartitionSpecEntry>> partition_spec,
 	                                                    const optional<vector<string>> &dotted_identifier);
+=======
+	static unique_ptr<QueryNode> TransformShowAllTables(PEGTransformer &transformer, const ShowType &show_or_describe,
+	                                                    const bool &has_result);
+>>>>>>> duckdb_upstream/main
 	static unique_ptr<TransformResultValue> TransformShowQualifiedNameInternal(PEGTransformer &transformer,
 	                                                                           ParseResult &parse_result);
 	static unique_ptr<QueryNode> TransformShowQualifiedName(PEGTransformer &transformer,
@@ -6473,8 +6729,9 @@ public:
 	static unique_ptr<TransformResultValue> TransformExplainStatementInternal(PEGTransformer &transformer,
 	                                                                          ParseResult &parse_result);
 	static unique_ptr<SQLStatement>
-	TransformExplainStatement(PEGTransformer &transformer, const optional<bool> &explain_analyze,
+	TransformExplainStatement(PEGTransformer &transformer, const optional<Identifier> &analyze_keyword,
 	                          const optional<vector<GenericCopyOption>> &explain_option_list,
+<<<<<<< HEAD
 	                          const optional<bool> &explain_mode, unique_ptr<SQLStatement> explainable_statements);
 	static unique_ptr<TransformResultValue> TransformExplainAnalyzeInternal(PEGTransformer &transformer,
 	                                                                        ParseResult &parse_result);
@@ -6482,6 +6739,9 @@ public:
 	static unique_ptr<TransformResultValue> TransformExplainModeInternal(PEGTransformer &transformer,
 	                                                                     ParseResult &parse_result);
 	static bool TransformExplainMode(PEGTransformer &transformer);
+=======
+	                          unique_ptr<SQLStatement> explainable_statements);
+>>>>>>> duckdb_upstream/main
 	static unique_ptr<TransformResultValue> TransformExplainOptionListInternal(PEGTransformer &transformer,
 	                                                                           ParseResult &parse_result);
 	static vector<GenericCopyOption> TransformExplainOptionList(PEGTransformer &transformer,
@@ -6490,6 +6750,9 @@ public:
 	                                                                       ParseResult &parse_result);
 	static GenericCopyOption TransformExplainOption(PEGTransformer &transformer, const Identifier &explain_option_name,
 	                                                optional<unique_ptr<ParsedExpression>> expression);
+	static unique_ptr<TransformResultValue> TransformExplainOptionNameInternal(PEGTransformer &transformer,
+	                                                                           ParseResult &parse_result);
+	static Identifier TransformExplainOptionName(PEGTransformer &transformer, ParseResult &choice_result);
 	static unique_ptr<TransformResultValue> TransformExplainSelectStatementInternal(PEGTransformer &transformer,
 	                                                                                ParseResult &parse_result);
 	static unique_ptr<SQLStatement>
@@ -6746,7 +7009,7 @@ public:
 	                                                      unique_ptr<ParsedExpression> expression);
 	static unique_ptr<TransformResultValue> TransformTypeLiteralInternal(PEGTransformer &transformer,
 	                                                                     ParseResult &parse_result);
-	static unique_ptr<ParsedExpression> TransformTypeLiteral(PEGTransformer &transformer, const Identifier &col_id,
+	static unique_ptr<ParsedExpression> TransformTypeLiteral(PEGTransformer &transformer, const LogicalType &type,
 	                                                         const string &string_literal);
 	static unique_ptr<TransformResultValue> TransformIntervalLiteralInternal(PEGTransformer &transformer,
 	                                                                         ParseResult &parse_result);
@@ -7028,11 +7291,18 @@ public:
 	                                                                  unique_ptr<ParsedExpression> is_expression);
 	static unique_ptr<TransformResultValue> TransformNotExpressionInternal(PEGTransformer &transformer,
 	                                                                       ParseResult &parse_result);
+<<<<<<< HEAD
 	static vector<bool> TransformNotExpression(PEGTransformer &transformer,
 	                                           vector<unique_ptr<ParsedExpression>> spark_not_expression);
 	static unique_ptr<TransformResultValue> TransformSparkNotExpressionInternal(PEGTransformer &transformer,
 	                                                                            ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformSparkNotExpression(PEGTransformer &transformer);
+=======
+	static vector<bool> TransformNotExpression(PEGTransformer &transformer, const vector<bool> &not_keyword);
+	static unique_ptr<TransformResultValue> TransformNotKeywordInternal(PEGTransformer &transformer,
+	                                                                    ParseResult &parse_result);
+	static bool TransformNotKeyword(PEGTransformer &transformer);
+>>>>>>> duckdb_upstream/main
 	static unique_ptr<TransformResultValue> TransformIsExpressionInternal(PEGTransformer &transformer,
 	                                                                      ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformIsExpression(PEGTransformer &transformer,
@@ -7553,6 +7823,31 @@ public:
 	                                                                   const string &string_literal);
 	static unique_ptr<TransformResultValue> TransformExtractDatePartInternal(PEGTransformer &transformer,
 	                                                                         ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformExternalResourceStatementInternal(PEGTransformer &transformer,
+	                                                                                   ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformCreateExternalResourceStmtInternal(PEGTransformer &transformer,
+	                                                                                    ParseResult &parse_result);
+	static unique_ptr<SQLStatement>
+	TransformCreateExternalResourceStmt(PEGTransformer &transformer, const string &string_literal,
+	                                    const optional<Identifier> &attach_alias,
+	                                    const optional<vector<GenericCopyOption>> &attach_options);
+	static unique_ptr<TransformResultValue> TransformRegisterExternalResourceStmtInternal(PEGTransformer &transformer,
+	                                                                                      ParseResult &parse_result);
+	static unique_ptr<SQLStatement> TransformRegisterExternalResourceStmt(PEGTransformer &transformer,
+	                                                                      const string &string_literal,
+	                                                                      const optional<Identifier> &attach_alias,
+	                                                                      unique_ptr<ParsedExpression> expression);
+	static unique_ptr<TransformResultValue> TransformDestroyExternalResourceStmtInternal(PEGTransformer &transformer,
+	                                                                                     ParseResult &parse_result);
+	static unique_ptr<SQLStatement> TransformDestroyExternalResourceStmt(PEGTransformer &transformer,
+	                                                                     const Identifier &col_id);
+	static unique_ptr<TransformResultValue> TransformShowExternalResourcesStmtInternal(PEGTransformer &transformer,
+	                                                                                   ParseResult &parse_result);
+	static unique_ptr<SQLStatement> TransformShowExternalResourcesStmt(PEGTransformer &transformer,
+	                                                                   const optional<bool> &show_all_modifier);
+	static unique_ptr<TransformResultValue> TransformShowAllModifierInternal(PEGTransformer &transformer,
+	                                                                         ParseResult &parse_result);
+	static bool TransformShowAllModifier(PEGTransformer &transformer);
 	static unique_ptr<TransformResultValue> TransformInsertStatementInternal(PEGTransformer &transformer,
 	                                                                         ParseResult &parse_result);
 	static unique_ptr<SQLStatement> TransformInsertStatement(
@@ -8158,6 +8453,67 @@ public:
 	static string TransformTimestampAtUnit(PEGTransformer &transformer);
 	static unique_ptr<TransformResultValue> TransformJoinClauseInternal(PEGTransformer &transformer,
 	                                                                    ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformNearestJoinClauseInternal(PEGTransformer &transformer,
+	                                                                           ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformNearestJoinAliasedInternal(PEGTransformer &transformer,
+	                                                                            ParseResult &parse_result);
+	static unique_ptr<TableRef>
+	TransformNearestJoinAliased(PEGTransformer &transformer, const optional<JoinType> &join_type,
+	                            unique_ptr<TableRef> table_ref, const optional<bool> &approx_or_exact,
+	                            optional<unique_ptr<ParsedExpression>> number_literal,
+	                            const OrderType &distance_or_similarity, unique_ptr<ParsedExpression> expression);
+	static unique_ptr<TransformResultValue> TransformNearestJoinBareInternal(PEGTransformer &transformer,
+	                                                                         ParseResult &parse_result);
+	static unique_ptr<TableRef>
+	TransformNearestJoinBare(PEGTransformer &transformer, const optional<JoinType> &join_type,
+	                         unique_ptr<TableRef> nearest_bare_table_ref, const optional<bool> &approx_or_exact,
+	                         optional<unique_ptr<ParsedExpression>> number_literal,
+	                         const OrderType &distance_or_similarity, unique_ptr<ParsedExpression> expression);
+	static unique_ptr<TransformResultValue> TransformNearestBareTableRefInternal(PEGTransformer &transformer,
+	                                                                             ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformNearestValuesRefInternal(PEGTransformer &transformer,
+	                                                                          ParseResult &parse_result);
+	static unique_ptr<TableRef> TransformNearestValuesRef(PEGTransformer &transformer,
+	                                                      unique_ptr<SelectStatement> values_clause);
+	static unique_ptr<TransformResultValue> TransformNearestTableFunctionInternal(PEGTransformer &transformer,
+	                                                                              ParseResult &parse_result);
+	static unique_ptr<TableRef> TransformNearestTableFunction(PEGTransformer &transformer,
+	                                                          const optional<bool> &lateral,
+	                                                          const QualifiedName &qualified_table_function,
+	                                                          vector<FunctionArgument> table_function_arguments,
+	                                                          const optional<bool> &with_ordinality);
+	static unique_ptr<TransformResultValue> TransformNearestTableSubqueryInternal(PEGTransformer &transformer,
+	                                                                              ParseResult &parse_result);
+	static unique_ptr<TableRef> TransformNearestTableSubquery(PEGTransformer &transformer,
+	                                                          const optional<bool> &lateral,
+	                                                          unique_ptr<TableRef> subquery_reference);
+	static unique_ptr<TransformResultValue> TransformNearestBaseTableRefInternal(PEGTransformer &transformer,
+	                                                                             ParseResult &parse_result);
+	static unique_ptr<TableRef> TransformNearestBaseTableRef(PEGTransformer &transformer,
+	                                                         unique_ptr<BaseTableRef> base_table_name,
+	                                                         optional<unique_ptr<AtClause>> at_clause,
+	                                                         optional<unique_ptr<SampleOptions>> sample_clause);
+	static unique_ptr<TransformResultValue> TransformNearestParensTableRefInternal(PEGTransformer &transformer,
+	                                                                               ParseResult &parse_result);
+	static unique_ptr<TableRef> TransformNearestParensTableRef(PEGTransformer &transformer,
+	                                                           unique_ptr<TableRef> table_ref,
+	                                                           optional<unique_ptr<SampleOptions>> sample_clause);
+	static unique_ptr<TransformResultValue> TransformApproxOrExactInternal(PEGTransformer &transformer,
+	                                                                       ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformNearestApproxInternal(PEGTransformer &transformer,
+	                                                                       ParseResult &parse_result);
+	static bool TransformNearestApprox(PEGTransformer &transformer);
+	static unique_ptr<TransformResultValue> TransformNearestExactInternal(PEGTransformer &transformer,
+	                                                                      ParseResult &parse_result);
+	static bool TransformNearestExact(PEGTransformer &transformer);
+	static unique_ptr<TransformResultValue> TransformDistanceOrSimilarityInternal(PEGTransformer &transformer,
+	                                                                              ParseResult &parse_result);
+	static unique_ptr<TransformResultValue> TransformNearestDistanceInternal(PEGTransformer &transformer,
+	                                                                         ParseResult &parse_result);
+	static OrderType TransformNearestDistance(PEGTransformer &transformer);
+	static unique_ptr<TransformResultValue> TransformNearestSimilarityInternal(PEGTransformer &transformer,
+	                                                                           ParseResult &parse_result);
+	static OrderType TransformNearestSimilarity(PEGTransformer &transformer);
 	static unique_ptr<TransformResultValue> TransformRegularJoinClauseInternal(PEGTransformer &transformer,
 	                                                                           ParseResult &parse_result);
 	static unique_ptr<TableRef> TransformRegularJoinClause(PEGTransformer &transformer, const optional<bool> &asof,
@@ -8174,6 +8530,7 @@ public:
 	static unique_ptr<TransformResultValue> TransformJoinWithoutOnClauseInternal(PEGTransformer &transformer,
 	                                                                             ParseResult &parse_result);
 	static unique_ptr<TableRef> TransformJoinWithoutOnClause(PEGTransformer &transformer, const JoinPrefix &join_prefix,
+<<<<<<< HEAD
 	                                                         unique_ptr<TableRef> table_ref,
 	                                                         optional<JoinQualifier> join_qualifier);
 	static unique_ptr<TransformResultValue> TransformLateralJoinClauseInternal(PEGTransformer &transformer,
@@ -8181,6 +8538,9 @@ public:
 	static unique_ptr<TableRef> TransformLateralJoinClause(PEGTransformer &transformer,
 	                                                       unique_ptr<TableRef> subquery_reference,
 	                                                       const optional<TableAlias> &table_alias);
+=======
+	                                                         unique_ptr<TableRef> inner_table_ref);
+>>>>>>> duckdb_upstream/main
 	static unique_ptr<TransformResultValue> TransformJoinQualifierInternal(PEGTransformer &transformer,
 	                                                                       ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformOnClauseInternal(PEGTransformer &transformer,
@@ -8446,6 +8806,9 @@ public:
 	                                                                        ParseResult &parse_result);
 	static unique_ptr<SQLStatement> TransformResetStatement(PEGTransformer &transformer,
 	                                                        const SettingInfo &set_variable_or_setting);
+	static unique_ptr<TransformResultValue> TransformSetSchemaInternal(PEGTransformer &transformer,
+	                                                                   ParseResult &parse_result);
+	static unique_ptr<SetStatement> TransformSetSchema(PEGTransformer &transformer, const string &string_literal);
 	static unique_ptr<TransformResultValue> TransformStandardAssignmentInternal(PEGTransformer &transformer,
 	                                                                            ParseResult &parse_result);
 	static unique_ptr<SetStatement> TransformStandardAssignment(PEGTransformer &transformer,
@@ -8624,7 +8987,7 @@ public:
 	                                                                      ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformOptAnalyzeInternal(PEGTransformer &transformer,
 	                                                                    ParseResult &parse_result);
-	static string TransformOptAnalyze(PEGTransformer &transformer);
+	static string TransformOptAnalyze(PEGTransformer &transformer, const Identifier &analyze_keyword);
 	static unique_ptr<TransformResultValue> TransformOptFullInternal(PEGTransformer &transformer,
 	                                                                 ParseResult &parse_result);
 	static string TransformOptFull(PEGTransformer &transformer);

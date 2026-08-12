@@ -20,6 +20,7 @@
 
 namespace duckdb {
 class ClientContext;
+<<<<<<< HEAD
 } // namespace duckdb
 
 namespace duckdb_fork {
@@ -40,6 +41,8 @@ public:
 		return false;
 	}
 };
+=======
+>>>>>>> duckdb_upstream/main
 class PEGTransformerFactory;
 class ParseResultAllocator;
 class Matcher;

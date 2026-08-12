@@ -237,9 +237,14 @@ void BaseTokenizer::TokenizeInput() {
 bool BaseTokenizer::TokenizeInputInternal() {
 	auto state = TokenizeState::STANDARD;
 	idx_t last_pos = 0;
+	bool escape_string = false;
 	string dollar_quote_marker;
 	idx_t dollar_marker_start = 0;
+<<<<<<< HEAD
 	idx_t comment_depth = 0;
+=======
+	idx_t multi_line_comment_depth = 0;
+>>>>>>> duckdb_upstream/main
 	for (idx_t i = 0; i < sql.size(); i++) {
 		auto c = sql[i];
 		switch (state) {
@@ -247,6 +252,7 @@ bool BaseTokenizer::TokenizeInputInternal() {
 			if (c == '\'') {
 				state = TokenizeState::STRING_LITERAL;
 				last_pos = i;
+				escape_string = false;
 				break;
 			}
 			if (c == '"') {
@@ -308,6 +314,7 @@ bool BaseTokenizer::TokenizeInputInternal() {
 				i++;
 				comment_depth = 1;
 				state = TokenizeState::MULTI_LINE_COMMENT;
+				multi_line_comment_depth = 1;
 				break;
 			}
 			if (StringUtil::CharacterIsSpace(c)) {
@@ -340,6 +347,9 @@ bool BaseTokenizer::TokenizeInputInternal() {
 				if (i + 1 < sql.size() && sql[i + 1] == '\'') {
 					state = TokenizeState::STRING_LITERAL;
 					last_pos = i;
+					if (c == 'E' || c == 'e') {
+						escape_string = true;
+					}
 					i++;
 					break;
 				}
@@ -439,8 +449,12 @@ bool BaseTokenizer::TokenizeInputInternal() {
 			}
 			break;
 		case TokenizeState::STRING_LITERAL:
+<<<<<<< HEAD
 			if (c == '\\' && i + 1 < sql.size()) {
 				// a backslash escapes the next character, so an escaped quote does not close the string
+=======
+			if (escape_string && c == '\\' && i + 1 < sql.size()) {
+>>>>>>> duckdb_upstream/main
 				i++;
 				break;
 			}
@@ -451,6 +465,7 @@ bool BaseTokenizer::TokenizeInputInternal() {
 				} else {
 					PushToken(last_pos, i + 1, TokenType::STRING_LITERAL);
 					last_pos = i + 1;
+					escape_string = false;
 					state = TokenizeState::STANDARD;
 				}
 			}
@@ -476,6 +491,7 @@ bool BaseTokenizer::TokenizeInputInternal() {
 			break;
 		case TokenizeState::MULTI_LINE_COMMENT:
 			if (c == '/' && i + 1 < sql.size() && sql[i + 1] == '*') {
+<<<<<<< HEAD
 				// nested comment open - consume both chars and increase depth
 				i++;
 				comment_depth++;
@@ -484,6 +500,14 @@ bool BaseTokenizer::TokenizeInputInternal() {
 				i++;
 				comment_depth--;
 				if (comment_depth == 0) {
+=======
+				i++;
+				multi_line_comment_depth++;
+			} else if (c == '*' && i + 1 < sql.size() && sql[i + 1] == '/') {
+				i++;
+				multi_line_comment_depth--;
+				if (multi_line_comment_depth == 0) {
+>>>>>>> duckdb_upstream/main
 					PushToken(last_pos, i + 1, TokenType::COMMENT);
 					last_pos = i + 1;
 					state = TokenizeState::STANDARD;

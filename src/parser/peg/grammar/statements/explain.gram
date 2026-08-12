@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 ExplainStatement <- 'EXPLAIN' ExplainAnalyze? ExplainOptionList? ExplainMode? ExplainableStatements
 ExplainAnalyze <- 'ANALYZE'
 ExplainMode <- 'EXTENDED' / 'CODEGEN' / 'COST' / 'FORMATTED'
+=======
+ExplainStatement <- 'EXPLAIN' AnalyzeKeyword? ExplainOptionList? ExplainableStatements
+>>>>>>> duckdb_upstream/main
 ExplainOptionList <- Parens(List(ExplainOption))
 ExplainOption <- ExplainOptionName Expression?
-ExplainOptionName <- 'ANALYZE' / 'ANALYSE' / ColId / FuncNameKeyword / TypeNameKeyword
+ExplainOptionName <- AnalyzeKeyword / ColId / FuncNameKeyword / TypeNameKeyword
 
 ExplainSelectStatement <- SelectStatementInternal
 

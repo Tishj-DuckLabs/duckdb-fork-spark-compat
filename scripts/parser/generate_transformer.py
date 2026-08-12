@@ -164,7 +164,7 @@ def tokens_to_ast(tokens):
             inner = parse_choice()
             if peek() and peek().type == PEGTokenType.OPERATOR and peek().text == ')':
                 consume()
-            if func_name == 'Parens' or func_name == 'AngleBrackets':
+            if func_name == 'Parens':
                 return ParensNode(inner)
             elif func_name == 'List':
                 return ListMacroNode(inner)
@@ -1215,8 +1215,6 @@ def _matcher_override_expr(rule_name, override):
         return "allocator.Allocate(make_uniq<StringLiteralMatcher>())"
     if matcher == "operator":
         return "allocator.Allocate(make_uniq<OperatorMatcher>())"
-    if matcher == "close_angle_bracket":
-        return "allocator.Allocate(make_uniq<CloseAngleBracketMatcher>())"
     raise RuntimeError(f"Unsupported matcher_rule_overrides entry for {rule_name}: {override}")
 
 

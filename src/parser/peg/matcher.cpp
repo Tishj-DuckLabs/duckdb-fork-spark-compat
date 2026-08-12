@@ -31,6 +31,13 @@ optional_ptr<ParseResult> Matcher::MatchParseResult(MatchState &state) const {
 	return MatchParseResultInternal(state);
 }
 
+optional_ptr<ParseResult> Matcher::MatchParseResult(MatchState &state) const {
+	if (state.packrat_cache && IsPackratMemoized()) {
+		return state.packrat_cache->Match(*this, state);
+	}
+	return MatchParseResultInternal(state);
+}
+
 SuggestionType Matcher::AddSuggestion(MatchState &state) const {
 	auto entry = state.added_suggestions.find(*this);
 	if (entry != state.added_suggestions.end()) {
@@ -107,6 +114,7 @@ public:
 		if (state.token_index >= state.tokens.size()) {
 			return nullptr;
 		}
+<<<<<<< HEAD
 		auto index_before = state.token_index;
 		auto &token = state.tokens[state.token_index];
 		auto start_offset = optional_idx(token.offset);
@@ -116,6 +124,15 @@ public:
 		// a keyword matched across several glued operator tokens is recorded as the keyword itself
 		const string &matched_text = state.token_index - index_before > 1 ? keyword : token.text;
 		auto result = state.allocator.Allocate(make_uniq<KeywordParseResult>(matched_text, start_offset));
+=======
+		auto &token_text = state.tokens[state.token_index].text;
+		auto start_offset = optional_idx(state.tokens[state.token_index].offset);
+		auto token_length = optional_idx(state.tokens[state.token_index].length);
+		if (!MatchKeyword(state)) {
+			return nullptr;
+		}
+		auto result = state.allocator.Allocate(make_uniq<KeywordParseResult>(token_text, start_offset, token_length));
+>>>>>>> duckdb_upstream/main
 		result->name = name;
 		return result;
 	}
@@ -652,6 +669,7 @@ public:
 
 		const auto &token_text = state.tokens[state.token_index].text;
 		auto start_offset = optional_idx(state.tokens[state.token_index].offset);
+		auto token_length = optional_idx(state.tokens[state.token_index].length);
 		if (!MatchIdentifier(state)) {
 			return nullptr;
 		}
@@ -667,7 +685,7 @@ public:
 			result_text = result_text.substr(1, result_text.size() - 2);
 			result_text = StringUtil::Replace(result_text, "''", "'");
 		}
-		return state.allocator.Allocate(make_uniq<IdentifierParseResult>(result_text, start_offset));
+		return state.allocator.Allocate(make_uniq<IdentifierParseResult>(result_text, start_offset, token_length));
 	}
 
 	TokenType GetTokenType() const {
@@ -839,6 +857,7 @@ public:
 
 		auto &token_text = state.tokens[state.token_index].text;
 		auto start_offset = optional_idx(state.tokens[state.token_index].offset);
+		auto token_length = optional_idx(state.tokens[state.token_index].length);
 		if (!MatchReservedIdentifier(state)) {
 			return nullptr;
 		}
@@ -849,7 +868,7 @@ public:
 		} else if (!state.preserve_identifier_case) {
 			result_text = StringUtil::Lower(result_text);
 		}
-		return state.allocator.Allocate(make_uniq<IdentifierParseResult>(result_text, start_offset));
+		return state.allocator.Allocate(make_uniq<IdentifierParseResult>(result_text, start_offset, token_length));
 	}
 
 private:
@@ -907,6 +926,7 @@ public:
 
 		auto &token = state.tokens[state.token_index];
 		auto start_offset = optional_idx(token.offset);
+		auto token_length = optional_idx(token.length);
 		auto string_info = GetSpecialStringInfo(token.text);
 
 		if (!MatchStringLiteral(state, string_info)) {
@@ -947,7 +967,11 @@ public:
 		}
 
 		auto result = state.allocator.Allocate(
+<<<<<<< HEAD
 		    make_uniq<StringLiteralParseResult>(stripped_string, effective_type, start_offset));
+=======
+		    make_uniq<StringLiteralParseResult>(stripped_string, string_info.type, start_offset, token_length));
+>>>>>>> duckdb_upstream/main
 		result->name = name;
 		return result;
 	}
@@ -1030,9 +1054,11 @@ public:
 		}
 		auto number_text = state.tokens[state.token_index].text;
 		auto start_offset = optional_idx(state.tokens[state.token_index].offset);
+		auto token_length = optional_idx(state.tokens[state.token_index].length);
 		if (!MatchNumberLiteral(state)) {
 			return nullptr;
 		}
+<<<<<<< HEAD
 		if (state.token_index < state.tokens.size() &&
 		    SparkCompatUtils::IsSparkPostfixToken(state.tokens[state.token_index].text) &&
 		    TokenIsGluedToPrevious(state.tokens, state.token_index)) {
@@ -1041,6 +1067,9 @@ public:
 			state.token_index++;
 		}
 		auto result = state.allocator.Allocate(make_uniq<NumberParseResult>(number_text, start_offset));
+=======
+		auto result = state.allocator.Allocate(make_uniq<NumberParseResult>(token_text, start_offset, token_length));
+>>>>>>> duckdb_upstream/main
 		result->name = name;
 		return result;
 	}
@@ -1143,11 +1172,19 @@ public:
 			return nullptr;
 		}
 		auto start_offset = optional_idx(state.tokens[state.token_index].offset);
+<<<<<<< HEAD
 		string matched_text;
 		if (!MatchOperator(state, matched_text)) {
 			return nullptr;
 		}
 		return state.allocator.Allocate(make_uniq<OperatorParseResult>(std::move(matched_text), start_offset));
+=======
+		auto token_length = optional_idx(state.tokens[state.token_index].length);
+		if (!MatchOperator(state)) {
+			return nullptr;
+		}
+		return state.allocator.Allocate(make_uniq<OperatorParseResult>(token_text, start_offset, token_length));
+>>>>>>> duckdb_upstream/main
 	}
 
 	SuggestionType AddSuggestionInternal(MatchState &state) const override {
@@ -1229,10 +1266,11 @@ public:
 		}
 		auto &token_text = state.tokens[state.token_index].text;
 		auto start_offset = optional_idx(state.tokens[state.token_index].offset);
+		auto token_length = optional_idx(state.tokens[state.token_index].length);
 		if (!MatchArithmeticOperator(state)) {
 			return nullptr;
 		}
-		return state.allocator.Allocate(make_uniq<OperatorParseResult>(token_text, start_offset));
+		return state.allocator.Allocate(make_uniq<OperatorParseResult>(token_text, start_offset, token_length));
 	}
 
 	SuggestionType AddSuggestionInternal(MatchState &state) const override {

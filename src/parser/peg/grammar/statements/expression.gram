@@ -62,7 +62,7 @@ SubqueryExists <- 'EXISTS'
 CaseExpression <- 'CASE' Expression? CaseWhenThen+ CaseElse? 'END'
 CaseWhenThen <- 'WHEN' Expression 'THEN' Expression
 CaseElse <- 'ELSE' Expression
-TypeLiteral <- ColId StringLiteral
+TypeLiteral <- Type StringLiteral
 IntervalLiteral <- 'INTERVAL' IntervalParameter Interval?
 IntervalParameter <- IntervalStringParameter / NumberLiteral / ParensExpression
 IntervalStringParameter <- StringLiteral
@@ -325,12 +325,18 @@ LambdaExpression <- 'LAMBDA' List(ColIdOrString) ':' Expression
 NullIfExpression <- 'NULLIF' Parens(NullIfArguments)
 NullIfArguments <- Expression ',' Expression
 PositionExpression <- 'POSITION' Parens(PositionArguments)
+<<<<<<< HEAD
 PositionArguments <- OtherOperatorExpression PositionSeparator Expression
 PositionSeparator <- 'IN' / ','
 RowExpression <- RowOrStruct Parens(List(RowExpressionArg)?)
 RowExpressionArg <- Expression RowExpressionAlias?
 RowExpressionAlias <- 'AS' ColId
 SubstringExpression <- ('SUBSTRING' / 'SUBSTR') Parens(SubstringArguments)
+=======
+PositionArguments <- OtherOperatorExpression 'IN' Expression
+RowExpression <- 'ROW' Parens(List(Expression)?)
+SubstringExpression <- 'SUBSTRING' Parens(SubstringArguments)
+>>>>>>> duckdb_upstream/main
 SubstringArguments <- SubstringParameters / SubstringExpressionList
 SubstringExpressionList <- List(Expression)
 SubstringParameters <- Expression SubstringFromFor

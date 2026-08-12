@@ -4,6 +4,7 @@
 #include "duckdb/parser/peg/transformer/peg_transformer.hpp"
 #include "duckdb/parser/statement/vacuum_statement.hpp"
 
+<<<<<<< HEAD
 namespace duckdb_fork {
 using namespace duckdb;
 // AnalyzeStatement <- 'ANALYZE' AnalyzeVerbose? 'TABLE'? AnalyzeTarget? PartitionSpec? AnalyzeComputeStatistics?
@@ -13,6 +14,13 @@ unique_ptr<SQLStatement> PEGTransformerFactory::TransformAnalyzeStatement(
     PEGTransformer &transformer, const optional<bool> &analyze_verbose, const bool &has_result,
     optional<AnalyzeTarget> analyze_target, optional<vector<PartitionSpecEntry>> partition_spec,
     const bool &has_result_1) {
+=======
+namespace duckdb {
+unique_ptr<SQLStatement> PEGTransformerFactory::TransformAnalyzeStatement(PEGTransformer &transformer,
+                                                                          const Identifier &analyze_keyword,
+                                                                          const optional<bool> &analyze_verbose,
+                                                                          optional<AnalyzeTarget> analyze_target) {
+>>>>>>> duckdb_upstream/main
 	VacuumOptions vacuum_options;
 	vacuum_options.analyze = true;
 	auto result = make_uniq<VacuumStatement>(vacuum_options);

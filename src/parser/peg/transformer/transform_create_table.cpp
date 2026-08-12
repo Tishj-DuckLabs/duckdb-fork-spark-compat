@@ -250,6 +250,7 @@ string PEGTransformerFactory::TransformDotColLabel(PEGTransformer &transformer, 
 	return col_label;
 }
 
+<<<<<<< HEAD
 // ColumnComment <- 'COMMENT' StringLiteral
 string PEGTransformerFactory::TransformColumnComment(PEGTransformer &transformer, const string &string_literal) {
 	return string_literal;
@@ -270,6 +271,8 @@ ColumnConstraintEntry PEGTransformerFactory::TransformColumnConstraint(PEGTransf
 	return transformer.Transform<ColumnConstraintEntry>(choice_result);
 }
 
+=======
+>>>>>>> duckdb_upstream/main
 ConstraintColumnDefinition PEGTransformerFactory::TransformColumnDefinition(
     PEGTransformer &transformer, const vector<string> &dotted_identifier, const optional<LogicalType> &type,
     optional<GeneratedColumnDefinition> generated_column, const bool &has_result,

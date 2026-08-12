@@ -157,4 +157,8 @@ void PEGTransformerFactory::SplitGenericOptions(const vector<GenericCopyOption> 
 	}
 }
 
+<<<<<<< HEAD
 } // namespace duckdb_fork
+=======
+} // namespace duckdb
+>>>>>>> duckdb_upstream/main

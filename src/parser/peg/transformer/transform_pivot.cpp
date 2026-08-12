@@ -4,8 +4,13 @@
 #include "duckdb/common/types/uuid.hpp"
 #include "duckdb/parser/expression/operator_expression.hpp"
 
+<<<<<<< HEAD
 namespace duckdb_fork {
 using namespace duckdb;
+=======
+namespace duckdb {
+
+>>>>>>> duckdb_upstream/main
 void PEGTransformerFactory::AddPivotEntry(PEGTransformer &transformer, string enum_name, unique_ptr<SelectNode> base,
                                           unique_ptr<ParsedExpression> column, unique_ptr<QueryNode> subquery,
                                           bool has_parameters) {

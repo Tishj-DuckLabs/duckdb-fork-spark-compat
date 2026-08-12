@@ -68,7 +68,7 @@ vector<string> PEGTransformerFactory::TransformNameList(PEGTransformer &transfor
 	return IdentifiersToStrings(col_id);
 }
 
-string PEGTransformerFactory::TransformOptAnalyze(PEGTransformer &transformer) {
+string PEGTransformerFactory::TransformOptAnalyze(PEGTransformer &transformer, const Identifier &analyze_keyword) {
 	return "analyze";
 }
 

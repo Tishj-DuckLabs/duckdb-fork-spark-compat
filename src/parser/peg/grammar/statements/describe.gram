@@ -1,6 +1,7 @@
 DescribeStatement <- ShowTables / ShowAllTables / DescribeQuery / DescribeFunction / DescribeTable / ShowSelect / ShowQualifiedName
 
 ShowSelect <- ShowOrDescribeOrSummarize SelectStatementInternal
+<<<<<<< HEAD
 ShowAllTables <- ShowOrDescribe 'ALL' 'TABLES'
 # Spark's { DESC | DESCRIBE } QUERY <query>. The explicit QUERY keyword must precede DescribeTable, otherwise
 # DescribeTable consumes QUERY as a table name (QUERY is not a reserved keyword). The no-QUERY form, DESC <query>,
@@ -14,6 +15,9 @@ DescribeFunction <- DescribeRule 'FUNCTION' 'EXTENDED'? FunctionIdentifier
 # The trailing DottedIdentifier is Spark's describeColName (a possibly nested column path): it describes that one
 # column instead of the table, and is routed to spark_describe_column[_extended] by the transformer.
 DescribeTable <- DescribeRule 'TABLE'? ('EXTENDED' / 'FORMATTED')? DescribeTarget PartitionSpec? DottedIdentifier?
+=======
+ShowAllTables <- ShowOrDescribe 'ALL' 'TABLES'?
+>>>>>>> duckdb_upstream/main
 ShowQualifiedName <- ShowOrDescribeOrSummarize DescribeTarget?
 ShowTables <- ShowOrDescribe 'TABLES' 'FROM' QualifiedName
 DescribeTarget <- DescribeBaseTableName / DescribeStringLiteral

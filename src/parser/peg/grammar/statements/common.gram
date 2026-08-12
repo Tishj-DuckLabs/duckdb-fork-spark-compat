@@ -3,6 +3,7 @@ Program <- TopLevelStatement*
 TopLevelStatement <- Statement? (';'+ / EndOfInput)
 
 Statement <-
+	ExternalResourceStatement /
 	CreateStatement /
 	MultiInsertStatement /
 	SelectStatement /
@@ -42,6 +43,8 @@ Statement <-
 	ConnectStatement /
 	DisconnectStatement /
 	ExpressionStatement
+
+AnalyzeKeyword <- 'ANALYZE' / 'ANALYSE'
 
 ExpressionStatement <- List(ExpressionAlias)
 ExpressionAlias <- ColIdExpression / ExpressionAsCollabel / Expression
@@ -172,6 +175,7 @@ TypeModifiers <- Parens(List(Expression)?)
 RowType <- RowOrStruct ColIdTypeList?
 SetofType <- 'SETOF' Type
 UnionType <- 'UNION' ColIdTypeList
+<<<<<<< HEAD
 ColIdTypeList <- ColIdParensTypeList / ColIdAngleBracketsTypeList
 ColIdParensTypeList <- Parens(List(ColIdType))
 ColIdAngleBracketsTypeList <- AngleBrackets(List(ColIdColonType))
@@ -183,7 +187,15 @@ TupleType <- 'TUPLE' Parens(List(Type))
 ColIdType <- ColId Type
 ColIdColonType <- ColId ':' Type
 ArrayBounds <- SquareBracketsArray / ArrayKeyword
+=======
+ColIdTypeList <- Parens(List(ColIdType))
+MapType <- 'MAP' Parens(List(Type))?
+TupleType <- 'TUPLE' Parens(List(Type))
+ColIdType <- ColId Type
+ArrayBounds <- ArrayKeywordWithBounds / SquareBracketsArray / ArrayKeyword
+>>>>>>> duckdb_upstream/main
 ArrayKeyword <- 'ARRAY'
+ArrayKeywordWithBounds <- 'ARRAY' SquareBracketsArray
 SquareBracketsArray <- '[' Expression? ']'
 TimeType <- TimeOrTimestamp TypeModifiers? TimeZone?
 TimeOrTimestamp <- TimeTypeId / TimestampTypeId

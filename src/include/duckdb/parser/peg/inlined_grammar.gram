@@ -3,6 +3,7 @@ Program <- TopLevelStatement*
 TopLevelStatement <- Statement? (';'+ / EndOfInput)
 
 Statement <-
+	ExternalResourceStatement /
 	CreateStatement /
 	MultiInsertStatement /
 	SelectStatement /
@@ -42,6 +43,8 @@ Statement <-
 	ConnectStatement /
 	DisconnectStatement /
 	ExpressionStatement
+
+AnalyzeKeyword <- 'ANALYZE' / 'ANALYSE'
 
 ExpressionStatement <- List(ExpressionAlias)
 ExpressionAlias <- ColIdExpression / ExpressionAsCollabel / Expression
@@ -172,6 +175,7 @@ TypeModifiers <- Parens(List(Expression)?)
 RowType <- RowOrStruct ColIdTypeList?
 SetofType <- 'SETOF' Type
 UnionType <- 'UNION' ColIdTypeList
+<<<<<<< HEAD
 ColIdTypeList <- ColIdParensTypeList / ColIdAngleBracketsTypeList
 ColIdParensTypeList <- Parens(List(ColIdType))
 ColIdAngleBracketsTypeList <- AngleBrackets(List(ColIdColonType))
@@ -183,7 +187,15 @@ TupleType <- 'TUPLE' Parens(List(Type))
 ColIdType <- ColId Type
 ColIdColonType <- ColId ':' Type
 ArrayBounds <- SquareBracketsArray / ArrayKeyword
+=======
+ColIdTypeList <- Parens(List(ColIdType))
+MapType <- 'MAP' Parens(List(Type))?
+TupleType <- 'TUPLE' Parens(List(Type))
+ColIdType <- ColId Type
+ArrayBounds <- ArrayKeywordWithBounds / SquareBracketsArray / ArrayKeyword
+>>>>>>> duckdb_upstream/main
 ArrayKeyword <- 'ARRAY'
+ArrayKeywordWithBounds <- 'ARRAY' SquareBracketsArray
 SquareBracketsArray <- '[' Expression? ']'
 TimeType <- TimeOrTimestamp TypeModifiers? TimeZone?
 TimeOrTimestamp <- TimeTypeId / TimestampTypeId
@@ -223,7 +235,10 @@ ColumnNameKeyword <- 'BETWEEN' /
 'COLUMNS' /
 'DEC' /
 'DECIMAL' /
+<<<<<<< HEAD
 'DIV' /
+=======
+>>>>>>> duckdb_upstream/main
 'EXISTS' /
 'EXTRACT' /
 'FLOAT' /
@@ -248,12 +263,18 @@ ColumnNameKeyword <- 'BETWEEN' /
 'ROW' /
 'SETOF' /
 'SMALLINT' /
+<<<<<<< HEAD
 'SUBSTR' /
+=======
+>>>>>>> duckdb_upstream/main
 'SUBSTRING' /
 'STRUCT' /
 'TIME' /
 'TIMESTAMP' /
+<<<<<<< HEAD
 'TIMESTAMPDIFF' /
+=======
+>>>>>>> duckdb_upstream/main
 'TREAT' /
 'TRIM' /
 'TRY_CAST' /
@@ -271,6 +292,7 @@ ColumnNameKeyword <- 'BETWEEN' /
 'XMLROOT' /
 'XMLSERIALIZE' /
 'XMLTABLE'
+<<<<<<< HEAD
 FuncNameKeyword <- 'ANY' /
 'ARRAY' /
 'ASOF' /
@@ -287,13 +309,25 @@ FuncNameKeyword <- 'ANY' /
 'DOUBLE' /
 'EXISTS' /
 'FLOAT' /
+=======
+FuncNameKeyword <- 'ASOF' /
+'AT' /
+'AUTHORIZATION' /
+'BINARY' /
+'COLLATION' /
+'CONCURRENTLY' /
+'CROSS' /
+>>>>>>> duckdb_upstream/main
 'FREEZE' /
 'FULL' /
 'GENERATED' /
 'GLOB' /
 'ILIKE' /
 'INNER' /
+<<<<<<< HEAD
 'INT' /
+=======
+>>>>>>> duckdb_upstream/main
 'IS' /
 'ISNULL' /
 'JOIN' /
@@ -307,6 +341,7 @@ FuncNameKeyword <- 'ANY' /
 'POSITIONAL' /
 'RIGHT' /
 'SIMILAR' /
+<<<<<<< HEAD
 'SMALLINT' /
 'SOME' /
 'STRING' /
@@ -317,6 +352,14 @@ FuncNameKeyword <- 'ANY' /
 'TUPLE' /
 'VERBOSE'
 ReservedKeyword <- 'ANALYSE' /
+=======
+'STRUCT' /
+'TABLESAMPLE' /
+'TUPLE' /
+'VERBOSE'
+ReservedKeyword <- 'ALL' /
+'ANALYSE' /
+>>>>>>> duckdb_upstream/main
 'ANALYZE' /
 'AND' /
 'ANY' /
@@ -357,7 +400,10 @@ ReservedKeyword <- 'ANALYSE' /
 'LATERAL' /
 'LEADING' /
 'LIMIT' /
+<<<<<<< HEAD
 'MINUS' /
+=======
+>>>>>>> duckdb_upstream/main
 'NOT' /
 'NULL' /
 'OFFSET' /
@@ -375,7 +421,10 @@ ReservedKeyword <- 'ANALYSE' /
 'SELECT' /
 'SHOW' /
 'SOME' /
+<<<<<<< HEAD
 'SORT' /
+=======
+>>>>>>> duckdb_upstream/main
 'SUMMARIZE' /
 'SYMMETRIC' /
 'TABLE' /
@@ -401,7 +450,10 @@ TypeNameKeyword <- 'ASOF' /
 'COLUMNS' /
 'CONCURRENTLY' /
 'CROSS' /
+<<<<<<< HEAD
 'DOUBLE' /
+=======
+>>>>>>> duckdb_upstream/main
 'FREEZE' /
 'FULL' /
 'GLOB' /
@@ -420,9 +472,13 @@ TypeNameKeyword <- 'ASOF' /
 'RIGHT' /
 'UNPACK' /
 'SIMILAR' /
+<<<<<<< HEAD
 'STRING' /
 'TABLESAMPLE' /
 'TINYINT' /
+=======
+'TABLESAMPLE' /
+>>>>>>> duckdb_upstream/main
 'TRY_CAST' /
 'VERBOSE' /
 'SEMI' /
@@ -438,6 +494,7 @@ UnreservedKeyword <- 'ABORT' /
 'ALSO' /
 'ALTER' /
 'ALWAYS' /
+'APPROX' /
 'ASSERTION' /
 'ASSIGNMENT' /
 'ATTACH' /
@@ -501,6 +558,7 @@ UnreservedKeyword <- 'ABORT' /
 'DISABLE' /
 'DISCARD' /
 'DISCONNECT' /
+'DISTANCE' /
 'DOCUMENT' /
 'DOMAIN' /
 'DOUBLE' /
@@ -513,7 +571,11 @@ UnreservedKeyword <- 'ABORT' /
 'ERROR' /
 'ESCAPE' /
 'EVENT' /
+<<<<<<< HEAD
 'EVOLUTION' /
+=======
+'EXACT' /
+>>>>>>> duckdb_upstream/main
 'EXCLUDE' /
 'EXCLUDING' /
 'EXCLUSIVE' /
@@ -604,6 +666,7 @@ UnreservedKeyword <- 'ABORT' /
 'MOVE' /
 'NAME' /
 'NAMES' /
+'NEAREST' /
 'NEW' /
 'NEXT' /
 'NO' /
@@ -667,6 +730,7 @@ UnreservedKeyword <- 'ABORT' /
 'REPLACE' /
 'REPLICA' /
 'RESET' /
+'RESOURCE' /
 'RESPECT' /
 'RESTART' /
 'RESTRICT' /
@@ -696,6 +760,7 @@ UnreservedKeyword <- 'ABORT' /
 'SET' /
 'SETS' /
 'SHARE' /
+'SIMILARITY' /
 'SIMPLE' /
 'SKIP' /
 'SNAPSHOT' /
@@ -775,6 +840,7 @@ AlterOptions <- AlterTableStmt / AlterViewStmt / AlterSequenceStmt / AlterDataba
 AlterTableStmt <- 'TABLE' IfExists? BaseTableName List(AlterTableOptions)
 AlterSchemaStmt <- 'SCHEMA' IfExists? QualifiedName RenameAlter
 
+<<<<<<< HEAD
 # Spark's ALTER TABLE ... SET/UNSET TBLPROPERTIES. Only the reserved 'comment' property maps onto a duckdb
 # concept (the table comment); every other property is accepted and dropped. Lives at the Statement level
 # because it yields either an AlterStatement or, with no 'comment' property, a no-op VacuumStatement.
@@ -785,6 +851,8 @@ SparkUnsetTblProperties <- 'UNSET' 'TBLPROPERTIES' IfExists? Parens(List(ColIdOr
 SparkTblProperty <- ColIdOrString SparkTblPropertyValue?
 SparkTblPropertyValue <- '='? ColIdOrString
 
+=======
+>>>>>>> duckdb_upstream/main
 AlterTableOptions <- AddColumn / DropColumn / AlterColumn / AddConstraint / ChangeNullability /
         RenameColumn / RenameAlter / SetPartitionedBy / ResetPartitionedBy / SetSortedBy / ResetSortedBy / SetOptions / ResetOptions
 
@@ -831,6 +899,7 @@ SetSequenceOption <- SequenceOption+
 
 AlterDatabaseStmt <- 'DATABASE' IfExists? Identifier 'SET' 'ALIAS' 'TO' Identifier
 
+<<<<<<< HEAD
 AnalyzeStatement <- 'ANALYZE' AnalyzeVerbose? 'TABLE'? AnalyzeTarget? PartitionSpec? AnalyzeComputeStatistics?
 AnalyzeTarget <- BaseTableName NameList?
 AnalyzeVerbose <- 'VERBOSE'
@@ -838,6 +907,11 @@ AnalyzeVerbose <- 'VERBOSE'
 # and ignored (AnalyzeComputeStatistics / AnalyzeStatsScope are excluded_rules: matched but not transformed).
 AnalyzeComputeStatistics <- 'COMPUTE' 'STATISTICS' AnalyzeStatsScope?
 AnalyzeStatsScope <- 'NOSCAN' / ('FOR' 'ALL' 'COLUMNS') / ('FOR' 'COLUMNS' NameList)
+=======
+AnalyzeStatement <- AnalyzeKeyword AnalyzeVerbose? AnalyzeTarget?
+AnalyzeTarget <- BaseTableName NameList?
+AnalyzeVerbose <- 'VERBOSE'
+>>>>>>> duckdb_upstream/main
 
 AttachStatement <- 'ATTACH' OrReplace? IfNotExists? Database? DatabasePath AttachAlias? AttachOptions?
 
@@ -973,7 +1047,11 @@ SimpleParameter <- TypeFuncName Type?
 ScalarMacroDefinition <- Expression
 TableMacroDefinition <- 'TABLE' SelectStatementInternal
 
+<<<<<<< HEAD
 CreateSchemaStmt <- ('SCHEMA' / 'DATABASE') IfNotExists? QualifiedName
+=======
+CreateSchemaStmt <- 'SCHEMA' IfNotExists? QualifiedName
+>>>>>>> duckdb_upstream/main
 CreateSecretStmt <- 'SECRET' IfNotExists? SecretName? SecretStorageSpecifier? GenericCopyOptionList
 
 SecretStorageSpecifier <- 'IN' Identifier
@@ -1012,6 +1090,7 @@ TemporaryPersistent <- 'TEMPORARY'
 
 CreateTableStmt <- 'TABLE' IfNotExists? QualifiedName CreateTableDefinition CommitAction?
 CreateTableDefinition <- CreateTableAs / CreateColumnList
+<<<<<<< HEAD
 SparkUsing <- 'USING' Identifier SparkLocation?
 SparkLocation <- 'LOCATION' StringLiteral
 # Spark's table-level COMMENT clause. ColIdOrString accepts both 'text' and spark's double-quoted "text".
@@ -1022,13 +1101,25 @@ PartitionOptSortedOptions <- PartitionOptions SortedOptions?
 SortedOptPartitionOptions <- SortedOptions PartitionOptions?
 PartitionOptions <- 'PARTITIONED' 'BY' Parens(List(PartitionField))
 PartitionField <- Expression Type?
+=======
+
+CreateTableAs <- IdentifierList? PartitionSortedOptions? WithList? 'AS' Statement WithData?
+PartitionSortedOptions <- PartitionOptSortedOptions / SortedOptPartitionOptions
+PartitionOptSortedOptions <- PartitionOptions SortedOptions?
+SortedOptPartitionOptions <- SortedOptions PartitionOptions?
+PartitionOptions <- 'PARTITIONED' 'BY' Parens(List(Expression))
+>>>>>>> duckdb_upstream/main
 SortedOptions <- 'SORTED' 'BY' Parens(List(Expression))
 
 WithData <- WithDataOnly / WithNoData
 WithDataOnly <- 'WITH' 'DATA'
 WithNoData <- 'WITH' 'NO' 'DATA'
 IdentifierList <- Parens(List(Identifier))
+<<<<<<< HEAD
 CreateColumnList <- Parens(CreateTableColumnList?) SparkUsing? PartitionSortedOptions? SparkTableComment? WithList?
+=======
+CreateColumnList <- Parens(CreateTableColumnList?) PartitionSortedOptions? WithList?
+>>>>>>> duckdb_upstream/main
 IfNotExists <- 'IF' 'NOT' 'EXISTS'
 QualifiedName <- CatalogReservedSchemaIdentifier / SchemaReservedIdentifierOrStringLiteral / IdentifierOrStringLiteral
 SchemaReservedIdentifierOrStringLiteral <- SchemaQualification ReservedIdentifierOrStringLiteral
@@ -1046,8 +1137,12 @@ CreateTableColumnElement <- CreateTableColumnDefinition / CreateTableConstraint
 CreateTableColumnDefinition <- ColumnDefinition
 CreateTableConstraint <- TopLevelConstraint
 ColumnDefinition <- DottedIdentifier Type? GeneratedColumn? ConstraintNameClause? ColumnConstraint*
+<<<<<<< HEAD
 ColumnConstraint <- NotNullConstraint / UniqueConstraint / PrimaryKeyConstraint / DefaultValue / CheckConstraint / ForeignKeyConstraint / ColumnCollation / ColumnCompression / ColumnComment
 ColumnComment <- 'COMMENT' StringLiteral
+=======
+ColumnConstraint <- NotNullConstraint / UniqueConstraint / PrimaryKeyConstraint / DefaultValue / CheckConstraint / ForeignKeyConstraint / ColumnCollation / ColumnCompression
+>>>>>>> duckdb_upstream/main
 NotNullConstraint <- NullConstraint / NotNullColumnConstraint
 NullConstraint <- 'NULL'
 NotNullColumnConstraint <- 'NOT' 'NULL'
@@ -1138,6 +1233,7 @@ CreateTypeFromType <- Type
 EnumSelectType <- 'ENUM' Parens(SelectStatementInternal)
 EnumStringLiteralList <- 'ENUM' Parens(List(StringLiteral)?)
 
+<<<<<<< HEAD
 CreateViewStmt <- CreateRecursive? 'VIEW' IfNotExists? QualifiedName ViewColumnList? WithSchemaMode? InsertColumnList? WithList? 'AS' SelectStatementInternal
 CreateRecursive <- 'RECURSIVE'
 ViewColumnList <- Parens(List(ViewColumn))
@@ -1154,11 +1250,20 @@ DeclareValue <- ('DEFAULT' / '=') Expression
 
 DropVariableStatement <- 'DROP' ('TEMPORARY' / 'TEMP')? 'VARIABLE' IfExists? Identifier
 
+=======
+CreateViewStmt <- CreateRecursive? 'VIEW' IfNotExists? QualifiedName InsertColumnList? WithList? 'AS' SelectStatementInternal
+CreateRecursive <- 'RECURSIVE'
+
+DeallocateStatement <- 'DEALLOCATE' DeallocatePrepare? Identifier
+DeallocatePrepare <- 'PREPARE'
+
+>>>>>>> duckdb_upstream/main
 DeleteStatement <- WithClause? 'DELETE' 'FROM' TargetOptAlias DeleteUsingClause? WhereClause? ReturningClause?
 TruncateStatement <- 'TRUNCATE' 'TABLE'? BaseTableName
 TargetOptAlias <- BaseTableName 'AS'? ColId?
 DeleteUsingClause <- 'USING' List(TableRef)
 
+<<<<<<< HEAD
 DescribeStatement <- ShowTables / ShowAllTables / DescribeQuery / DescribeFunction / DescribeTable / ShowSelect / ShowQualifiedName
 
 ShowSelect <- ShowOrDescribeOrSummarize SelectStatementInternal
@@ -1175,6 +1280,12 @@ DescribeFunction <- DescribeRule 'FUNCTION' 'EXTENDED'? FunctionIdentifier
 # The trailing DottedIdentifier is Spark's describeColName (a possibly nested column path): it describes that one
 # column instead of the table, and is routed to spark_describe_column[_extended] by the transformer.
 DescribeTable <- DescribeRule 'TABLE'? ('EXTENDED' / 'FORMATTED')? DescribeTarget PartitionSpec? DottedIdentifier?
+=======
+DescribeStatement <- ShowTables / ShowSelect / ShowAllTables / ShowQualifiedName
+
+ShowSelect <- ShowOrDescribeOrSummarize SelectStatementInternal
+ShowAllTables <- ShowOrDescribe 'ALL' 'TABLES'?
+>>>>>>> duckdb_upstream/main
 ShowQualifiedName <- ShowOrDescribeOrSummarize DescribeTarget?
 ShowTables <- ShowOrDescribe 'TABLES' 'FROM' QualifiedName
 DescribeTarget <- DescribeBaseTableName / DescribeStringLiteral
@@ -1211,7 +1322,11 @@ DropTrigger <- 'TRIGGER' IfExists? TriggerName 'ON' BaseTableName
 DropTable <- TableOrView IfExists? List(BaseTableName)
 DropTableFunction <- CommentMacroTable IfExists? List(TableFunctionName)
 DropFunction <- FunctionTypeMacro IfExists? List(FunctionIdentifier)
+<<<<<<< HEAD
 DropSchema <- ('SCHEMA' / 'DATABASE') IfExists? List(QualifiedName)
+=======
+DropSchema <- 'SCHEMA' IfExists? List(QualifiedName)
+>>>>>>> duckdb_upstream/main
 DropIndex <- 'INDEX' IfExists? List(QualifiedIndexName)
 QualifiedIndexName <- CatalogReservedSchemaIndex / SchemaReservedIndex / QualifiedIndexNameString
 QualifiedIndexNameString <- IndexName
@@ -1237,12 +1352,19 @@ IfExists <- 'IF' 'EXISTS'
 DropSecretStorage <- 'FROM' Identifier
 
 ExecuteStatement <- 'EXECUTE' Identifier TableFunctionArguments?
+<<<<<<< HEAD
 ExplainStatement <- 'EXPLAIN' ExplainAnalyze? ExplainOptionList? ExplainMode? ExplainableStatements
 ExplainAnalyze <- 'ANALYZE'
 ExplainMode <- 'EXTENDED' / 'CODEGEN' / 'COST' / 'FORMATTED'
 ExplainOptionList <- Parens(List(ExplainOption))
 ExplainOption <- ExplainOptionName Expression?
 ExplainOptionName <- 'ANALYZE' / 'ANALYSE' / ColId / FuncNameKeyword / TypeNameKeyword
+=======
+ExplainStatement <- 'EXPLAIN' AnalyzeKeyword? ExplainOptionList? ExplainableStatements
+ExplainOptionList <- Parens(List(ExplainOption))
+ExplainOption <- ExplainOptionName Expression?
+ExplainOptionName <- AnalyzeKeyword / ColId / FuncNameKeyword / TypeNameKeyword
+>>>>>>> duckdb_upstream/main
 
 ExplainSelectStatement <- SelectStatementInternal
 
@@ -1268,6 +1390,10 @@ ExplainableStatements <-
     VacuumStatement /
     SetStatement /
     ResetStatement
+<<<<<<< HEAD
+=======
+
+>>>>>>> duckdb_upstream/main
 ExportStatement <- 'EXPORT' 'DATABASE' ExportSource? StringLiteral GenericCopyOptionList?
 ExportSource <- CatalogName 'TO'
 ImportStatement <- 'IMPORT' 'DATABASE' StringLiteral
@@ -1298,7 +1424,11 @@ IgnoreOrRespectNulls <- IgnoreNulls / RespectNulls
 IgnoreNulls <- 'IGNORE' 'NULLS'
 RespectNulls <- 'RESPECT' 'NULLS'
 
+<<<<<<< HEAD
 ParenthesisExpression <- Parens(List(RowExpressionArg)?)
+=======
+ParenthesisExpression <- Parens(List(Expression)?)
+>>>>>>> duckdb_upstream/main
 LiteralExpression <- StringLiteral / NumberLiteral / ConstantLiteral
 ConstantLiteral <- NullLiteral / TrueLiteral / FalseLiteral
 NullLiteral <- 'NULL'
@@ -1336,12 +1466,19 @@ SubqueryExists <- 'EXISTS'
 CaseExpression <- 'CASE' Expression? CaseWhenThen+ CaseElse? 'END'
 CaseWhenThen <- 'WHEN' Expression 'THEN' Expression
 CaseElse <- 'ELSE' Expression
+<<<<<<< HEAD
 TypeLiteral <- ColId StringLiteral
 IntervalLiteral <- 'INTERVAL' IntervalParameter Interval?
 IntervalParameter <- IntervalStringParameter / NumberLiteral / ParensExpression
 IntervalStringParameter <- StringLiteral
 IntervalMultiUnitLiteral <- 'INTERVAL' IntervalUnitPair IntervalUnitPair+
 IntervalUnitPair <- NumberLiteral Interval
+=======
+TypeLiteral <- Type StringLiteral
+IntervalLiteral <- 'INTERVAL' IntervalParameter Interval?
+IntervalParameter <- IntervalStringParameter / NumberLiteral / ParensExpression
+IntervalStringParameter <- StringLiteral
+>>>>>>> duckdb_upstream/main
 FrameClause <- Framing FrameExtent WindowExcludeClause?
 Framing <- RowsFraming / RangeFraming / GroupsFraming
 RowsFraming <- 'ROWS'
@@ -1408,7 +1545,10 @@ SingleExpression <-
     SubqueryExpression /
     SpecialFunctionExpression /
     ParenthesisExpression /
+<<<<<<< HEAD
     IntervalMultiUnitLiteral /
+=======
+>>>>>>> duckdb_upstream/main
     IntervalLiteral /
     TypeLiteral /
     CaseExpression /
@@ -1441,8 +1581,13 @@ ColDefAndExpr <- IsDistinctFromExpression ColDefAndExpressionTail*
 ColDefAndExpressionTail <- 'AND' IsDistinctFromExpression
 # LEVEL 3
 LogicalNotExpression <- NotExpression? IsExpression
+<<<<<<< HEAD
 NotExpression <- SparkNotExpression+
 SparkNotExpression <- 'NOT' / '!'
+=======
+NotExpression <- NotKeyword+
+NotKeyword <- 'NOT'
+>>>>>>> duckdb_upstream/main
 # LEVEL 4
 IsExpression <- IsDistinctFromExpression IsTest*
 IsTest <- IsLiteral / NotNull / IsNull
@@ -1478,11 +1623,15 @@ OperatorGreaterThanEquals <- '>='
 # LEVEL 7
 BetweenInLikeExpression <- OtherOperatorExpression BetweenInLikeOp?
 BetweenInLikeOp <- 'NOT'? BetweenInLikeOpExpression
+<<<<<<< HEAD
 BetweenInLikeOpExpression <- BetweenClause / InClause / LikeAnyAllClause / LikeClause
 LikeAnyAllClause <- LikeVariations LikeAnyOrAll Parens(List(Expression))
 LikeAnyOrAll <- LikeAny / LikeAll
 LikeAny <- 'ANY'
 LikeAll <- 'ALL'
+=======
+BetweenInLikeOpExpression <- BetweenClause / InClause / LikeClause
+>>>>>>> duckdb_upstream/main
 LikeClause <- LikeVariations OtherOperatorExpression EscapeClause?
 EscapeClause <- 'ESCAPE' ComparisonExpression
 
@@ -1513,7 +1662,11 @@ AnyAllParsedOperator <- AnyAllOperator
 NamedOtherOperator <-
     QualifiedOperator / InetOperator / JsonOperator / ListOperator / StringOperator / OperatorLiteral
 OperatorLiteral <- Identifier
+<<<<<<< HEAD
 AnyAllOperator <- AnyAllOp AnyOrAll
+=======
+AnyAllOperator <- AnyOp AnyOrAll
+>>>>>>> duckdb_upstream/main
 AnyOrAll <- SubqueryAny / SubqueryAll
 SubqueryAny <- 'ANY'
 SubqueryAll <- 'ALL'
@@ -1524,6 +1677,7 @@ StringOperator <- '^@' / '||'
 QualifiedOperator <- 'OPERATOR' Parens(QualifiedOperatorContents)
 QualifiedOperatorContents <- ColIdDot* AnyOp
 AnyOp <- '!~~*' / '>>=' / '<<=' / '->>' / '!~~' / '!~*' / '~~*' / '~~~' / '~*' / '!~' / '^@' / '||' / '&&' / '@>' / '<@' / '<=' / '>=' / '<>' / '!=' / '==' / '<<' / '>>' / '//' / '**' / '->' / '~~' / '+' / '-' / '*' / '/' / '%' / '^' / '<' / '>' / '=' / '&' / '|' / '~' / '!'
+<<<<<<< HEAD
 # AnyOp without '->': the lambda arrow may never introduce a quantified comparison, otherwise
 # 'x -> all ...' parses as 'x -> ALL (...)' instead of a lambda taking a parameter named all
 AnyAllOp <- '!~~*' / '>>=' / '<<=' / '->>' / '!~~' / '!~*' / '~~*' / '~~~' / '~*' / '!~' / '^@' / '||' / '&&' / '@>' / '<@' / '<=' / '>=' / '<>' / '!=' / '==' / '<<' / '>>' / '//' / '**' / '~~' / '+' / '-' / '*' / '/' / '%' / '^' / '<' / '>' / '=' / '&' / '|' / '~' / '!'
@@ -1560,12 +1714,43 @@ AtTimeZoneExpression <- PrefixExpression AtTimeZoneExpressionTail*
 AtTimeZoneExpressionTail <- AtTimeZoneOperator PrefixExpression
 AtTimeZoneOperator <- 'AT' 'TIME' 'ZONE'
 # LEVEL 17
+=======
+# LEVEL 9
+BitwiseExpression <- AdditiveExpression BitwiseExpressionTail*
+BitwiseExpressionTail <- BitOperator AdditiveExpression
+BitOperator <- '&' / '|' / '<<' / '>>'
+# LEVEL 10
+AdditiveExpression <- MultiplicativeExpression AdditiveExpressionTail*
+AdditiveExpressionTail <- Term MultiplicativeExpression
+Term <- '+' / '-'
+# LEVEL 11
+MultiplicativeExpression <- ExponentiationExpression MultiplicativeExpressionTail*
+MultiplicativeExpressionTail <- Factor ExponentiationExpression
+Factor <- '*' / '/' / '//' / '%'
+# LEVEL 12
+ExponentiationExpression <- CollateExpression ExponentiationExpressionTail*
+ExponentiationExpressionTail <- ExponentOperator CollateExpression
+ExponentOperator <- '^' / '**'
+# LEVEL 13
+CollateExpression <- AtTimeZoneExpression CollateExpressionTail*
+CollateExpressionTail <- CollateOperator AtTimeZoneExpression
+CollateOperator <- 'COLLATE'
+# LEVEL 14
+AtTimeZoneExpression <- PrefixExpression AtTimeZoneExpressionTail*
+AtTimeZoneExpressionTail <- AtTimeZoneOperator PrefixExpression
+AtTimeZoneOperator <- 'AT' 'TIME' 'ZONE'
+# LEVEL 15
+>>>>>>> duckdb_upstream/main
 PrefixExpression <- PrefixOperator* BaseExpression
 PrefixOperator <- QualifiedOperator / MinusPrefixOperator / PlusPrefixOperator / TildePrefixOperator
 MinusPrefixOperator <- '-'
 PlusPrefixOperator <- '+'
 TildePrefixOperator <- '~'
+<<<<<<< HEAD
 # LEVEL 18 (Highest)
+=======
+# LEVEL 16 (Highest)
+>>>>>>> duckdb_upstream/main
 BaseExpression <- SingleExpression IndirectionList?
 IndirectionList <- Indirection+
 
@@ -1587,8 +1772,12 @@ StepSliceBound <- ':' Expression?
 PostfixOperator <- '!'
 
 
+<<<<<<< HEAD
 SpecialFunctionExpression <- CoalesceExpression / UnpackExpression / TryExpression / ColumnsExpression / ExtractExpression / TimestampDiffExpression / LambdaExpression / NullIfExpression / PositionExpression / RowExpression / SubstringExpression / TrimExpression / OverlayExpression
 TimestampDiffExpression <- 'TIMESTAMPDIFF' Parens(ExtractArgument ',' Expression ',' Expression)
+=======
+SpecialFunctionExpression <- CoalesceExpression / UnpackExpression / TryExpression / ColumnsExpression / ExtractExpression / LambdaExpression / NullIfExpression / PositionExpression / RowExpression / SubstringExpression / TrimExpression / OverlayExpression
+>>>>>>> duckdb_upstream/main
 CoalesceExpression <- 'COALESCE' Parens(List(Expression))
 UnpackExpression <- 'UNPACK' Parens(Expression)
 TryExpression <- 'TRY' Parens(Expression)
@@ -1599,12 +1788,18 @@ LambdaExpression <- 'LAMBDA' List(ColIdOrString) ':' Expression
 NullIfExpression <- 'NULLIF' Parens(NullIfArguments)
 NullIfArguments <- Expression ',' Expression
 PositionExpression <- 'POSITION' Parens(PositionArguments)
+<<<<<<< HEAD
 PositionArguments <- OtherOperatorExpression PositionSeparator Expression
 PositionSeparator <- 'IN' / ','
 RowExpression <- RowOrStruct Parens(List(RowExpressionArg)?)
 RowExpressionArg <- Expression RowExpressionAlias?
 RowExpressionAlias <- 'AS' ColId
 SubstringExpression <- ('SUBSTRING' / 'SUBSTR') Parens(SubstringArguments)
+=======
+PositionArguments <- OtherOperatorExpression 'IN' Expression
+RowExpression <- 'ROW' Parens(List(Expression)?)
+SubstringExpression <- 'SUBSTRING' Parens(SubstringArguments)
+>>>>>>> duckdb_upstream/main
 SubstringArguments <- SubstringParameters / SubstringExpressionList
 SubstringExpressionList <- List(Expression)
 SubstringParameters <- Expression SubstringFromFor
@@ -1634,6 +1829,7 @@ ExtractDatePart <-
     MillisecondKeyword / MicrosecondKeyword / WeekKeyword / QuarterKeyword / DecadeKeyword /
     CenturyKeyword / MillenniumKeyword
 
+<<<<<<< HEAD
 InsertStatement <- WithClause? 'INSERT' OrAction? 'INTO' 'TABLE'? InsertTarget PartitionSpec? ByNameOrPosition? InsertColumnList? InsertValues OnConflictClause? ReturningClause?
 
 # Spark multi-insert: a shared leading FROM source fanned out into several INSERT branches, each with its own projection.
@@ -1642,6 +1838,17 @@ InsertStatement <- WithClause? 'INSERT' OrAction? 'INTO' 'TABLE'? InsertTarget P
 # AS-less alias form) to keep the INSERT keyword that separates branches from being swallowed as an alias.
 MultiInsertStatement <- WithClause? 'FROM' InsertTarget MultiInsertBranch+
 MultiInsertBranch <- 'INSERT' 'INTO' 'TABLE'? InsertTarget InsertColumnList? 'SELECT' List(ExpressionAlias) WhereClause? GroupByClause? HavingClause?
+=======
+ExternalResourceStatement <- CreateExternalResourceStmt / RegisterExternalResourceStmt / DestroyExternalResourceStmt / ShowExternalResourcesStmt
+
+CreateExternalResourceStmt <- 'CREATE' 'EXTERNAL' 'RESOURCE' StringLiteral AttachAlias? AttachOptions?
+RegisterExternalResourceStmt <- 'REGISTER' 'EXTERNAL' 'RESOURCE' StringLiteral AttachAlias? 'FROM' Expression
+DestroyExternalResourceStmt <- 'DESTROY' 'EXTERNAL' 'RESOURCE' ColId
+ShowExternalResourcesStmt <- 'SHOW' ShowAllModifier? 'EXTERNAL' 'RESOURCES'
+ShowAllModifier <- 'ALL'
+
+InsertStatement <- WithClause? 'INSERT' OrAction? 'INTO' InsertTarget ByNameOrPosition? InsertColumnList? InsertValues OnConflictClause? ReturningClause?
+>>>>>>> duckdb_upstream/main
 
 OrAction <- InsertOrReplace / InsertOrIgnore
 InsertOrReplace <- 'OR' 'REPLACE'
@@ -1762,10 +1969,17 @@ SelectParens <- Parens(SelectStatementInternal)
 SetopClause <- SetopType DistinctOrAll? ByName?
 SetopType <- SetopUnion / SetopExcept
 SetopUnion <- 'UNION'
+<<<<<<< HEAD
 SetopExcept <- 'EXCEPT' / 'MINUS'
 ByName <- 'BY' 'NAME'
 
 SelectStatementType <- OptionalParensSimpleSelect / ValuesClauseWithAlias / ValuesBody / DescribeStatement / TableStatement / PivotStatement / UnpivotStatement
+=======
+SetopExcept <- 'EXCEPT'
+ByName <- 'BY' 'NAME'
+
+SelectStatementType <- OptionalParensSimpleSelect / ValuesClause / DescribeStatement / TableStatement / PivotStatement / UnpivotStatement
+>>>>>>> duckdb_upstream/main
 ResultModifiers <- OrderByClause? LimitOffset?
 LimitOffset <- LimitOffsetClause / OffsetFetchClause / OffsetLimitClause / FetchOnlyClause
 LimitOffsetClause <- LimitClause OffsetClause?
@@ -1780,20 +1994,34 @@ SimpleSelect <- SelectFrom WhereClause? GroupByClause? HavingClause? WindowClaus
 SelectFrom <- SelectFromClause / FromSelectClause
 SelectFromClause <- SelectClause FromClause?
 FromSelectClause <- FromClause SelectClause?
+<<<<<<< HEAD
 WithStatement <- ColIdOrString InsertColumnList? MaxRecursionLevel? UsingKey? 'AS' Materialized? CTEBody
+=======
+WithStatement <- ColIdOrString InsertColumnList? UsingKey? 'AS' Materialized? CTEBody
+>>>>>>> duckdb_upstream/main
 CTEBody <- CTESelectBody / CTEDMLBody
 CTESelectBody <- Parens(SelectStatementInternal)
 CTEDMLBody <- Parens(Statement)
 UsingKey <- 'USING' 'KEY' Parens(TargetList)
+<<<<<<< HEAD
 MaxRecursionLevel <- 'MAX' 'RECURSION' 'LEVEL' NumberLiteral
+=======
+>>>>>>> duckdb_upstream/main
 Materialized <- 'NOT'? 'MATERIALIZED'
 WithClause <- 'WITH' Recursive? List(WithStatement)
 Recursive <- 'RECURSIVE'
 SelectClause <- 'SELECT' DistinctClause? TargetList?
 TargetList <- List(AliasedExpression)
+<<<<<<< HEAD
 ColumnAliases <- Parens(List(ColLabelOrString))
 
 DistinctClause <- DistinctOn
+=======
+ColumnAliases <- Parens(List(ColIdOrString))
+
+DistinctClause <- DistinctOn / DistinctAll
+DistinctAll <- 'ALL'
+>>>>>>> duckdb_upstream/main
 DistinctOn <- 'DISTINCT' DistinctOnTargets?
 DistinctOnTargets <- 'ON' Parens(List(Expression))
 
@@ -1803,7 +2031,11 @@ TableRef <- InnerTableRef JoinOrPivot*
 TableSubquery <- Lateral? SubqueryReference TableAlias?
 BaseTableRef <- TableAliasColon? BaseTableName TableAlias? AtClause? SampleClause?
 TableAliasColon <- ColIdOrString ':'
+<<<<<<< HEAD
 ValuesRef <- ValuesBody TableAlias?
+=======
+ValuesRef <- ValuesClause TableAlias?
+>>>>>>> duckdb_upstream/main
 ParensTableRef <- TableAliasColon? Parens(TableRef) TableAlias? SampleClause?
 
 JoinOrPivot <- JoinClause / TablePivotClause / TableUnpivotClause
@@ -1839,9 +2071,13 @@ TableFunctionArguments <- Parens(List(FunctionArgument)?)
 FunctionArgument <- NamedFunctionArgument / PositionalFunctionArgument
 NamedFunctionArgument <- NamedParameter
 PositionalFunctionArgument <- Expression
+<<<<<<< HEAD
 # Spark permits (nearly) any word as a named-argument name, e.g. count_min_sketch(column => x):
 # ReservedIdentifier accepts reserved keywords like COLUMN that TypeFuncName rejects.
 NamedParameter <- ReservedIdentifier Type? NamedParameterAssignment Expression
+=======
+NamedParameter <- TypeFuncName Type? NamedParameterAssignment Expression
+>>>>>>> duckdb_upstream/main
 NamedParameterAssignment <- ':=' / '=>'
 
 TableAlias <- TableAliasAs / TableAliasWithoutAs
@@ -1854,24 +2090,57 @@ AtUnit <- VersionAtUnit / TimestampAtUnit
 VersionAtUnit <- 'VERSION'
 TimestampAtUnit <- 'TIMESTAMP'
 
+<<<<<<< HEAD
 JoinClause <- JoinByClause / RegularJoinClause / JoinWithoutOnClause / LateralJoinClause
 RegularJoinClause <- Asof? JoinType? 'JOIN' TableRef JoinQualifier
 JoinByClause <- 'JOIN' 'BY' Parens('TYPE' ColLabel) TableRef JoinQualifier
 Asof <- 'ASOF'
 JoinWithoutOnClause <- JoinPrefix 'JOIN' TableRef JoinQualifier?
 LateralJoinClause <- 'JOIN' 'LATERAL' SubqueryReference TableAlias?
+=======
+JoinClause <- JoinByClause / RegularJoinClause / JoinWithoutOnClause / NearestJoinClause
+# NEAREST BY has two alternatives so PEG can backtrack: the bare form uses alias-less target mirrors (tried
+# first, so an unaliased target does not greedily consume NEAREST/APPROX/EXACT as an alias), and the aliased
+# form falls back to a full TableRef when a real alias identifier follows the target.
+NearestJoinClause <- NearestJoinBare / NearestJoinAliased
+NearestJoinAliased <- JoinType? 'JOIN' TableRef ApproxOrExact? 'NEAREST' NumberLiteral? 'BY' DistanceOrSimilarity Expression
+NearestJoinBare <- JoinType? 'JOIN' NearestBareTableRef ApproxOrExact? 'NEAREST' NumberLiteral? 'BY' DistanceOrSimilarity Expression
+NearestBareTableRef <- NearestValuesRef / NearestTableFunction / NearestTableSubquery / NearestBaseTableRef / NearestParensTableRef
+NearestValuesRef <- ValuesClause
+NearestTableFunction <- Lateral? QualifiedTableFunction TableFunctionArguments WithOrdinality?
+NearestTableSubquery <- Lateral? SubqueryReference
+NearestBaseTableRef <- BaseTableName AtClause? SampleClause?
+NearestParensTableRef <- Parens(TableRef) SampleClause?
+ApproxOrExact <- NearestApprox / NearestExact
+NearestApprox <- 'APPROX'
+NearestExact <- 'EXACT'
+DistanceOrSimilarity <- NearestDistance / NearestSimilarity
+NearestDistance <- 'DISTANCE'
+NearestSimilarity <- 'SIMILARITY'
+RegularJoinClause <- Asof? JoinType? 'JOIN' TableRef JoinQualifier
+JoinByClause <- 'JOIN' 'BY' Parens('TYPE' ColLabel) TableRef JoinQualifier
+Asof <- 'ASOF'
+JoinWithoutOnClause <- JoinPrefix 'JOIN' InnerTableRef
+>>>>>>> duckdb_upstream/main
 JoinQualifier <- OnClause / UsingClause
 OnClause <- 'ON' Expression
 UsingClause <- 'USING' Parens(List(ColumnName))
 
+<<<<<<< HEAD
 JoinType <- FullJoin / LeftSemiJoin / LeftAntiJoin / LeftJoin / RightJoin / SemiJoin / AntiJoin / InnerJoin
+=======
+JoinType <- FullJoin / LeftJoin / RightJoin / SemiJoin / AntiJoin / InnerJoin
+>>>>>>> duckdb_upstream/main
 JoinPrefix <- CrossJoinPrefix / NaturalJoinPrefix / PositionalJoinPrefix
 CrossJoinPrefix <- 'CROSS'
 NaturalJoinPrefix <- 'NATURAL' JoinType?
 PositionalJoinPrefix <- 'POSITIONAL'
 FullJoin <- 'FULL' 'OUTER'?
+<<<<<<< HEAD
 LeftSemiJoin <- 'LEFT' 'SEMI'
 LeftAntiJoin <- 'LEFT' 'ANTI'
+=======
+>>>>>>> duckdb_upstream/main
 LeftJoin <- 'LEFT' 'OUTER'?
 RightJoin <- 'RIGHT' 'OUTER'?
 SemiJoin <- 'SEMI'
@@ -1906,10 +2175,14 @@ SampleRows <- 'ROWS'
 
 GroupByExpressions <- GroupByList / GroupByAll
 GroupByAll <- 'ALL'
+<<<<<<< HEAD
 GroupByList <- List(GroupByExpression) GroupByModifier?
 GroupByModifier <- WithCubeOrRollup / TrailingGroupingSets
 WithCubeOrRollup <- 'WITH' CubeOrRollup
 TrailingGroupingSets <- 'GROUPING' 'SETS' Parens(GroupByList)
+=======
+GroupByList <- List(GroupByExpression)
+>>>>>>> duckdb_upstream/main
 GroupByExpression <- EmptyGroupingItem / CubeOrRollupClause / GroupingSetsClause / GroupByBaseExpression
 GroupByBaseExpression <- Expression
 EmptyGroupingItem <- '(' ')'
@@ -1928,8 +2201,13 @@ AscendingOrder <- 'ASC' / 'ASCENDING'
 NullsFirstOrLast <- NullsFirst / NullsLast
 NullsFirst <- 'NULLS' 'FIRST'
 NullsLast <- 'NULLS' 'LAST'
+<<<<<<< HEAD
 OrderByClause <- ('ORDER' / 'SORT') 'BY' OrderByExpressions
 OrderByExpressions <- OrderByExpressionList / OrderByAll
+=======
+OrderByClause <- 'ORDER' 'BY' OrderByExpressions
+OrderByExpressions <- OrderByAll / OrderByExpressionList
+>>>>>>> duckdb_upstream/main
 OrderByExpressionList <- List(OrderByExpression)
 OrderByAll <- 'ALL' DescOrAsc? NullsFirstOrLast?
 
@@ -1945,6 +2223,7 @@ FetchClause <- 'FETCH' FirstOrNext FetchValue RowOrRows 'ONLY'
 FirstOrNext <- 'FIRST' / 'NEXT'
 FetchValue <- Expression
 
+<<<<<<< HEAD
 AliasedExpression <- ColIdExpression / ExpressionAsCollabel / ExpressionAsColumnAliases / ExpressionOptIdentifier
 ColIdExpression <- ColId ':' Expression
 ExpressionAsCollabel <- Expression 'AS' ColLabelOrString
@@ -1964,15 +2243,35 @@ SetAssignmentOrTimeZone <- StandardAssignment / SetTimeZone
 ReadSettingStatement <- 'SET' SetVariableOrSetting
 
 ResetStatement <- 'RESET' SetVariableOrSetting
+=======
+AliasedExpression <- ColIdExpression / ExpressionAsCollabel / ExpressionOptIdentifier
+ColIdExpression <- ColId ':' Expression
+ExpressionAsCollabel <- Expression 'AS' ColLabelOrString
+ExpressionOptIdentifier <- Expression Identifier?
+
+ValuesClause <- 'VALUES' List(ValuesExpressions)
+ValuesExpressions <- Parens(List(Expression))
+
+SetStatement <- 'SET' SetAssignmentOrTimeZone
+SetAssignmentOrTimeZone <- SetSchema / StandardAssignment / SetTimeZone
+
+ResetStatement <- 'RESET' SetVariableOrSetting
+SetSchema <- 'SCHEMA' StringLiteral
+>>>>>>> duckdb_upstream/main
 StandardAssignment <- SetVariableOrSetting SetAssignment
 SetVariableOrSetting <- SetVariable / SetSetting
 SetTimeZone <- 'TIME' 'ZONE' ZoneValue
 
+<<<<<<< HEAD
 ZoneValue <- ZoneIntervalWithPrecision / ZoneIntervalRange / ZoneIntervalLiteral / ZoneLocal / ZoneDefault / ZoneStringLiteral / ZoneIdentifier / NumberLiteral
+=======
+ZoneValue <- ZoneIntervalWithPrecision / ZoneIntervalWithInterval / ZoneLocal / ZoneDefault / ZoneStringLiteral / ZoneIdentifier / NumberLiteral
+>>>>>>> duckdb_upstream/main
 ZoneLocal <- 'LOCAL'
 ZoneDefault <- 'DEFAULT'
 ZoneStringLiteral <- StringLiteral
 ZoneIdentifier <- Identifier
+<<<<<<< HEAD
 ZoneIntervalRange <- 'INTERVAL' StringLiteral IntervalToIntervalAsType
 ZoneIntervalLiteral <- IntervalLiteral
 ZoneIntervalWithPrecision <- 'INTERVAL' Parens(NumberLiteral) StringLiteral
@@ -1980,6 +2279,12 @@ ZoneIntervalWithPrecision <- 'INTERVAL' Parens(NumberLiteral) StringLiteral
 SetSetting <- DottedSettingIdentifier / (SettingScope? SettingName)
 DottedSettingIdentifier <- Identifier ('.' Identifier)+
 
+=======
+ZoneIntervalWithInterval <- 'INTERVAL' StringLiteral Interval?
+ZoneIntervalWithPrecision <- 'INTERVAL' Parens(NumberLiteral) StringLiteral
+
+SetSetting <- SettingScope? SettingName
+>>>>>>> duckdb_upstream/main
 SetVariable <- VariableScope Identifier
 VariableScope <- 'VARIABLE'
 
@@ -1993,7 +2298,10 @@ SetAssignment <- VariableAssign VariableList
 VariableAssign <- '=' / 'TO'
 VariableList <- List(Expression)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> duckdb_upstream/main
 TransactionStatement <- BeginTransaction / RollbackTransaction / CommitTransaction
 
 BeginTransaction <- StartOrBegin Transaction? ReadOrWrite?
@@ -2030,6 +2338,20 @@ DotIdentifier <- '.' Identifier
 
 VacuumStatement <- 'VACUUM' VacuumOptions? AnalyzeTarget?
 VacuumOptions <- VacuumParensOptions / VacuumLegacyOptions
+<<<<<<< HEAD
+=======
+
+VacuumParensOptions <- Parens(List(VacuumOption))
+VacuumLegacyOptions <- OptFull? OptFreeze? OptVerbose? OptAnalyze?
+VacuumOption <- OptAnalyze / OptFreeze / OptFull / OptVerbose / Identifier
+
+OptAnalyze <- AnalyzeKeyword
+OptFull <- 'FULL'
+OptFreeze <- 'FREEZE'
+OptVerbose <- 'VERBOSE'
+
+NameList <- Parens(List(ColId))
+>>>>>>> duckdb_upstream/main
 
 VacuumParensOptions <- Parens(List(VacuumOption))
 VacuumLegacyOptions <- OptFull? OptFreeze? OptVerbose? OptAnalyze?

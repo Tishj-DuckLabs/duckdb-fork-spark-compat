@@ -36,4 +36,8 @@ PEGTransformerFactory::TransformExecuteStatement(PEGTransformer &transformer, co
 	return std::move(result);
 }
 
+<<<<<<< HEAD
 } // namespace duckdb_fork
+=======
+} // namespace duckdb
+>>>>>>> duckdb_upstream/main
