@@ -276,7 +276,7 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformFunctionExpression(
 		function_children.emplace_back(
 		    make_uniq<ConstantExpression>(Value::BOOLEAN(function_expression_arguments.ignore_nulls)));
 		function_expression_arguments.has_ignore_nulls = false;
-  }
+	}
 	if (lowercase_name == "count") {
 		// COUNT(*) is the row count, not a splice of the columns
 		if (function_children.size() == 1 && ExpressionIsEmptyStar(*function_children[0].GetExpressionMutable()) &&
@@ -1659,16 +1659,14 @@ PEGTransformerFactory::TransformAdditiveExpression(PEGTransformer &transformer,
 			return function.FunctionName() == "make_interval" || function.FunctionName() == "make_ym_interval";
 		};
 		auto function_name = std::move(term_expr.op);
-		if (function_name == "+" &&
-		    (is_calendar_interval(*expr) || is_calendar_interval(*term_expr.expression))) {
+		if (function_name == "+" && (is_calendar_interval(*expr) || is_calendar_interval(*term_expr.expression))) {
 			function_name = "__spark_add_calendar_interval";
 		}
 		auto is_operator = function_name != "__spark_add_calendar_interval";
 		vector<unique_ptr<ParsedExpression>> term_children;
 		term_children.push_back(std::move(expr));
 		term_children.push_back(std::move(term_expr.expression));
-		auto func_expr =
-		    make_uniq<FunctionExpression>(Identifier(std::move(function_name)), std::move(term_children));
+		auto func_expr = make_uniq<FunctionExpression>(Identifier(std::move(function_name)), std::move(term_children));
 		func_expr->IsOperatorMutable() = is_operator;
 		if (term_expr.query_location.IsValid()) {
 			transformer.SetQueryLocation(*func_expr, term_expr.query_location);
@@ -2984,11 +2982,9 @@ PEGTransformerFactory::TransformPositionExpression(PEGTransformer &transformer,
 	return make_uniq<FunctionExpression>("position", std::move(position_arguments));
 }
 
-vector<unique_ptr<ParsedExpression>>
-PEGTransformerFactory::TransformPositionArguments(PEGTransformer &transformer,
-                                                  unique_ptr<ParsedExpression> other_operator_expression,
-                                                  unique_ptr<ParsedExpression> expression,
-                                                  optional<unique_ptr<ParsedExpression>> position_start) {
+vector<unique_ptr<ParsedExpression>> PEGTransformerFactory::TransformPositionArguments(
+    PEGTransformer &transformer, unique_ptr<ParsedExpression> other_operator_expression,
+    unique_ptr<ParsedExpression> expression, optional<unique_ptr<ParsedExpression>> position_start) {
 	vector<unique_ptr<ParsedExpression>> result;
 	result.push_back(std::move(expression));
 	result.push_back(std::move(other_operator_expression));
@@ -2998,8 +2994,8 @@ PEGTransformerFactory::TransformPositionArguments(PEGTransformer &transformer,
 	return result;
 }
 
-unique_ptr<ParsedExpression>
-PEGTransformerFactory::TransformPositionStart(PEGTransformer &transformer, unique_ptr<ParsedExpression> expression) {
+unique_ptr<ParsedExpression> PEGTransformerFactory::TransformPositionStart(PEGTransformer &transformer,
+                                                                           unique_ptr<ParsedExpression> expression) {
 	return expression;
 }
 
