@@ -574,6 +574,7 @@ TableRef:
     - JoinByClause
     - JoinWithoutOnClause
     - LateralJoinClause
+    - UnqualifiedJoinClause
     - TableUnpivotClause
     - TableUnpivotClauseBody
     - TablePivotClause

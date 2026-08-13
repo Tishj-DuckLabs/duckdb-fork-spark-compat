@@ -1854,12 +1854,15 @@ AtUnit <- VersionAtUnit / TimestampAtUnit
 VersionAtUnit <- 'VERSION'
 TimestampAtUnit <- 'TIMESTAMP'
 
-JoinClause <- JoinByClause / RegularJoinClause / JoinWithoutOnClause / LateralJoinClause
+JoinClause <- JoinByClause / RegularJoinClause / JoinWithoutOnClause / LateralJoinClause / UnqualifiedJoinClause
 RegularJoinClause <- Asof? JoinType? 'JOIN' TableRef JoinQualifier
 JoinByClause <- 'JOIN' 'BY' Parens('TYPE' ColLabel) TableRef JoinQualifier
 Asof <- 'ASOF'
 JoinWithoutOnClause <- JoinPrefix 'JOIN' TableRef JoinQualifier?
 LateralJoinClause <- 'JOIN' 'LATERAL' SubqueryReference TableAlias?
+# Spark allows any join type to omit ON/USING. The right operand is a single table (not a TableRef),
+# so chained joins associate to the left as they do in Spark's `relationPrimary relationExtension*`.
+UnqualifiedJoinClause <- JoinType? 'JOIN' InnerTableRef
 JoinQualifier <- OnClause / UsingClause
 OnClause <- 'ON' Expression
 UsingClause <- 'USING' Parens(List(ColumnName))

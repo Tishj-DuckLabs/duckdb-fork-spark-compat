@@ -1195,6 +1195,18 @@ unique_ptr<TableRef> PEGTransformerFactory::TransformRegularJoinClause(PEGTransf
 	return std::move(result);
 }
 
+unique_ptr<TableRef> PEGTransformerFactory::TransformUnqualifiedJoinClause(PEGTransformer &transformer,
+                                                                           const optional<JoinType> &join_type,
+                                                                           unique_ptr<TableRef> inner_table_ref) {
+	// Spark leaves the condition unset when a join carries no ON/USING, pairing every left row with
+	// every right row; an explicit TRUE expresses that for every join type.
+	auto result = make_uniq<JoinRef>();
+	result->type = join_type.value_or(JoinType::INNER);
+	result->right = std::move(inner_table_ref);
+	result->condition = make_uniq<ConstantExpression>(Value::BOOLEAN(true));
+	return std::move(result);
+}
+
 unique_ptr<TableRef> PEGTransformerFactory::TransformJoinByClause(PEGTransformer &transformer, const string &col_label,
                                                                   unique_ptr<TableRef> table_ref,
                                                                   JoinQualifier join_qualifier) {

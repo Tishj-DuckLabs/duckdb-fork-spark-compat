@@ -2557,6 +2557,9 @@ static const TransformFrameOps JOIN_WITHOUT_ON_CLAUSE_OPS = {
 static const TransformFrameOps LATERAL_JOIN_CLAUSE_OPS = {"LateralJoinClause",
                                                           &PEGTransformerFactory::InitializeLateralJoinClauseTrampoline,
                                                           &PEGTransformerFactory::FinalizeLateralJoinClauseTrampoline};
+static const TransformFrameOps UNQUALIFIED_JOIN_CLAUSE_OPS = {
+    "UnqualifiedJoinClause", &PEGTransformerFactory::InitializeUnqualifiedJoinClauseTrampoline,
+    &PEGTransformerFactory::FinalizeUnqualifiedJoinClauseTrampoline};
 static const TransformFrameOps JOIN_QUALIFIER_OPS = {"JoinQualifier",
                                                      &PEGTransformerFactory::InitializeJoinQualifierTrampoline,
                                                      &PEGTransformerFactory::FinalizeJoinQualifierTrampoline};
@@ -3824,6 +3827,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"Asof", &ASOF_OPS},
 	    {"JoinWithoutOnClause", &JOIN_WITHOUT_ON_CLAUSE_OPS},
 	    {"LateralJoinClause", &LATERAL_JOIN_CLAUSE_OPS},
+	    {"UnqualifiedJoinClause", &UNQUALIFIED_JOIN_CLAUSE_OPS},
 	    {"JoinQualifier", &JOIN_QUALIFIER_OPS},
 	    {"OnClause", &ON_CLAUSE_OPS},
 	    {"UsingClause", &USING_CLAUSE_OPS},
@@ -22766,6 +22770,30 @@ PEGTransformerFactory::FinalizeLateralJoinClauseTrampoline(PEGTransformer &trans
 		table_alias = frame.TakeResult<TableAlias>(1);
 	}
 	auto result = TransformLateralJoinClause(transformer, std::move(subquery_reference), table_alias);
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeUnqualifiedJoinClauseTrampoline(PEGTransformer &transformer,
+                                                                      TransformStack &stack,
+                                                                      TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(2);
+	stack.PushFrame(list_pr.GetChild(2), INNER_TABLE_REF_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	auto &join_type_opt = list_pr.GetChild(0).Cast<OptionalParseResult>();
+	if (join_type_opt.HasResult()) {
+		stack.PushFrame(join_type_opt.GetResult(), JOIN_TYPE_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+	}
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeUnqualifiedJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                               TransformStackFrame &frame) {
+	optional<JoinType> join_type {};
+	if (frame.child_results[0]) {
+		join_type = frame.TakeResult<JoinType>(0);
+	}
+	auto inner_table_ref = frame.TakeResult<unique_ptr<TableRef>>(1);
+	auto result = TransformUnqualifiedJoinClause(transformer, join_type, std::move(inner_table_ref));
 	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
 }
 

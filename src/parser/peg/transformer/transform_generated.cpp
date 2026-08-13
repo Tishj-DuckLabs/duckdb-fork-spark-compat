@@ -9702,6 +9702,20 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformLateralJoinClau
 	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
 }
 
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::TransformUnqualifiedJoinClauseInternal(PEGTransformer &transformer, ParseResult &parse_result) {
+	auto &list_pr = parse_result.Cast<ListParseResult>();
+	optional<JoinType> join_type {};
+	auto &join_type_opt = list_pr.GetChild(0).Cast<OptionalParseResult>();
+	if (join_type_opt.HasResult()) {
+		auto join_type_value = transformer.Transform<JoinType>(join_type_opt.GetResult());
+		join_type = join_type_value;
+	}
+	auto inner_table_ref = transformer.Transform<unique_ptr<TableRef>>(list_pr.GetChild(2));
+	auto result = TransformUnqualifiedJoinClause(transformer, join_type, std::move(inner_table_ref));
+	return make_uniq<TypedTransformResult<unique_ptr<TableRef>>>(std::move(result));
+}
+
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformJoinQualifierInternal(PEGTransformer &transformer,
                                                                                        ParseResult &parse_result) {
 	auto &list_pr = parse_result.Cast<ListParseResult>();
@@ -11914,6 +11928,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"Asof", &PEGTransformerFactory::TransformAsofInternal},
 	    {"JoinWithoutOnClause", &PEGTransformerFactory::TransformJoinWithoutOnClauseInternal},
 	    {"LateralJoinClause", &PEGTransformerFactory::TransformLateralJoinClauseInternal},
+	    {"UnqualifiedJoinClause", &PEGTransformerFactory::TransformUnqualifiedJoinClauseInternal},
 	    {"JoinQualifier", &PEGTransformerFactory::TransformJoinQualifierInternal},
 	    {"OnClause", &PEGTransformerFactory::TransformOnClauseInternal},
 	    {"UsingClause", &PEGTransformerFactory::TransformUsingClauseInternal},

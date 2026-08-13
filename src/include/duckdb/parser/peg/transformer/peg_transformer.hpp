@@ -4289,6 +4289,11 @@ public:
 	                                                  TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeLateralJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeUnqualifiedJoinClauseTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                      TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeUnqualifiedJoinClauseTrampoline(PEGTransformer &transformer,
+	                                                                                TransformStack &stack,
+	                                                                                TransformStackFrame &frame);
 	static void InitializeJoinQualifierTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                              TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -8197,6 +8202,11 @@ public:
 	static unique_ptr<TableRef> TransformLateralJoinClause(PEGTransformer &transformer,
 	                                                       unique_ptr<TableRef> subquery_reference,
 	                                                       const optional<TableAlias> &table_alias);
+	static unique_ptr<TransformResultValue> TransformUnqualifiedJoinClauseInternal(PEGTransformer &transformer,
+	                                                                               ParseResult &parse_result);
+	static unique_ptr<TableRef> TransformUnqualifiedJoinClause(PEGTransformer &transformer,
+	                                                           const optional<JoinType> &join_type,
+	                                                           unique_ptr<TableRef> inner_table_ref);
 	static unique_ptr<TransformResultValue> TransformJoinQualifierInternal(PEGTransformer &transformer,
 	                                                                       ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformOnClauseInternal(PEGTransformer &transformer,
