@@ -409,9 +409,8 @@ void RewriteSparkSelectGenerators(SelectNode &node) {
 	}
 }
 
-//! The select node of a table reference of the form `(SELECT ...)` without a FROM clause, which is where a
-//! star has no input columns of its own to expand over.
-optional_ptr<SelectNode> FromlessSubquerySelect(TableRef &ref) {
+//! The select node of a table reference of the form `(SELECT ...)`.
+optional_ptr<SelectNode> SubquerySelect(TableRef &ref) {
 	if (ref.type != TableReferenceType::SUBQUERY) {
 		return nullptr;
 	}
@@ -419,36 +418,96 @@ optional_ptr<SelectNode> FromlessSubquerySelect(TableRef &ref) {
 	if (!subquery.subquery || subquery.subquery->node->type != QueryNodeType::SELECT_NODE) {
 		return nullptr;
 	}
-	auto &select_node = subquery.subquery->node->Cast<SelectNode>();
-	if (!select_node.from_table || select_node.from_table->type != TableReferenceType::EMPTY_FROM) {
+	return subquery.subquery->node->Cast<SelectNode>();
+}
+
+//! The select node of a `(SELECT ...)` table reference without a FROM clause, which is where a star has no
+//! input columns of its own to expand over.
+optional_ptr<SelectNode> FromlessSubquerySelect(TableRef &ref) {
+	auto select_node = SubquerySelect(ref);
+	if (!select_node || !select_node->from_table || select_node->from_table->type != TableReferenceType::EMPTY_FROM) {
 		return nullptr;
 	}
 	return select_node;
 }
 
-//! A star expands over the input columns of its query, so a qualified star in a subquery without a FROM
-//! clause can only name a relation of the enclosing query: `LATERAL (SELECT t1.*)` is a one-row relation
-//! holding a copy of the current t1 row. duckdb expands a star from the bindings of its own query, which are
-//! empty here, so the star is lowered to unnest over the outer relation's row struct - a column reference,
-//! and those do resolve against the enclosing query. TransformStarExpression uses the same lowering for a
-//! star with more qualifiers than a relation name can hold (`db.tbl.*`).
-void RewriteFromlessQualifiedStars(TableRef &ref) {
-	auto select_node = FromlessSubquerySelect(ref);
-	if (!select_node) {
+//! The relation names a star can name in a query's own FROM clause. Returns false when a reference is bound
+//! under a name the query does not spell out, since the collected names then say nothing about what is in
+//! scope and no conclusion can be drawn from a star's name being absent from them.
+bool CollectFromRelationNames(const TableRef &ref, identifier_set_t &names) {
+	if (!ref.alias.empty()) {
+		names.insert(ref.alias);
+	}
+	switch (ref.type) {
+	case TableReferenceType::EMPTY_FROM:
+		return true;
+	case TableReferenceType::BASE_TABLE:
+		// an alias hides the table name, but collecting both only ever suppresses a rewrite
+		names.insert(ref.Cast<BaseTableRef>().Table());
+		return true;
+	case TableReferenceType::JOIN: {
+		auto &join = ref.Cast<JoinRef>();
+		return join.left && join.right && CollectFromRelationNames(*join.left, names) &&
+		       CollectFromRelationNames(*join.right, names);
+	}
+	case TableReferenceType::SUBQUERY:
+	case TableReferenceType::EXPRESSION_LIST:
+	case TableReferenceType::TABLE_FUNCTION:
+	case TableReferenceType::PIVOT:
+		// without an alias the binder names these itself (`unnamed_subquery`, `unnamed_query1`, ...)
+		return !ref.alias.empty();
+	default:
+		return false;
+	}
+}
+
+//! A star that names a relation and carries nothing unnest cannot express. An unqualified star has no
+//! relation to unnest, and EXCLUDE/REPLACE/RENAME have no unnest equivalent.
+bool IsPlainQualifiedStar(const ParsedExpression &expr) {
+	if (!StarExpression::IsStar(expr)) {
+		return false;
+	}
+	auto &star = expr.Cast<StarExpression>();
+	return !star.RelationName().empty() && !star.Expression() && star.ExcludeList().empty() &&
+	       star.ReplaceList().empty() && star.RenameList().empty();
+}
+
+//! A star expands over the input columns of its query, so a star qualified by a name the query's own FROM
+//! clause does not provide can only name a relation of the enclosing query: in
+//! `LATERAL (SELECT t1.*, t2.* FROM t2)`, `t1` is the outer relation and the star stands for a copy of the
+//! current t1 row. duckdb expands a star from the bindings of its own query, which never hold an outer
+//! relation, so such a star is lowered to unnest over that relation's row struct - a column reference, and
+//! those do resolve against the enclosing query. TransformStarExpression uses the same lowering for a star
+//! with more qualifiers than a relation name can hold (`db.tbl.*`).
+void RewriteOuterQualifiedStars(TableRef &ref) {
+	auto select_node = SubquerySelect(ref);
+	if (!select_node || !select_node->from_table) {
+		return;
+	}
+	bool has_qualified_star = false;
+	for (auto &select_expr : select_node->select_list) {
+		if (IsPlainQualifiedStar(*select_expr)) {
+			has_qualified_star = true;
+			break;
+		}
+	}
+	if (!has_qualified_star) {
+		return;
+	}
+	identifier_set_t local_relations;
+	if (!CollectFromRelationNames(*select_node->from_table, local_relations)) {
 		return;
 	}
 	for (auto &select_expr : select_node->select_list) {
-		if (!StarExpression::IsStar(*select_expr)) {
+		if (!IsPlainQualifiedStar(*select_expr)) {
 			continue;
 		}
-		auto &star = select_expr->Cast<StarExpression>();
-		// an unqualified star has no relation to unnest, and EXCLUDE/REPLACE/RENAME have no unnest equivalent
-		if (star.RelationName().empty() || star.Expression() || !star.ExcludeList().empty() ||
-		    !star.ReplaceList().empty() || !star.RenameList().empty()) {
+		auto &relation_name = select_expr->Cast<StarExpression>().RelationName();
+		if (local_relations.find(relation_name) != local_relations.end()) {
 			continue;
 		}
 		vector<unique_ptr<ParsedExpression>> children;
-		children.push_back(make_uniq<ColumnRefExpression>(star.RelationName()));
+		children.push_back(make_uniq<ColumnRefExpression>(relation_name));
 		auto unnest = make_uniq<FunctionExpression>("unnest", std::move(children));
 		unnest->SetQueryLocation(select_expr->GetQueryLocation());
 		select_expr = std::move(unnest);
@@ -1287,7 +1346,7 @@ unique_ptr<TableRef> PEGTransformerFactory::TransformLateralJoinClause(PEGTransf
 		subquery_reference->alias = table_alias->name;
 		subquery_reference->column_name_alias = table_alias->column_name_alias;
 	}
-	RewriteFromlessQualifiedStars(*subquery_reference);
+	RewriteOuterQualifiedStars(*subquery_reference);
 	auto result = make_uniq<JoinRef>();
 	result->type = JoinType::INNER;
 	result->right = std::move(subquery_reference);
@@ -2054,7 +2113,7 @@ unique_ptr<TableRef> PEGTransformerFactory::TransformTableSubquery(PEGTransforme
 		subquery_reference->alias = table_alias->name;
 		subquery_reference->column_name_alias = table_alias->column_name_alias;
 	}
-	RewriteFromlessQualifiedStars(*subquery_reference);
+	RewriteOuterQualifiedStars(*subquery_reference);
 	return subquery_reference;
 }
 
