@@ -335,6 +335,38 @@ unique_ptr<ParsedExpression> RewriteStackGenerator(FunctionExpression &func) {
 	return ExpandGeneratorRows(std::move(list));
 }
 
+//! Spark's stack doubles as a table-valued function, where the TVF form is the same generator over a single
+//! row (FunctionRegistry.scala builds Generate(<generator>, child = OneRowRelation()) for it). Reuse the
+//! select-item rewrite by wrapping its expression in a subquery, so one implementation serves both call
+//! positions; the table alias and its column alias list carry over. Correlated arguments keep working
+//! because a subquery in FROM resolves outer columns the same way the table function form does.
+unique_ptr<TableRef> RewriteStackTableFunction(TableFunctionRef &ref) {
+	if (ref.with_ordinality == OrdinalityType::WITH_ORDINALITY ||
+	    ref.function->GetExpressionClass() != ExpressionClass::FUNCTION) {
+		return nullptr;
+	}
+	auto &func = ref.function->Cast<FunctionExpression>();
+	if (StringUtil::Lower(func.FunctionName().GetIdentifierName()) != "stack") {
+		return nullptr;
+	}
+	if (func.GetArguments().size() < 2 || !IsUndecoratedGeneratorCall(func)) {
+		return nullptr;
+	}
+	auto rows = RewriteStackGenerator(func);
+	if (!rows) {
+		return nullptr;
+	}
+	auto select_node = make_uniq<SelectNode>();
+	select_node->select_list.push_back(std::move(rows));
+	select_node->from_table = make_uniq<EmptyTableRef>();
+	auto select_statement = make_uniq<SelectStatement>();
+	select_statement->node = std::move(select_node);
+	auto subquery = make_uniq<SubqueryRef>(std::move(select_statement));
+	subquery->alias = ref.alias;
+	subquery->column_name_alias = ref.column_name_alias;
+	return std::move(subquery);
+}
+
 //! Spark's explode()/posexplode()/inline() and their _outer variants are generators in SELECT position: one
 //! output row per element, arrays yielding a single column, maps key/value columns and arrays of structs one
 //! column per struct field, with the posexplode variants adding a leading element position column. Rewrite a
@@ -1254,6 +1286,10 @@ unique_ptr<TableRef> PEGTransformerFactory::TransformTableFunctionLateralOpt(
 	if (table_alias) {
 		result->alias = table_alias->name;
 		result->column_name_alias = table_alias->column_name_alias;
+	}
+	auto generator_rows = RewriteStackTableFunction(*result);
+	if (generator_rows) {
+		return generator_rows;
 	}
 	return std::move(result);
 }
