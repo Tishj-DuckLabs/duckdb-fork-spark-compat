@@ -253,6 +253,17 @@ const char *GeneratorEntriesFunction(const string &lower_name) {
 	return nullptr;
 }
 
+//! `unnest(<rows>, max_depth := 2)`: unnest the generator's row list and expand each row struct into the
+//! output columns, without descending into a nested collection inside a column.
+unique_ptr<ParsedExpression> ExpandGeneratorRows(unique_ptr<ParsedExpression> rows) {
+	auto max_depth = make_uniq<ConstantExpression>(Value::INTEGER(2));
+	max_depth->SetAlias(Identifier("max_depth"));
+	vector<unique_ptr<ParsedExpression>> unnest_args;
+	unnest_args.push_back(std::move(rows));
+	unnest_args.push_back(std::move(max_depth));
+	return make_uniq<FunctionExpression>(Identifier("unnest"), std::move(unnest_args));
+}
+
 //! Spark's json_tuple(json, k1, ..., kn) is a generator that extracts n keys into n output columns named
 //! c0..c{n-1}, one output row per input row. Build that row as a STRUCT of one __spark_json_tuple_value call
 //! per key; the root unnest then expands it into the output columns. A plain unnest suffices because every
@@ -271,6 +282,57 @@ unique_ptr<ParsedExpression> RewriteJsonTupleGenerator(FunctionExpression &func)
 	vector<unique_ptr<ParsedExpression>> unnest_args;
 	unnest_args.push_back(make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(row_fields)));
 	return make_uniq<FunctionExpression>(Identifier("unnest"), std::move(unnest_args));
+}
+
+//! Spark's stack(n, e1, ..., ek) is a generator that lays the k values out row-major into n rows of
+//! ceil(k/n) columns named col0..col{numFields-1}, filling any slot past the last value with NULL. n is a
+//! foldable integer, so the row shape is known here: build the rows as a list of structs whose fields the
+//! root unnest expands into the output columns, with list_value unifying each column's type across rows.
+//! Rows holding no value at all come from list_resize, whose NULL list elements the struct-expanding unnest
+//! turns into all-NULL rows; that keeps the rewrite bounded by the arguments written even for a large n.
+unique_ptr<ParsedExpression> RewriteStackGenerator(FunctionExpression &func) {
+	auto &args = func.GetArgumentsMutable();
+	auto &row_count_expr = args[0].GetExpression();
+	if (row_count_expr.GetExpressionClass() != ExpressionClass::CONSTANT) {
+		return nullptr;
+	}
+	auto &row_count_value = row_count_expr.Cast<ConstantExpression>().GetValue();
+	Value row_count_bigint;
+	if (row_count_value.IsNull() || !row_count_value.type().IsIntegral() ||
+	    !row_count_value.DefaultTryCastAs(LogicalType::BIGINT, row_count_bigint, nullptr)) {
+		return nullptr;
+	}
+	auto row_count = row_count_bigint.GetValue<int64_t>();
+	if (row_count < 1) {
+		return nullptr;
+	}
+	auto num_values = args.size() - 1;
+	auto num_rows = NumericCast<idx_t>(row_count);
+	auto num_fields = num_rows >= num_values ? 1 : (num_values + num_rows - 1) / num_rows;
+	auto num_value_rows = (num_values + num_fields - 1) / num_fields;
+	vector<unique_ptr<ParsedExpression>> rows;
+	for (idx_t row = 0; row < num_value_rows; row++) {
+		vector<FunctionArgument> row_fields;
+		for (idx_t col = 0; col < num_fields; col++) {
+			auto index = row * num_fields + col;
+			unique_ptr<ParsedExpression> field;
+			if (index < num_values) {
+				field = std::move(args[index + 1].GetExpressionMutable());
+			} else {
+				field = make_uniq<ConstantExpression>(Value());
+			}
+			row_fields.emplace_back(Identifier("col" + to_string(col)), std::move(field));
+		}
+		rows.push_back(make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(row_fields)));
+	}
+	unique_ptr<ParsedExpression> list = make_uniq<FunctionExpression>(Identifier("list_value"), std::move(rows));
+	if (num_value_rows < num_rows) {
+		vector<unique_ptr<ParsedExpression>> resize_args;
+		resize_args.push_back(std::move(list));
+		resize_args.push_back(make_uniq<ConstantExpression>(Value::BIGINT(row_count)));
+		list = make_uniq<FunctionExpression>(Identifier("list_resize"), std::move(resize_args));
+	}
+	return ExpandGeneratorRows(std::move(list));
 }
 
 //! Spark's explode()/posexplode()/inline() and their _outer variants are generators in SELECT position: one
@@ -294,19 +356,24 @@ void RewriteSparkSelectGenerators(SelectNode &node) {
 			}
 			continue;
 		}
+		if (lower_name == "stack") {
+			// the row count plus at least one value; a non-constant row count is left unrewritten
+			if (func.GetArguments().size() >= 2 && IsUndecoratedGeneratorCall(func)) {
+				auto stack_rows = RewriteStackGenerator(func);
+				if (stack_rows) {
+					select_expr = std::move(stack_rows);
+				}
+			}
+			continue;
+		}
 		auto entries_fn = GeneratorEntriesFunction(lower_name);
 		if (!entries_fn || !IsBareGeneratorCall(func)) {
 			continue;
 		}
 		vector<unique_ptr<ParsedExpression>> entries_args;
 		entries_args.push_back(std::move(func.GetArgumentsMutable()[0].GetExpressionMutable()));
-		auto entries = make_uniq<FunctionExpression>(Identifier(entries_fn), std::move(entries_args));
-		auto max_depth = make_uniq<ConstantExpression>(Value::INTEGER(2));
-		max_depth->SetAlias(Identifier("max_depth"));
-		vector<unique_ptr<ParsedExpression>> unnest_args;
-		unnest_args.push_back(std::move(entries));
-		unnest_args.push_back(std::move(max_depth));
-		select_expr = make_uniq<FunctionExpression>(Identifier("unnest"), std::move(unnest_args));
+		select_expr =
+		    ExpandGeneratorRows(make_uniq<FunctionExpression>(Identifier(entries_fn), std::move(entries_args)));
 	}
 }
 
