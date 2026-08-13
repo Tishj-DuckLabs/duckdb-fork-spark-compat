@@ -2263,19 +2263,57 @@ JoinPrefix PEGTransformerFactory::TransformPositionalJoinPrefix(PEGTransformer &
 	return result;
 }
 
+//! `(SELECT *)` without a FROM clause is Spark's one-row, zero-column relation: `*` expands over the
+//! input columns of the query, and a SELECT without a FROM clause has none.
+static bool IsFromlessStarSubquery(const TableRef &ref) {
+	if (ref.type != TableReferenceType::SUBQUERY) {
+		return false;
+	}
+	auto &subquery = ref.Cast<SubqueryRef>();
+	if (!subquery.subquery || subquery.subquery->node->type != QueryNodeType::SELECT_NODE) {
+		return false;
+	}
+	auto &select_node = subquery.subquery->node->Cast<SelectNode>();
+	if (!select_node.from_table || select_node.from_table->type != TableReferenceType::EMPTY_FROM) {
+		return false;
+	}
+	// anything that can change the cardinality means the relation is not a plain single row
+	if (select_node.where_clause || select_node.having || select_node.qualify || select_node.sample) {
+		return false;
+	}
+	if (!select_node.groups.group_expressions.empty() || !select_node.modifiers.empty()) {
+		return false;
+	}
+	if (select_node.select_list.size() != 1 || !StarExpression::IsStar(*select_node.select_list[0])) {
+		return false;
+	}
+	auto &star = select_node.select_list[0]->Cast<StarExpression>();
+	return star.RelationName().empty() && !star.Expression() && star.ExcludeList().empty() &&
+	       star.ReplaceList().empty() && star.RenameList().empty();
+}
+
 unique_ptr<TableRef> PEGTransformerFactory::TransformFromClause(PEGTransformer &transformer,
                                                                 vector<unique_ptr<TableRef>> table_ref) {
-	auto result_table_ref = std::move(table_ref[0]);
-	if (table_ref.size() == 1) {
-		return result_table_ref;
-	}
-	for (idx_t i = 1; i < table_ref.size(); i++) {
+	unique_ptr<TableRef> result_table_ref;
+	for (auto &entry : table_ref) {
+		// cross joining a one-row, zero-column relation is an identity, so it is dropped from the FROM list
+		if (IsFromlessStarSubquery(*entry)) {
+			continue;
+		}
+		if (!result_table_ref) {
+			result_table_ref = std::move(entry);
+			continue;
+		}
 		auto cross_product = make_uniq<JoinRef>();
 		cross_product->left = std::move(result_table_ref);
-		cross_product->right = std::move(table_ref[i]);
+		cross_product->right = std::move(entry);
 		cross_product->ref_type = JoinRefType::CROSS;
 		cross_product->is_implicit = true;
 		result_table_ref = std::move(cross_product);
+	}
+	if (!result_table_ref) {
+		// the query would produce zero columns, which has no representation - keep the entry so binding reports it
+		result_table_ref = std::move(table_ref[0]);
 	}
 	return result_table_ref;
 }
