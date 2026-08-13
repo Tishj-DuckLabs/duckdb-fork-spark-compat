@@ -46,8 +46,8 @@ fork_parser_generated_sources(
   peg/transformer/transform_use.cpp
   peg/transformer/transform_vacuum.cpp)
 
-add_library_unity(duckdb_fork_parser_peg_transformer OBJECT
-                  ${FORK_PARSER_PEG_TRANSFORMER_SOURCES})
+add_fork_parser_library(duckdb_fork_parser_peg_transformer OBJECT
+                        ${FORK_PARSER_PEG_TRANSFORMER_SOURCES})
 
 set(ALL_OBJECT_FILES
     ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:duckdb_fork_parser_peg_transformer>
