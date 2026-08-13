@@ -391,6 +391,45 @@ public:
 		return result;
 	}
 
+private:
+	static bool IsHighSurrogate(uint32_t unit) {
+		return unit >= 0xD800 && unit <= 0xDBFF;
+	}
+
+	static bool IsLowSurrogate(uint32_t unit) {
+		return unit >= 0xDC00 && unit <= 0xDFFF;
+	}
+
+	static uint32_t CombineSurrogates(uint32_t high, uint32_t low) {
+		return 0x10000 + ((high - 0xD800) << 10) + (low - 0xDC00);
+	}
+
+	// reads the fixed-width payload of a \uXXXX / \UXXXXXXXX escape, failing unless every digit is hex
+	static bool ReadHexEscape(const string &str, size_t start, size_t len, uint32_t &codepoint) {
+		if (start + len > str.size()) {
+			return false;
+		}
+		for (size_t i = start; i < start + len; i++) {
+			if (!StringUtil::CharacterIsHex(str[i])) {
+				return false;
+			}
+		}
+		codepoint = static_cast<uint32_t>(strtoul(str.substr(start, len).c_str(), nullptr, 16));
+		return true;
+	}
+
+	// unpaired surrogates and out-of-range codepoints become '?', like Java's UTF-8 encoder
+	static void AppendCodepoint(string &target, uint32_t codepoint) {
+		char utf8[4];
+		int size;
+		if (codepoint > 0x10FFFF || !Utf8Proc::CodepointToUtf8(static_cast<int>(codepoint), size, utf8)) {
+			target += '?';
+			return;
+		}
+		target.append(utf8, static_cast<size_t>(size));
+	}
+
+public:
 	unique_ptr<ParsedExpression> ToExpression() {
 		switch (string_type) {
 		case SpecialStringCharacter::STANDARD:
@@ -463,6 +502,47 @@ public:
 							i = hex_end - 1;
 						} else {
 							escaped_result += 'x';
+						}
+						break;
+					}
+					case 'u': {
+						uint32_t unit = 0;
+						if (!ReadHexEscape(result, i + 1, 4, unit)) {
+							escaped_result += 'u';
+							break;
+						}
+						i += 4;
+						uint32_t low = 0;
+						// a high surrogate absorbs a following \uXXXX low surrogate into one codepoint
+						if (IsHighSurrogate(unit) && i + 6 < result.size() && result[i + 1] == '\\' &&
+						    result[i + 2] == 'u' && ReadHexEscape(result, i + 3, 4, low) && IsLowSurrogate(low)) {
+							i += 6;
+							AppendCodepoint(escaped_result, CombineSurrogates(unit, low));
+						} else {
+							AppendCodepoint(escaped_result, unit);
+						}
+						break;
+					}
+					case 'U': {
+						uint32_t codepoint = 0;
+						if (!ReadHexEscape(result, i + 1, 8, codepoint)) {
+							escaped_result += 'U';
+							break;
+						}
+						i += 8;
+						if (codepoint < 0x10000) {
+							AppendCodepoint(escaped_result, codepoint);
+							break;
+						}
+						// Spark widens \UXXXXXXXX into a UTF-16 surrogate pair, so values above the
+						// unicode range wrap into whatever that arithmetic truncates to
+						uint32_t high = ((codepoint - 0x10000) / 0x400 + 0xD800) & 0xFFFF;
+						uint32_t low = ((codepoint - 0x10000) % 0x400 + 0xDC00) & 0xFFFF;
+						if (IsHighSurrogate(high) && IsLowSurrogate(low)) {
+							AppendCodepoint(escaped_result, CombineSurrogates(high, low));
+						} else {
+							AppendCodepoint(escaped_result, high);
+							AppendCodepoint(escaped_result, low);
 						}
 						break;
 					}
