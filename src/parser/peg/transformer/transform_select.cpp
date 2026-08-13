@@ -409,6 +409,52 @@ void RewriteSparkSelectGenerators(SelectNode &node) {
 	}
 }
 
+//! The select node of a table reference of the form `(SELECT ...)` without a FROM clause, which is where a
+//! star has no input columns of its own to expand over.
+optional_ptr<SelectNode> FromlessSubquerySelect(TableRef &ref) {
+	if (ref.type != TableReferenceType::SUBQUERY) {
+		return nullptr;
+	}
+	auto &subquery = ref.Cast<SubqueryRef>();
+	if (!subquery.subquery || subquery.subquery->node->type != QueryNodeType::SELECT_NODE) {
+		return nullptr;
+	}
+	auto &select_node = subquery.subquery->node->Cast<SelectNode>();
+	if (!select_node.from_table || select_node.from_table->type != TableReferenceType::EMPTY_FROM) {
+		return nullptr;
+	}
+	return select_node;
+}
+
+//! A star expands over the input columns of its query, so a qualified star in a subquery without a FROM
+//! clause can only name a relation of the enclosing query: `LATERAL (SELECT t1.*)` is a one-row relation
+//! holding a copy of the current t1 row. duckdb expands a star from the bindings of its own query, which are
+//! empty here, so the star is lowered to unnest over the outer relation's row struct - a column reference,
+//! and those do resolve against the enclosing query. TransformStarExpression uses the same lowering for a
+//! star with more qualifiers than a relation name can hold (`db.tbl.*`).
+void RewriteFromlessQualifiedStars(TableRef &ref) {
+	auto select_node = FromlessSubquerySelect(ref);
+	if (!select_node) {
+		return;
+	}
+	for (auto &select_expr : select_node->select_list) {
+		if (!StarExpression::IsStar(*select_expr)) {
+			continue;
+		}
+		auto &star = select_expr->Cast<StarExpression>();
+		// an unqualified star has no relation to unnest, and EXCLUDE/REPLACE/RENAME have no unnest equivalent
+		if (star.RelationName().empty() || star.Expression() || !star.ExcludeList().empty() ||
+		    !star.ReplaceList().empty() || !star.RenameList().empty()) {
+			continue;
+		}
+		vector<unique_ptr<ParsedExpression>> children;
+		children.push_back(make_uniq<ColumnRefExpression>(star.RelationName()));
+		auto unnest = make_uniq<FunctionExpression>("unnest", std::move(children));
+		unnest->SetQueryLocation(select_expr->GetQueryLocation());
+		select_expr = std::move(unnest);
+	}
+}
+
 //! The expression that decides a group key's identity: an ordinal stands for the select item it names.
 //! An out-of-range ordinal stands for itself, so the binder still reports it.
 const ParsedExpression &GroupByKeyExpression(const ParsedExpression &group_expr,
@@ -1241,6 +1287,7 @@ unique_ptr<TableRef> PEGTransformerFactory::TransformLateralJoinClause(PEGTransf
 		subquery_reference->alias = table_alias->name;
 		subquery_reference->column_name_alias = table_alias->column_name_alias;
 	}
+	RewriteFromlessQualifiedStars(*subquery_reference);
 	auto result = make_uniq<JoinRef>();
 	result->type = JoinType::INNER;
 	result->right = std::move(subquery_reference);
@@ -2007,6 +2054,7 @@ unique_ptr<TableRef> PEGTransformerFactory::TransformTableSubquery(PEGTransforme
 		subquery_reference->alias = table_alias->name;
 		subquery_reference->column_name_alias = table_alias->column_name_alias;
 	}
+	RewriteFromlessQualifiedStars(*subquery_reference);
 	return subquery_reference;
 }
 
@@ -2265,29 +2313,22 @@ JoinPrefix PEGTransformerFactory::TransformPositionalJoinPrefix(PEGTransformer &
 
 //! `(SELECT *)` without a FROM clause is Spark's one-row, zero-column relation: `*` expands over the
 //! input columns of the query, and a SELECT without a FROM clause has none.
-static bool IsFromlessStarSubquery(const TableRef &ref) {
-	if (ref.type != TableReferenceType::SUBQUERY) {
-		return false;
-	}
-	auto &subquery = ref.Cast<SubqueryRef>();
-	if (!subquery.subquery || subquery.subquery->node->type != QueryNodeType::SELECT_NODE) {
-		return false;
-	}
-	auto &select_node = subquery.subquery->node->Cast<SelectNode>();
-	if (!select_node.from_table || select_node.from_table->type != TableReferenceType::EMPTY_FROM) {
+static bool IsFromlessStarSubquery(TableRef &ref) {
+	auto select_node = FromlessSubquerySelect(ref);
+	if (!select_node) {
 		return false;
 	}
 	// anything that can change the cardinality means the relation is not a plain single row
-	if (select_node.where_clause || select_node.having || select_node.qualify || select_node.sample) {
+	if (select_node->where_clause || select_node->having || select_node->qualify || select_node->sample) {
 		return false;
 	}
-	if (!select_node.groups.group_expressions.empty() || !select_node.modifiers.empty()) {
+	if (!select_node->groups.group_expressions.empty() || !select_node->modifiers.empty()) {
 		return false;
 	}
-	if (select_node.select_list.size() != 1 || !StarExpression::IsStar(*select_node.select_list[0])) {
+	if (select_node->select_list.size() != 1 || !StarExpression::IsStar(*select_node->select_list[0])) {
 		return false;
 	}
-	auto &star = select_node.select_list[0]->Cast<StarExpression>();
+	auto &star = select_node->select_list[0]->Cast<StarExpression>();
 	return star.RelationName().empty() && !star.Expression() && star.ExcludeList().empty() &&
 	       star.ReplaceList().empty() && star.RenameList().empty();
 }
