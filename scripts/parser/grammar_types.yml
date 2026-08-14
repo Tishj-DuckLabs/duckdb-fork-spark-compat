@@ -1942,6 +1942,7 @@ excluded_rules:
   - WithSchemaMode
   - SchemaModeName
   - PositionSeparator
+  - ExtractSeparator
   # spark ANALYZE ... COMPUTE STATISTICS tail — parsed but ignored (duckdb has no partition/column stats)
   - AnalyzeComputeStatistics
   - AnalyzeStatsScope

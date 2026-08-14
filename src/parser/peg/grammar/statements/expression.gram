@@ -321,7 +321,8 @@ UnpackExpression <- 'UNPACK' Parens(Expression)
 TryExpression <- 'TRY' Parens(Expression)
 ColumnsExpression <- StarSymbol? 'COLUMNS' Parens(Expression)
 ExtractExpression <- 'EXTRACT' Parens(ExtractArguments)
-ExtractArguments <- ExtractArgument 'FROM' Expression
+ExtractArguments <- ExtractArgument ExtractSeparator Expression
+ExtractSeparator <- 'FROM' / ','
 LambdaExpression <- 'LAMBDA' List(ColIdOrString) ':' Expression
 NullIfExpression <- 'NULLIF' Parens(NullIfArguments)
 NullIfArguments <- Expression ',' Expression
