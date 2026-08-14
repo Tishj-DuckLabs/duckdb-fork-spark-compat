@@ -476,6 +476,7 @@ Expression:
     - TypeLiteral
     - DefaultExpression
     - IntervalLiteral
+    - IntervalRangeLiteral
     - IntervalMultiUnitLiteral
     - IntervalParameter
     - IntervalStringParameter
@@ -1327,7 +1328,6 @@ DatePartSpecifier:
   by_value: false
   rules:
     - Interval
-    - IntervalToInterval
     - IntervalToIntervalAsType
     - YearKeyword
     - MonthKeyword
@@ -1343,6 +1343,12 @@ DatePartSpecifier:
     - CenturyKeyword
     - MillenniumKeyword
     - ExtractDatePart
+
+DatePartRange:
+  type: "pair<DatePartSpecifier, DatePartSpecifier>"
+  by_value: false
+  rules:
+    - IntervalToInterval
     - YearToMonth
     - DayToHour
     - DayToMinute

@@ -63,6 +63,7 @@ CaseExpression <- 'CASE' Expression? CaseWhenThen+ CaseElse? 'END'
 CaseWhenThen <- 'WHEN' Expression 'THEN' Expression
 CaseElse <- 'ELSE' Expression
 TypeLiteral <- ColId StringLiteral
+IntervalRangeLiteral <- 'INTERVAL' StringLiteral IntervalToInterval
 IntervalLiteral <- 'INTERVAL' IntervalParameter Interval?
 IntervalParameter <- IntervalStringParameter / NumberLiteral / ParensExpression
 IntervalStringParameter <- StringLiteral
@@ -134,6 +135,7 @@ SingleExpression <-
     SubqueryExpression /
     SpecialFunctionExpression /
     ParenthesisExpression /
+    IntervalRangeLiteral /
     IntervalMultiUnitLiteral /
     IntervalLiteral /
     TypeLiteral /

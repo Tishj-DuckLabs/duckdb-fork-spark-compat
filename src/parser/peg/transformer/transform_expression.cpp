@@ -3138,6 +3138,73 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformIntervalStringParam
 	return make_uniq<ConstantExpression>(Value(string_literal));
 }
 
+// Reads spark's year-month interval string, [+|-]y-m, as a total month count.
+static bool TryParseYearMonthIntervalString(const string &input, int32_t &result) {
+	idx_t pos = 0;
+	idx_t end = input.size();
+	while (pos < end && StringUtil::CharacterIsSpace(input[pos])) {
+		pos++;
+	}
+	while (end > pos && StringUtil::CharacterIsSpace(input[end - 1])) {
+		end--;
+	}
+	int64_t sign = 1;
+	if (pos < end && (input[pos] == '+' || input[pos] == '-')) {
+		sign = input[pos] == '-' ? -1 : 1;
+		pos++;
+	}
+	int64_t years = 0;
+	idx_t year_digits = 0;
+	while (pos < end && StringUtil::CharacterIsDigit(input[pos])) {
+		years = years * 10 + (input[pos] - '0');
+		if (years > NumericLimits<int32_t>::Maximum()) {
+			return false;
+		}
+		pos++;
+		year_digits++;
+	}
+	if (year_digits == 0 || pos == end || input[pos] != '-') {
+		return false;
+	}
+	pos++;
+	int64_t months = 0;
+	idx_t month_digits = 0;
+	while (pos < end && StringUtil::CharacterIsDigit(input[pos])) {
+		months = months * 10 + (input[pos] - '0');
+		if (months >= Interval::MONTHS_PER_YEAR) {
+			return false;
+		}
+		pos++;
+		month_digits++;
+	}
+	if (month_digits == 0 || pos != end) {
+		return false;
+	}
+	int64_t total_months = sign * (years * Interval::MONTHS_PER_YEAR + months);
+	if (total_months < NumericLimits<int32_t>::Minimum() || total_months > NumericLimits<int32_t>::Maximum()) {
+		return false;
+	}
+	result = NumericCast<int32_t>(total_months);
+	return true;
+}
+
+// IntervalRangeLiteral <- 'INTERVAL' StringLiteral IntervalToInterval
+// The string is read according to its unit range, which the generic interval parser cannot do.
+unique_ptr<ParsedExpression> PEGTransformerFactory::TransformIntervalRangeLiteral(
+    PEGTransformer &transformer, const string &string_literal,
+    const pair<DatePartSpecifier, DatePartSpecifier> &interval_to_interval) {
+	if (interval_to_interval.first != DatePartSpecifier::YEAR ||
+	    interval_to_interval.second != DatePartSpecifier::MONTH) {
+		throw ParserException("%s TO %s is not supported", EnumUtil::ToString(interval_to_interval.first),
+		                      EnumUtil::ToString(interval_to_interval.second));
+	}
+	int32_t months = 0;
+	if (!TryParseYearMonthIntervalString(string_literal, months)) {
+		throw ParserException("Error parsing '%s' to interval, expected format is '[+|-]y-m'", string_literal);
+	}
+	return make_uniq<ConstantExpression>(Value::INTERVAL(months, 0, 0));
+}
+
 static unique_ptr<ParsedExpression> IntervalBinaryOp(string op, unique_ptr<ParsedExpression> left,
                                                      unique_ptr<ParsedExpression> right) {
 	vector<unique_ptr<ParsedExpression>> children;

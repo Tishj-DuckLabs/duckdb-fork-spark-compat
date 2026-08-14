@@ -1020,8 +1020,8 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformIntervalToInter
                                                                                             ParseResult &parse_result) {
 	auto &list_pr = parse_result.Cast<ListParseResult>();
 	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
-	auto result = transformer.Transform<DatePartSpecifier>(choice_pr.GetResult());
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	auto result = transformer.Transform<pair<DatePartSpecifier, DatePartSpecifier>>(choice_pr.GetResult());
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformYearToMonthInternal(PEGTransformer &transformer,
@@ -1030,7 +1030,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformYearToMonthInte
 	auto year_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(0));
 	auto month_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(2));
 	auto result = TransformYearToMonth(transformer, year_keyword, month_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformDayToHourInternal(PEGTransformer &transformer,
@@ -1039,7 +1039,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformDayToHourIntern
 	auto day_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(0));
 	auto hour_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(2));
 	auto result = TransformDayToHour(transformer, day_keyword, hour_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformDayToMinuteInternal(PEGTransformer &transformer,
@@ -1048,7 +1048,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformDayToMinuteInte
 	auto day_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(0));
 	auto minute_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(2));
 	auto result = TransformDayToMinute(transformer, day_keyword, minute_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformDayToSecondInternal(PEGTransformer &transformer,
@@ -1057,7 +1057,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformDayToSecondInte
 	auto day_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(0));
 	auto second_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(2));
 	auto result = TransformDayToSecond(transformer, day_keyword, second_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformHourToMinuteInternal(PEGTransformer &transformer,
@@ -1066,7 +1066,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformHourToMinuteInt
 	auto hour_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(0));
 	auto minute_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(2));
 	auto result = TransformHourToMinute(transformer, hour_keyword, minute_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformHourToSecondInternal(PEGTransformer &transformer,
@@ -1075,7 +1075,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformHourToSecondInt
 	auto hour_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(0));
 	auto second_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(2));
 	auto result = TransformHourToSecond(transformer, hour_keyword, second_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformMinuteToSecondInternal(PEGTransformer &transformer,
@@ -1084,7 +1084,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformMinuteToSecondI
 	auto minute_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(0));
 	auto second_keyword = transformer.Transform<DatePartSpecifier>(list_pr.GetChild(2));
 	auto result = TransformMinuteToSecond(transformer, minute_keyword, second_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformBitTypeInternal(PEGTransformer &transformer,
@@ -5372,6 +5372,15 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformTypeLiteralInte
 	auto col_id = transformer.Transform<Identifier>(list_pr.GetChild(0));
 	auto string_literal = transformer.Transform<string>(list_pr.GetChild(1));
 	auto result = TransformTypeLiteral(transformer, col_id, string_literal);
+	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::TransformIntervalRangeLiteralInternal(PEGTransformer &transformer, ParseResult &parse_result) {
+	auto &list_pr = parse_result.Cast<ListParseResult>();
+	auto string_literal = transformer.Transform<string>(list_pr.GetChild(1));
+	auto interval_to_interval = transformer.Transform<pair<DatePartSpecifier, DatePartSpecifier>>(list_pr.GetChild(2));
+	auto result = TransformIntervalRangeLiteral(transformer, string_literal, interval_to_interval);
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
@@ -11542,6 +11551,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"CaseWhenThen", &PEGTransformerFactory::TransformCaseWhenThenInternal},
 	    {"CaseElse", &PEGTransformerFactory::TransformCaseElseInternal},
 	    {"TypeLiteral", &PEGTransformerFactory::TransformTypeLiteralInternal},
+	    {"IntervalRangeLiteral", &PEGTransformerFactory::TransformIntervalRangeLiteralInternal},
 	    {"IntervalLiteral", &PEGTransformerFactory::TransformIntervalLiteralInternal},
 	    {"IntervalParameter", &PEGTransformerFactory::TransformIntervalParameterInternal},
 	    {"IntervalStringParameter", &PEGTransformerFactory::TransformIntervalStringParameterInternal},

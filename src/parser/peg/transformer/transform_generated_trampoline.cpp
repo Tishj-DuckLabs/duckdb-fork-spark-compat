@@ -1424,6 +1424,9 @@ static const TransformFrameOps CASE_ELSE_OPS = {"CaseElse", &PEGTransformerFacto
 static const TransformFrameOps TYPE_LITERAL_OPS = {"TypeLiteral",
                                                    &PEGTransformerFactory::InitializeTypeLiteralTrampoline,
                                                    &PEGTransformerFactory::FinalizeTypeLiteralTrampoline};
+static const TransformFrameOps INTERVAL_RANGE_LITERAL_OPS = {
+    "IntervalRangeLiteral", &PEGTransformerFactory::InitializeIntervalRangeLiteralTrampoline,
+    &PEGTransformerFactory::FinalizeIntervalRangeLiteralTrampoline};
 static const TransformFrameOps INTERVAL_LITERAL_OPS = {"IntervalLiteral",
                                                        &PEGTransformerFactory::InitializeIntervalLiteralTrampoline,
                                                        &PEGTransformerFactory::FinalizeIntervalLiteralTrampoline};
@@ -3432,6 +3435,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"CaseWhenThen", &CASE_WHEN_THEN_OPS},
 	    {"CaseElse", &CASE_ELSE_OPS},
 	    {"TypeLiteral", &TYPE_LITERAL_OPS},
+	    {"IntervalRangeLiteral", &INTERVAL_RANGE_LITERAL_OPS},
 	    {"IntervalLiteral", &INTERVAL_LITERAL_OPS},
 	    {"IntervalParameter", &INTERVAL_PARAMETER_OPS},
 	    {"IntervalStringParameter", &INTERVAL_STRING_PARAMETER_OPS},
@@ -6017,8 +6021,8 @@ void PEGTransformerFactory::InitializeIntervalToIntervalTrampoline(PEGTransforme
 unique_ptr<TransformResultValue>
 PEGTransformerFactory::FinalizeIntervalToIntervalTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                             TransformStackFrame &frame) {
-	auto result = frame.TakeResult<DatePartSpecifier>(0);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	auto result = frame.TakeResult<pair<DatePartSpecifier, DatePartSpecifier>>(0);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 void PEGTransformerFactory::InitializeYearToMonthTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -6035,7 +6039,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeYearToMonthTramp
 	auto year_keyword = frame.TakeResult<DatePartSpecifier>(0);
 	auto month_keyword = frame.TakeResult<DatePartSpecifier>(1);
 	auto result = TransformYearToMonth(transformer, year_keyword, month_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 void PEGTransformerFactory::InitializeDayToHourTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -6052,7 +6056,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeDayToHourTrampol
 	auto day_keyword = frame.TakeResult<DatePartSpecifier>(0);
 	auto hour_keyword = frame.TakeResult<DatePartSpecifier>(1);
 	auto result = TransformDayToHour(transformer, day_keyword, hour_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 void PEGTransformerFactory::InitializeDayToMinuteTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -6069,7 +6073,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeDayToMinuteTramp
 	auto day_keyword = frame.TakeResult<DatePartSpecifier>(0);
 	auto minute_keyword = frame.TakeResult<DatePartSpecifier>(1);
 	auto result = TransformDayToMinute(transformer, day_keyword, minute_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 void PEGTransformerFactory::InitializeDayToSecondTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -6086,7 +6090,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeDayToSecondTramp
 	auto day_keyword = frame.TakeResult<DatePartSpecifier>(0);
 	auto second_keyword = frame.TakeResult<DatePartSpecifier>(1);
 	auto result = TransformDayToSecond(transformer, day_keyword, second_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 void PEGTransformerFactory::InitializeHourToMinuteTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -6103,7 +6107,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeHourToMinuteTram
 	auto hour_keyword = frame.TakeResult<DatePartSpecifier>(0);
 	auto minute_keyword = frame.TakeResult<DatePartSpecifier>(1);
 	auto result = TransformHourToMinute(transformer, hour_keyword, minute_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 void PEGTransformerFactory::InitializeHourToSecondTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -6120,7 +6124,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeHourToSecondTram
 	auto hour_keyword = frame.TakeResult<DatePartSpecifier>(0);
 	auto second_keyword = frame.TakeResult<DatePartSpecifier>(1);
 	auto result = TransformHourToSecond(transformer, hour_keyword, second_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 void PEGTransformerFactory::InitializeMinuteToSecondTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -6137,7 +6141,7 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeMinuteToSecondTr
 	auto minute_keyword = frame.TakeResult<DatePartSpecifier>(0);
 	auto second_keyword = frame.TakeResult<DatePartSpecifier>(1);
 	auto result = TransformMinuteToSecond(transformer, minute_keyword, second_keyword);
-	return make_uniq<TypedTransformResult<DatePartSpecifier>>(result);
+	return make_uniq<TypedTransformResult<pair<DatePartSpecifier, DatePartSpecifier>>>(result);
 }
 
 void PEGTransformerFactory::InitializeBitTypeTrampoline(PEGTransformer &transformer, TransformStack &stack,
@@ -14373,6 +14377,23 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeTypeLiteralTramp
 	auto col_id = frame.TakeResult<Identifier>(0);
 	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(1));
 	auto result = TransformTypeLiteral(transformer, col_id, string_literal);
+	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeIntervalRangeLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                     TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	frame.ReserveChildSlots(1);
+	stack.PushFrame(list_pr.GetChild(2), INTERVAL_TO_INTERVAL_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeIntervalRangeLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                              TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(1));
+	auto interval_to_interval = frame.TakeResult<pair<DatePartSpecifier, DatePartSpecifier>>(0);
+	auto result = TransformIntervalRangeLiteral(transformer, string_literal, interval_to_interval);
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
 }
 
