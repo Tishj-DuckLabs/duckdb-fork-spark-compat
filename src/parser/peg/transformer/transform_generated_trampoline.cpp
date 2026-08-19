@@ -1427,6 +1427,9 @@ static const TransformFrameOps TYPE_LITERAL_OPS = {"TypeLiteral",
 static const TransformFrameOps INTERVAL_RANGE_LITERAL_OPS = {
     "IntervalRangeLiteral", &PEGTransformerFactory::InitializeIntervalRangeLiteralTrampoline,
     &PEGTransformerFactory::FinalizeIntervalRangeLiteralTrampoline};
+static const TransformFrameOps INTERVAL_RANGE_SIGN_OPS = {"IntervalRangeSign",
+                                                          &PEGTransformerFactory::InitializeIntervalRangeSignTrampoline,
+                                                          &PEGTransformerFactory::FinalizeIntervalRangeSignTrampoline};
 static const TransformFrameOps INTERVAL_LITERAL_OPS = {"IntervalLiteral",
                                                        &PEGTransformerFactory::InitializeIntervalLiteralTrampoline,
                                                        &PEGTransformerFactory::FinalizeIntervalLiteralTrampoline};
@@ -3436,6 +3439,7 @@ const case_insensitive_map_t<const TransformFrameOps *> &PEGTransformerFactory::
 	    {"CaseElse", &CASE_ELSE_OPS},
 	    {"TypeLiteral", &TYPE_LITERAL_OPS},
 	    {"IntervalRangeLiteral", &INTERVAL_RANGE_LITERAL_OPS},
+	    {"IntervalRangeSign", &INTERVAL_RANGE_SIGN_OPS},
 	    {"IntervalLiteral", &INTERVAL_LITERAL_OPS},
 	    {"IntervalParameter", &INTERVAL_PARAMETER_OPS},
 	    {"IntervalStringParameter", &INTERVAL_STRING_PARAMETER_OPS},
@@ -14383,18 +14387,41 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::FinalizeTypeLiteralTramp
 void PEGTransformerFactory::InitializeIntervalRangeLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                                      TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
-	frame.ReserveChildSlots(1);
-	stack.PushFrame(list_pr.GetChild(2), INTERVAL_TO_INTERVAL_OPS, TransformFrameResultTarget(frame.frame_index, 0));
+	frame.ReserveChildSlots(2);
+	stack.PushFrame(list_pr.GetChild(3), INTERVAL_TO_INTERVAL_OPS, TransformFrameResultTarget(frame.frame_index, 1));
+	auto &interval_range_sign_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (interval_range_sign_opt.HasResult()) {
+		stack.PushFrame(interval_range_sign_opt.GetResult(), INTERVAL_RANGE_SIGN_OPS,
+		                TransformFrameResultTarget(frame.frame_index, 0));
+	}
 }
 
 unique_ptr<TransformResultValue>
 PEGTransformerFactory::FinalizeIntervalRangeLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack,
                                                               TransformStackFrame &frame) {
 	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
-	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(1));
-	auto interval_to_interval = frame.TakeResult<pair<DatePartSpecifier, DatePartSpecifier>>(0);
-	auto result = TransformIntervalRangeLiteral(transformer, string_literal, interval_to_interval);
+	optional<string> interval_range_sign {};
+	if (frame.child_results[0]) {
+		interval_range_sign = frame.TakeResult<string>(0);
+	}
+	auto string_literal = TransformStringLiteral(transformer, list_pr.GetChild(2));
+	auto interval_to_interval = frame.TakeResult<pair<DatePartSpecifier, DatePartSpecifier>>(1);
+	auto result = TransformIntervalRangeLiteral(transformer, interval_range_sign, string_literal, interval_to_interval);
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
+}
+
+void PEGTransformerFactory::InitializeIntervalRangeSignTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                                  TransformStackFrame &frame) {
+	frame.ReserveChildSlots(0);
+}
+
+unique_ptr<TransformResultValue>
+PEGTransformerFactory::FinalizeIntervalRangeSignTrampoline(PEGTransformer &transformer, TransformStack &stack,
+                                                           TransformStackFrame &frame) {
+	auto &list_pr = frame.parse_result.Cast<ListParseResult>();
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto result = choice_pr.GetResult().Cast<KeywordParseResult>().keyword;
+	return make_uniq<TypedTransformResult<string>>(result);
 }
 
 void PEGTransformerFactory::InitializeIntervalLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack,

@@ -5378,10 +5378,24 @@ unique_ptr<TransformResultValue> PEGTransformerFactory::TransformTypeLiteralInte
 unique_ptr<TransformResultValue>
 PEGTransformerFactory::TransformIntervalRangeLiteralInternal(PEGTransformer &transformer, ParseResult &parse_result) {
 	auto &list_pr = parse_result.Cast<ListParseResult>();
-	auto string_literal = transformer.Transform<string>(list_pr.GetChild(1));
-	auto interval_to_interval = transformer.Transform<pair<DatePartSpecifier, DatePartSpecifier>>(list_pr.GetChild(2));
-	auto result = TransformIntervalRangeLiteral(transformer, string_literal, interval_to_interval);
+	optional<string> interval_range_sign {};
+	auto &interval_range_sign_opt = list_pr.GetChild(1).Cast<OptionalParseResult>();
+	if (interval_range_sign_opt.HasResult()) {
+		auto interval_range_sign_value = transformer.Transform<string>(interval_range_sign_opt.GetResult());
+		interval_range_sign = interval_range_sign_value;
+	}
+	auto string_literal = transformer.Transform<string>(list_pr.GetChild(2));
+	auto interval_to_interval = transformer.Transform<pair<DatePartSpecifier, DatePartSpecifier>>(list_pr.GetChild(3));
+	auto result = TransformIntervalRangeLiteral(transformer, interval_range_sign, string_literal, interval_to_interval);
 	return make_uniq<TypedTransformResult<unique_ptr<ParsedExpression>>>(std::move(result));
+}
+
+unique_ptr<TransformResultValue> PEGTransformerFactory::TransformIntervalRangeSignInternal(PEGTransformer &transformer,
+                                                                                           ParseResult &parse_result) {
+	auto &list_pr = parse_result.Cast<ListParseResult>();
+	auto &choice_pr = list_pr.Child<ChoiceParseResult>(0);
+	auto result = choice_pr.GetResult().Cast<KeywordParseResult>().keyword;
+	return make_uniq<TypedTransformResult<string>>(result);
 }
 
 unique_ptr<TransformResultValue> PEGTransformerFactory::TransformIntervalLiteralInternal(PEGTransformer &transformer,
@@ -11552,6 +11566,7 @@ void PEGTransformerFactory::RegisterGenerated() {
 	    {"CaseElse", &PEGTransformerFactory::TransformCaseElseInternal},
 	    {"TypeLiteral", &PEGTransformerFactory::TransformTypeLiteralInternal},
 	    {"IntervalRangeLiteral", &PEGTransformerFactory::TransformIntervalRangeLiteralInternal},
+	    {"IntervalRangeSign", &PEGTransformerFactory::TransformIntervalRangeSignInternal},
 	    {"IntervalLiteral", &PEGTransformerFactory::TransformIntervalLiteralInternal},
 	    {"IntervalParameter", &PEGTransformerFactory::TransformIntervalParameterInternal},
 	    {"IntervalStringParameter", &PEGTransformerFactory::TransformIntervalStringParameterInternal},

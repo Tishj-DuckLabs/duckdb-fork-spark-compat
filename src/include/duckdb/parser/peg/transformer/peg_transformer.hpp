@@ -2623,6 +2623,10 @@ public:
 	static unique_ptr<TransformResultValue> FinalizeIntervalRangeLiteralTrampoline(PEGTransformer &transformer,
 	                                                                               TransformStack &stack,
 	                                                                               TransformStackFrame &frame);
+	static void InitializeIntervalRangeSignTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                  TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeIntervalRangeSignTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
 	static void InitializeIntervalLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -6775,8 +6779,11 @@ public:
 	static unique_ptr<TransformResultValue> TransformIntervalRangeLiteralInternal(PEGTransformer &transformer,
 	                                                                              ParseResult &parse_result);
 	static unique_ptr<ParsedExpression>
-	TransformIntervalRangeLiteral(PEGTransformer &transformer, const string &string_literal,
+	TransformIntervalRangeLiteral(PEGTransformer &transformer, const optional<string> &interval_range_sign,
+	                              const string &string_literal,
 	                              const pair<DatePartSpecifier, DatePartSpecifier> &interval_to_interval);
+	static unique_ptr<TransformResultValue> TransformIntervalRangeSignInternal(PEGTransformer &transformer,
+	                                                                           ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformIntervalLiteralInternal(PEGTransformer &transformer,
 	                                                                         ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformIntervalLiteral(PEGTransformer &transformer,

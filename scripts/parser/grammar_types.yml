@@ -1028,6 +1028,7 @@ String:
   type: "string"
   by_value: false
   rules:
+    - IntervalRangeSign
     - RowExpressionAlias
     - GroupByModifier
     - WithCubeOrRollup

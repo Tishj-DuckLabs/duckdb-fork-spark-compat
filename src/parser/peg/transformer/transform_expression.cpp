@@ -3339,23 +3339,37 @@ static string DayTimeIntervalFormat(DatePartSpecifier start_field, DatePartSpeci
 	return format;
 }
 
-// IntervalRangeLiteral <- 'INTERVAL' StringLiteral IntervalToInterval
+// Folds a sign written outside the quotes into the string, the way spark's
+// AstBuilder.visitUnitToUnitInterval does before it hands the string to IntervalUtils. Only MINUS is
+// inspected, so a leading PLUS is a no-op, and a minus in front of an already negative string cancels.
+static string ApplyIntervalRangeSign(const optional<string> &sign, const string &value) {
+	if (!sign || *sign != "-") {
+		return value;
+	}
+	if (!value.empty() && value[0] == '-') {
+		return value.substr(1);
+	}
+	return "-" + value;
+}
+
+// IntervalRangeLiteral <- 'INTERVAL' IntervalRangeSign? StringLiteral IntervalToInterval
 // The string is read according to its unit range, which the generic interval parser cannot do.
 unique_ptr<ParsedExpression> PEGTransformerFactory::TransformIntervalRangeLiteral(
-    PEGTransformer &transformer, const string &string_literal,
+    PEGTransformer &transformer, const optional<string> &interval_range_sign, const string &string_literal,
     const pair<DatePartSpecifier, DatePartSpecifier> &interval_to_interval) {
+	auto signed_literal = ApplyIntervalRangeSign(interval_range_sign, string_literal);
 	if (interval_to_interval.first == DatePartSpecifier::YEAR &&
 	    interval_to_interval.second == DatePartSpecifier::MONTH) {
 		int32_t months = 0;
-		if (!TryParseYearMonthIntervalString(string_literal, months)) {
-			throw ParserException("Error parsing '%s' to interval, expected format is '[+|-]y-m'", string_literal);
+		if (!TryParseYearMonthIntervalString(signed_literal, months)) {
+			throw ParserException("Error parsing '%s' to interval, expected format is '[+|-]y-m'", signed_literal);
 		}
 		return make_uniq<ConstantExpression>(Value::INTERVAL(months, 0, 0));
 	}
 	int64_t micros = 0;
-	if (!TryParseDayTimeIntervalString(string_literal, interval_to_interval.first, interval_to_interval.second,
+	if (!TryParseDayTimeIntervalString(signed_literal, interval_to_interval.first, interval_to_interval.second,
 	                                   micros)) {
-		throw ParserException("Error parsing '%s' to interval, expected format is '%s'", string_literal,
+		throw ParserException("Error parsing '%s' to interval, expected format is '%s'", signed_literal,
 		                      DayTimeIntervalFormat(interval_to_interval.first, interval_to_interval.second));
 	}
 	// spark keeps a day-time interval in microseconds but extracts days and hours out of the day it
