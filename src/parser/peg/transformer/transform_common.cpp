@@ -490,51 +490,46 @@ DatePartSpecifier PEGTransformerFactory::TransformMillenniumKeyword(PEGTransform
 	return DatePartSpecifier::MILLENNIUM;
 }
 
-static DatePartSpecifier UnsupportedIntervalRange(DatePartSpecifier first_interval, DatePartSpecifier second_interval) {
-	throw ParserException("%s TO %s is not supported", EnumUtil::ToString(first_interval),
-	                      EnumUtil::ToString(second_interval));
+pair<DatePartSpecifier, DatePartSpecifier>
+PEGTransformerFactory::TransformYearToMonth(PEGTransformer &transformer, const DatePartSpecifier &year_keyword,
+                                            const DatePartSpecifier &month_keyword) {
+	return std::make_pair(year_keyword, month_keyword);
 }
 
-DatePartSpecifier PEGTransformerFactory::TransformYearToMonth(PEGTransformer &transformer,
-                                                              const DatePartSpecifier &year_keyword,
-                                                              const DatePartSpecifier &month_keyword) {
-	return UnsupportedIntervalRange(year_keyword, month_keyword);
+pair<DatePartSpecifier, DatePartSpecifier>
+PEGTransformerFactory::TransformDayToHour(PEGTransformer &transformer, const DatePartSpecifier &day_keyword,
+                                          const DatePartSpecifier &hour_keyword) {
+	return std::make_pair(day_keyword, hour_keyword);
 }
 
-DatePartSpecifier PEGTransformerFactory::TransformDayToHour(PEGTransformer &transformer,
-                                                            const DatePartSpecifier &day_keyword,
-                                                            const DatePartSpecifier &hour_keyword) {
-	return UnsupportedIntervalRange(day_keyword, hour_keyword);
+pair<DatePartSpecifier, DatePartSpecifier>
+PEGTransformerFactory::TransformDayToMinute(PEGTransformer &transformer, const DatePartSpecifier &day_keyword,
+                                            const DatePartSpecifier &minute_keyword) {
+	return std::make_pair(day_keyword, minute_keyword);
 }
 
-DatePartSpecifier PEGTransformerFactory::TransformDayToMinute(PEGTransformer &transformer,
-                                                              const DatePartSpecifier &day_keyword,
-                                                              const DatePartSpecifier &minute_keyword) {
-	return UnsupportedIntervalRange(day_keyword, minute_keyword);
+pair<DatePartSpecifier, DatePartSpecifier>
+PEGTransformerFactory::TransformDayToSecond(PEGTransformer &transformer, const DatePartSpecifier &day_keyword,
+                                            const DatePartSpecifier &second_keyword) {
+	return std::make_pair(day_keyword, second_keyword);
 }
 
-DatePartSpecifier PEGTransformerFactory::TransformDayToSecond(PEGTransformer &transformer,
-                                                              const DatePartSpecifier &day_keyword,
-                                                              const DatePartSpecifier &second_keyword) {
-	return UnsupportedIntervalRange(day_keyword, second_keyword);
+pair<DatePartSpecifier, DatePartSpecifier>
+PEGTransformerFactory::TransformHourToMinute(PEGTransformer &transformer, const DatePartSpecifier &hour_keyword,
+                                             const DatePartSpecifier &minute_keyword) {
+	return std::make_pair(hour_keyword, minute_keyword);
 }
 
-DatePartSpecifier PEGTransformerFactory::TransformHourToMinute(PEGTransformer &transformer,
-                                                               const DatePartSpecifier &hour_keyword,
-                                                               const DatePartSpecifier &minute_keyword) {
-	return UnsupportedIntervalRange(hour_keyword, minute_keyword);
+pair<DatePartSpecifier, DatePartSpecifier>
+PEGTransformerFactory::TransformHourToSecond(PEGTransformer &transformer, const DatePartSpecifier &hour_keyword,
+                                             const DatePartSpecifier &second_keyword) {
+	return std::make_pair(hour_keyword, second_keyword);
 }
 
-DatePartSpecifier PEGTransformerFactory::TransformHourToSecond(PEGTransformer &transformer,
-                                                               const DatePartSpecifier &hour_keyword,
-                                                               const DatePartSpecifier &second_keyword) {
-	return UnsupportedIntervalRange(hour_keyword, second_keyword);
-}
-
-DatePartSpecifier PEGTransformerFactory::TransformMinuteToSecond(PEGTransformer &transformer,
-                                                                 const DatePartSpecifier &minute_keyword,
-                                                                 const DatePartSpecifier &second_keyword) {
-	return UnsupportedIntervalRange(minute_keyword, second_keyword);
+pair<DatePartSpecifier, DatePartSpecifier>
+PEGTransformerFactory::TransformMinuteToSecond(PEGTransformer &transformer, const DatePartSpecifier &minute_keyword,
+                                               const DatePartSpecifier &second_keyword) {
+	return std::make_pair(minute_keyword, second_keyword);
 }
 
 unique_ptr<ParsedExpression> PEGTransformerFactory::TryNegateValue(const ConstantExpression &expr) {

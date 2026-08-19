@@ -112,8 +112,7 @@ DecadeKeyword       <- 'DECADE' / 'DECADES'
 CenturyKeyword      <- 'CENTURY' / 'CENTURIES'
 MillenniumKeyword   <- 'MILLENNIUM' / 'MILLENNIA'
 
-Interval <- IntervalToInterval /
-    YearKeyword /
+Interval <- YearKeyword /
     MonthKeyword /
     DayKeyword /
     HourKeyword /
@@ -1335,6 +1334,8 @@ CaseExpression <- 'CASE' Expression? CaseWhenThen+ CaseElse? 'END'
 CaseWhenThen <- 'WHEN' Expression 'THEN' Expression
 CaseElse <- 'ELSE' Expression
 TypeLiteral <- ColId StringLiteral
+IntervalRangeLiteral <- 'INTERVAL' IntervalRangeSign? StringLiteral IntervalToInterval
+IntervalRangeSign <- '+' / '-'
 IntervalLiteral <- 'INTERVAL' IntervalParameter Interval?
 IntervalParameter <- IntervalStringParameter / NumberLiteral / ParensExpression
 IntervalStringParameter <- StringLiteral
@@ -1406,6 +1407,7 @@ SingleExpression <-
     SubqueryExpression /
     SpecialFunctionExpression /
     ParenthesisExpression /
+    IntervalRangeLiteral /
     IntervalMultiUnitLiteral /
     IntervalLiteral /
     TypeLiteral /
@@ -1593,7 +1595,8 @@ UnpackExpression <- 'UNPACK' Parens(Expression)
 TryExpression <- 'TRY' Parens(Expression)
 ColumnsExpression <- StarSymbol? 'COLUMNS' Parens(Expression)
 ExtractExpression <- 'EXTRACT' Parens(ExtractArguments)
-ExtractArguments <- ExtractArgument 'FROM' Expression
+ExtractArguments <- ExtractArgument ExtractSeparator Expression
+ExtractSeparator <- 'FROM' / ','
 LambdaExpression <- 'LAMBDA' List(ColIdOrString) ':' Expression
 NullIfExpression <- 'NULLIF' Parens(NullIfArguments)
 NullIfArguments <- Expression ',' Expression

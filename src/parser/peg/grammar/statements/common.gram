@@ -112,8 +112,7 @@ DecadeKeyword       <- 'DECADE' / 'DECADES'
 CenturyKeyword      <- 'CENTURY' / 'CENTURIES'
 MillenniumKeyword   <- 'MILLENNIUM' / 'MILLENNIA'
 
-Interval <- IntervalToInterval /
-    YearKeyword /
+Interval <- YearKeyword /
     MonthKeyword /
     DayKeyword /
     HourKeyword /

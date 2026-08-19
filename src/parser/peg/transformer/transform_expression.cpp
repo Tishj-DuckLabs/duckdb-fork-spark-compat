@@ -3138,6 +3138,246 @@ unique_ptr<ParsedExpression> PEGTransformerFactory::TransformIntervalStringParam
 	return make_uniq<ConstantExpression>(Value(string_literal));
 }
 
+// Trims an interval string and consumes the sign every interval format allows in front of it.
+static int64_t ReadIntervalSign(const string &input, idx_t &pos, idx_t &end) {
+	pos = 0;
+	end = input.size();
+	while (pos < end && StringUtil::CharacterIsSpace(input[pos])) {
+		pos++;
+	}
+	while (end > pos && StringUtil::CharacterIsSpace(input[end - 1])) {
+		end--;
+	}
+	if (pos < end && (input[pos] == '+' || input[pos] == '-')) {
+		int64_t sign = input[pos] == '-' ? -1 : 1;
+		pos++;
+		return sign;
+	}
+	return 1;
+}
+
+// Reads spark's year-month interval string, [+|-]y-m, as a total month count.
+static bool TryParseYearMonthIntervalString(const string &input, int32_t &result) {
+	idx_t pos;
+	idx_t end;
+	int64_t sign = ReadIntervalSign(input, pos, end);
+	int64_t years = 0;
+	idx_t year_digits = 0;
+	while (pos < end && StringUtil::CharacterIsDigit(input[pos])) {
+		years = years * 10 + (input[pos] - '0');
+		if (years > NumericLimits<int32_t>::Maximum()) {
+			return false;
+		}
+		pos++;
+		year_digits++;
+	}
+	if (year_digits == 0 || pos == end || input[pos] != '-') {
+		return false;
+	}
+	pos++;
+	int64_t months = 0;
+	idx_t month_digits = 0;
+	while (pos < end && StringUtil::CharacterIsDigit(input[pos])) {
+		months = months * 10 + (input[pos] - '0');
+		if (months >= Interval::MONTHS_PER_YEAR) {
+			return false;
+		}
+		pos++;
+		month_digits++;
+	}
+	if (month_digits == 0 || pos != end) {
+		return false;
+	}
+	int64_t total_months = sign * (years * Interval::MONTHS_PER_YEAR + months);
+	if (total_months < NumericLimits<int32_t>::Minimum() || total_months > NumericLimits<int32_t>::Maximum()) {
+		return false;
+	}
+	result = NumericCast<int32_t>(total_months);
+	return true;
+}
+
+struct DayTimeIntervalField {
+	DatePartSpecifier specifier;
+	char letter;
+	//! Separator that precedes the field when another field leads
+	char separator;
+	//! Digit count the field may span when it leads, so that its microseconds stay in range
+	idx_t leading_digits;
+	//! Value bound of the field when another field leads
+	int64_t clock_max;
+	int64_t micros_per_unit;
+};
+
+//! Day-time interval fields, most significant first
+static const DayTimeIntervalField DAY_TIME_INTERVAL_FIELDS[] = {
+    {DatePartSpecifier::DAY, 'd', ' ', 9, 0, Interval::MICROS_PER_DAY},
+    {DatePartSpecifier::HOUR, 'h', ' ', 10, 23, Interval::MICROS_PER_HOUR},
+    {DatePartSpecifier::MINUTE, 'm', ':', 12, 59, Interval::MICROS_PER_MINUTE},
+    {DatePartSpecifier::SECOND, 's', ':', 0, 59, Interval::MICROS_PER_SEC}};
+static constexpr idx_t DAY_TIME_INTERVAL_FIELD_COUNT = sizeof(DAY_TIME_INTERVAL_FIELDS) / sizeof(DayTimeIntervalField);
+
+// Reads a run of digits bounded by both its width and its value, the way spark's interval patterns are.
+static bool TryReadIntervalField(const string &input, idx_t &pos, idx_t end, idx_t max_digits, int64_t max_value,
+                                 int64_t &result) {
+	int64_t value = 0;
+	idx_t digits = 0;
+	while (pos < end && StringUtil::CharacterIsDigit(input[pos])) {
+		if (digits == max_digits) {
+			return false;
+		}
+		value = value * 10 + (input[pos] - '0');
+		pos++;
+		digits++;
+	}
+	if (digits == 0 || value > max_value) {
+		return false;
+	}
+	result = value;
+	return true;
+}
+
+static bool TryAddIntervalMicros(int64_t &micros, int64_t addition) {
+	if (addition > NumericLimits<int64_t>::Maximum() - micros) {
+		return false;
+	}
+	micros += addition;
+	return true;
+}
+
+// Reads spark's day-time interval string as a total microsecond count. Which fields are present, how
+// wide they may be and how large they may get all follow the unit range that qualifies the string.
+static bool TryParseDayTimeIntervalString(const string &input, DatePartSpecifier start_field,
+                                          DatePartSpecifier end_field, int64_t &result) {
+	idx_t start_index = DAY_TIME_INTERVAL_FIELD_COUNT;
+	idx_t end_index = DAY_TIME_INTERVAL_FIELD_COUNT;
+	for (idx_t i = 0; i < DAY_TIME_INTERVAL_FIELD_COUNT; i++) {
+		if (DAY_TIME_INTERVAL_FIELDS[i].specifier == start_field) {
+			start_index = i;
+		}
+		if (DAY_TIME_INTERVAL_FIELDS[i].specifier == end_field) {
+			end_index = i;
+		}
+	}
+	if (start_index >= end_index || end_index == DAY_TIME_INTERVAL_FIELD_COUNT) {
+		return false;
+	}
+	idx_t pos;
+	idx_t end;
+	int64_t sign = ReadIntervalSign(input, pos, end);
+	int64_t micros = 0;
+	for (idx_t i = start_index; i <= end_index; i++) {
+		auto &field = DAY_TIME_INTERVAL_FIELDS[i];
+		if (i > start_index) {
+			if (pos == end || input[pos] != field.separator) {
+				return false;
+			}
+			pos++;
+		}
+		bool leading = i == start_index;
+		idx_t max_digits = leading ? field.leading_digits : 2;
+		int64_t max_value = leading ? NumericLimits<int64_t>::Maximum() / field.micros_per_unit : field.clock_max;
+		int64_t value = 0;
+		if (!TryReadIntervalField(input, pos, end, max_digits, max_value, value)) {
+			return false;
+		}
+		// the bound above keeps the product itself in range, only the total can still overflow
+		if (!TryAddIntervalMicros(micros, value * field.micros_per_unit)) {
+			return false;
+		}
+	}
+	if (end_field == DatePartSpecifier::SECOND && pos < end && input[pos] == '.') {
+		pos++;
+		int64_t nanos = 0;
+		idx_t digits = 0;
+		while (pos < end && StringUtil::CharacterIsDigit(input[pos])) {
+			if (digits == 9) {
+				return false;
+			}
+			nanos = nanos * 10 + (input[pos] - '0');
+			pos++;
+			digits++;
+		}
+		if (digits == 0) {
+			return false;
+		}
+		// spark pads the fraction out to nanoseconds and truncates it to microseconds
+		for (; digits < 9; digits++) {
+			nanos *= 10;
+		}
+		if (!TryAddIntervalMicros(micros, nanos / Interval::NANOS_PER_MICRO)) {
+			return false;
+		}
+	}
+	if (pos != end) {
+		return false;
+	}
+	result = sign * micros;
+	return true;
+}
+
+// Spells out the format a unit range accepts, e.g. '[+|-]d h:m:s.n' for DAY TO SECOND.
+static string DayTimeIntervalFormat(DatePartSpecifier start_field, DatePartSpecifier end_field) {
+	string format = "[+|-]";
+	bool started = false;
+	for (idx_t i = 0; i < DAY_TIME_INTERVAL_FIELD_COUNT; i++) {
+		auto &field = DAY_TIME_INTERVAL_FIELDS[i];
+		if (!started && field.specifier != start_field) {
+			continue;
+		}
+		if (started) {
+			format += field.separator;
+		}
+		started = true;
+		format += field.letter;
+		if (field.specifier == end_field) {
+			break;
+		}
+	}
+	if (end_field == DatePartSpecifier::SECOND) {
+		format += ".n";
+	}
+	return format;
+}
+
+// Folds a sign written outside the quotes into the string, the way spark's
+// AstBuilder.visitUnitToUnitInterval does before it hands the string to IntervalUtils. Only MINUS is
+// inspected, so a leading PLUS is a no-op, and a minus in front of an already negative string cancels.
+static string ApplyIntervalRangeSign(const optional<string> &sign, const string &value) {
+	if (!sign || *sign != "-") {
+		return value;
+	}
+	if (!value.empty() && value[0] == '-') {
+		return value.substr(1);
+	}
+	return "-" + value;
+}
+
+// IntervalRangeLiteral <- 'INTERVAL' IntervalRangeSign? StringLiteral IntervalToInterval
+// The string is read according to its unit range, which the generic interval parser cannot do.
+unique_ptr<ParsedExpression> PEGTransformerFactory::TransformIntervalRangeLiteral(
+    PEGTransformer &transformer, const optional<string> &interval_range_sign, const string &string_literal,
+    const pair<DatePartSpecifier, DatePartSpecifier> &interval_to_interval) {
+	auto signed_literal = ApplyIntervalRangeSign(interval_range_sign, string_literal);
+	if (interval_to_interval.first == DatePartSpecifier::YEAR &&
+	    interval_to_interval.second == DatePartSpecifier::MONTH) {
+		int32_t months = 0;
+		if (!TryParseYearMonthIntervalString(signed_literal, months)) {
+			throw ParserException("Error parsing '%s' to interval, expected format is '[+|-]y-m'", signed_literal);
+		}
+		return make_uniq<ConstantExpression>(Value::INTERVAL(months, 0, 0));
+	}
+	int64_t micros = 0;
+	if (!TryParseDayTimeIntervalString(signed_literal, interval_to_interval.first, interval_to_interval.second,
+	                                   micros)) {
+		throw ParserException("Error parsing '%s' to interval, expected format is '%s'", signed_literal,
+		                      DayTimeIntervalFormat(interval_to_interval.first, interval_to_interval.second));
+	}
+	// spark keeps a day-time interval in microseconds but extracts days and hours out of the day it
+	// carries, so the days have to be split off for duckdb's interval fields to agree with it
+	auto days = NumericCast<int32_t>(micros / Interval::MICROS_PER_DAY);
+	return make_uniq<ConstantExpression>(Value::INTERVAL(0, days, micros % Interval::MICROS_PER_DAY));
+}
+
 static unique_ptr<ParsedExpression> IntervalBinaryOp(string op, unique_ptr<ParsedExpression> left,
                                                      unique_ptr<ParsedExpression> right) {
 	vector<unique_ptr<ParsedExpression>> children;

@@ -2618,6 +2618,15 @@ public:
 	                                            TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
 	FinalizeTypeLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
+	static void InitializeIntervalRangeLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                     TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue> FinalizeIntervalRangeLiteralTrampoline(PEGTransformer &transformer,
+	                                                                               TransformStack &stack,
+	                                                                               TransformStackFrame &frame);
+	static void InitializeIntervalRangeSignTrampoline(PEGTransformer &transformer, TransformStack &stack,
+	                                                  TransformStackFrame &frame);
+	static unique_ptr<TransformResultValue>
+	FinalizeIntervalRangeSignTrampoline(PEGTransformer &transformer, TransformStack &stack, TransformStackFrame &frame);
 	static void InitializeIntervalLiteralTrampoline(PEGTransformer &transformer, TransformStack &stack,
 	                                                TransformStackFrame &frame);
 	static unique_ptr<TransformResultValue>
@@ -5302,33 +5311,39 @@ public:
 	                                                                            ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformYearToMonthInternal(PEGTransformer &transformer,
 	                                                                     ParseResult &parse_result);
-	static DatePartSpecifier TransformYearToMonth(PEGTransformer &transformer, const DatePartSpecifier &year_keyword,
-	                                              const DatePartSpecifier &month_keyword);
+	static pair<DatePartSpecifier, DatePartSpecifier> TransformYearToMonth(PEGTransformer &transformer,
+	                                                                       const DatePartSpecifier &year_keyword,
+	                                                                       const DatePartSpecifier &month_keyword);
 	static unique_ptr<TransformResultValue> TransformDayToHourInternal(PEGTransformer &transformer,
 	                                                                   ParseResult &parse_result);
-	static DatePartSpecifier TransformDayToHour(PEGTransformer &transformer, const DatePartSpecifier &day_keyword,
-	                                            const DatePartSpecifier &hour_keyword);
+	static pair<DatePartSpecifier, DatePartSpecifier> TransformDayToHour(PEGTransformer &transformer,
+	                                                                     const DatePartSpecifier &day_keyword,
+	                                                                     const DatePartSpecifier &hour_keyword);
 	static unique_ptr<TransformResultValue> TransformDayToMinuteInternal(PEGTransformer &transformer,
 	                                                                     ParseResult &parse_result);
-	static DatePartSpecifier TransformDayToMinute(PEGTransformer &transformer, const DatePartSpecifier &day_keyword,
-	                                              const DatePartSpecifier &minute_keyword);
+	static pair<DatePartSpecifier, DatePartSpecifier> TransformDayToMinute(PEGTransformer &transformer,
+	                                                                       const DatePartSpecifier &day_keyword,
+	                                                                       const DatePartSpecifier &minute_keyword);
 	static unique_ptr<TransformResultValue> TransformDayToSecondInternal(PEGTransformer &transformer,
 	                                                                     ParseResult &parse_result);
-	static DatePartSpecifier TransformDayToSecond(PEGTransformer &transformer, const DatePartSpecifier &day_keyword,
-	                                              const DatePartSpecifier &second_keyword);
+	static pair<DatePartSpecifier, DatePartSpecifier> TransformDayToSecond(PEGTransformer &transformer,
+	                                                                       const DatePartSpecifier &day_keyword,
+	                                                                       const DatePartSpecifier &second_keyword);
 	static unique_ptr<TransformResultValue> TransformHourToMinuteInternal(PEGTransformer &transformer,
 	                                                                      ParseResult &parse_result);
-	static DatePartSpecifier TransformHourToMinute(PEGTransformer &transformer, const DatePartSpecifier &hour_keyword,
-	                                               const DatePartSpecifier &minute_keyword);
+	static pair<DatePartSpecifier, DatePartSpecifier> TransformHourToMinute(PEGTransformer &transformer,
+	                                                                        const DatePartSpecifier &hour_keyword,
+	                                                                        const DatePartSpecifier &minute_keyword);
 	static unique_ptr<TransformResultValue> TransformHourToSecondInternal(PEGTransformer &transformer,
 	                                                                      ParseResult &parse_result);
-	static DatePartSpecifier TransformHourToSecond(PEGTransformer &transformer, const DatePartSpecifier &hour_keyword,
-	                                               const DatePartSpecifier &second_keyword);
+	static pair<DatePartSpecifier, DatePartSpecifier> TransformHourToSecond(PEGTransformer &transformer,
+	                                                                        const DatePartSpecifier &hour_keyword,
+	                                                                        const DatePartSpecifier &second_keyword);
 	static unique_ptr<TransformResultValue> TransformMinuteToSecondInternal(PEGTransformer &transformer,
 	                                                                        ParseResult &parse_result);
-	static DatePartSpecifier TransformMinuteToSecond(PEGTransformer &transformer,
-	                                                 const DatePartSpecifier &minute_keyword,
-	                                                 const DatePartSpecifier &second_keyword);
+	static pair<DatePartSpecifier, DatePartSpecifier> TransformMinuteToSecond(PEGTransformer &transformer,
+	                                                                          const DatePartSpecifier &minute_keyword,
+	                                                                          const DatePartSpecifier &second_keyword);
 	static unique_ptr<TransformResultValue> TransformBitTypeInternal(PEGTransformer &transformer,
 	                                                                 ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformBitType(PEGTransformer &transformer, const bool &has_result,
@@ -6761,6 +6776,14 @@ public:
 	                                                                     ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformTypeLiteral(PEGTransformer &transformer, const Identifier &col_id,
 	                                                         const string &string_literal);
+	static unique_ptr<TransformResultValue> TransformIntervalRangeLiteralInternal(PEGTransformer &transformer,
+	                                                                              ParseResult &parse_result);
+	static unique_ptr<ParsedExpression>
+	TransformIntervalRangeLiteral(PEGTransformer &transformer, const optional<string> &interval_range_sign,
+	                              const string &string_literal,
+	                              const pair<DatePartSpecifier, DatePartSpecifier> &interval_to_interval);
+	static unique_ptr<TransformResultValue> TransformIntervalRangeSignInternal(PEGTransformer &transformer,
+	                                                                           ParseResult &parse_result);
 	static unique_ptr<TransformResultValue> TransformIntervalLiteralInternal(PEGTransformer &transformer,
 	                                                                         ParseResult &parse_result);
 	static unique_ptr<ParsedExpression> TransformIntervalLiteral(PEGTransformer &transformer,
